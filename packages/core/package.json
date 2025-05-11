@@ -34,6 +34,7 @@
     "@opentelemetry/sdk-trace-base": "^2.0.0",
     "@opentelemetry/sdk-trace-node": "^2.0.0",
     "@types/ws": "^8.18.1",
+    "fastmcp": "^1.20.5",
     "hono": "^4.7.7",
     "npm-check-updates": "^17.1.18",
     "uuid": "^9.0.1",
