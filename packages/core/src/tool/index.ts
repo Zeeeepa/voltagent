@@ -6,6 +6,18 @@ import type { z } from "zod";
 export { ToolManager, ToolStatus, ToolStatusInfo } from "./manager";
 // Also export Toolkit
 export type { Toolkit } from "./toolkit";
+// Export registry types and functions
+export { defaultToolRegistry, createToolRegistry } from "./registry";
+export { ToolCategory, ToolPermission } from "./registry/types";
+export type {
+  ToolRegistry,
+  ExtendedTool,
+  ExtendedToolOptions,
+  ToolExecutionContext,
+  ToolExecutionEventData,
+} from "./registry/types";
+// Export all tools
+export * from "./tools";
 
 /**
  * Tool definition compatible with Vercel AI SDK
