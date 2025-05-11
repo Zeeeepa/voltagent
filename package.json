@@ -5,7 +5,10 @@
   "description": "Backend framework with a monorepo structure using pnpm and lerna",
   "license": "MIT",
   "author": "",
-  "workspaces": ["packages/*", "examples/*"],
+  "workspaces": [
+    "packages/*",
+    "examples/*"
+  ],
   "scripts": {
     "attw": "lerna run attw --scope @voltagent/core",
     "attw:all": "lerna run attw --scope @voltagent/*",
@@ -43,9 +46,18 @@
     "version-packages": "changeset version && pnpm i --ignore-scripts --lockfile-only --no-frozen-lockfile && git add pnpm-lock.yaml"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx,json}": ["biome format --write --no-errors-on-unmatched"],
-    "*.{md,mdx}": ["prettier --config ./.prettierrc --write"],
-    "package.json": ["sort-package-json"]
+    "*.{js,jsx,ts,tsx,json}": [
+      "biome format --write --no-errors-on-unmatched"
+    ],
+    "*.{md,mdx}": [
+      "prettier --config ./.prettierrc --write"
+    ],
+    "package.json": [
+      "sort-package-json"
+    ]
+  },
+  "dependencies": {
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.17.4",
@@ -54,6 +66,7 @@
     "@changesets/cli": "^2.28.1",
     "@commitlint/cli": "^18.2.0",
     "@commitlint/config-conventional": "^18.2.0",
+    "@types/uuid": "^10.0.0",
     "husky": "^8.0.3",
     "lerna": "^7.4.2",
     "lint-staged": "^15.4.3",
