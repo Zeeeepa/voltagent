@@ -56,6 +56,25 @@ const getOSInfo = () => {
   }
 };
 
+// Function to capture general events
+export const captureEvent = (options: {
+  event: string;
+  properties: Record<string, any>;
+}) => {
+  // Skip if telemetry is disabled
+  if (isTelemetryDisabled()) return;
+
+  client.capture({
+    distinctId: getMachineId(),
+    event: options.event,
+    properties: {
+      ...options.properties,
+      machine_id: getMachineId(),
+      ...getOSInfo(),
+    },
+  });
+};
+
 // Function to capture CLI initialization events
 export const captureInitEvent = (options: {
   packageManager: string;
