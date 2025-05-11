@@ -5,16 +5,15 @@
   "main": "dist/execution-example.js",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/execution-example.js",
-    "dev": "ts-node src/execution-example.ts"
+    "dev": "ts-node src/execution-example.ts",
+    "start": "node dist/execution-example.js"
   },
   "dependencies": {
     "@voltagent/core": "workspace:*",
-    "fastmcp": "^0.1.0"
+    "fastmcp": "^1.27.4"
   },
   "devDependencies": {
     "ts-node": "^10.9.1",
     "typescript": "^5.0.4"
   }
 }
-
