@@ -1,23 +1,27 @@
 /**
  * events/index.ts
- * 
+ *
  * Event system for the voltagent framework
  */
 
-import { EventEmitter } from 'events';
+import { EventEmitter } from "node:events";
+import { AgentEventEmitter, EventStatus, EventUpdater } from "./agent-event-emitter";
+
+// Export the AgentEventEmitter class and related types
+export { AgentEventEmitter, EventStatus, EventUpdater };
 
 /**
  * Event types for the agent system
  */
 export enum AgentEventType {
-  ENVIRONMENT_STATUS_CHANGED = 'environment:status',
-  CHECKPOINT_READY = 'checkpoint:ready',
-  TOOL_EXECUTION_START = 'tool:execution:start',
-  TOOL_EXECUTION_END = 'tool:execution:end',
-  AGENT_STATE_CHANGED = 'agent:state:changed',
-  AGENT_MESSAGE = 'agent:message',
-  MCP_REQUEST = 'mcp:request',
-  MCP_RESPONSE = 'mcp:response'
+  ENVIRONMENT_STATUS_CHANGED = "environment:status",
+  CHECKPOINT_READY = "checkpoint:ready",
+  TOOL_EXECUTION_START = "tool:execution:start",
+  TOOL_EXECUTION_END = "tool:execution:end",
+  AGENT_STATE_CHANGED = "agent:state:changed",
+  AGENT_MESSAGE = "agent:message",
+  MCP_REQUEST = "mcp:request",
+  MCP_RESPONSE = "mcp:response",
 }
 
 /**
@@ -36,7 +40,7 @@ AgentEvents.setMaxListeners(50);
  */
 export function subscribeToEvent<T>(
   eventType: AgentEventType,
-  handler: (data: T) => void
+  handler: (data: T) => void,
 ): () => void {
   AgentEvents.on(eventType, handler);
   return () => {
@@ -52,7 +56,7 @@ export function subscribeToEvent<T>(
  */
 export function subscribeToEventOnce<T>(
   eventType: AgentEventType,
-  handler: (data: T) => void
+  handler: (data: T) => void,
 ): () => void {
   AgentEvents.once(eventType, handler);
   return () => {
@@ -68,4 +72,3 @@ export function subscribeToEventOnce<T>(
 export function emitEvent<T>(eventType: AgentEventType, data: T): void {
   AgentEvents.emit(eventType, data);
 }
-
