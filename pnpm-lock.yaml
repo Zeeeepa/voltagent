@@ -7,6 +7,10 @@ settings:
 importers:
 
   .:
+    dependencies:
+      uuid:
+        specifier: ^9.0.1
+        version: 9.0.1
     devDependencies:
       '@arethetypeswrong/cli':
         specifier: ^0.17.4
@@ -26,6 +30,9 @@ importers:
       '@commitlint/config-conventional':
         specifier: ^18.2.0
         version: 18.6.3
+      '@types/uuid':
+        specifier: ^10.0.0
+        version: 10.0.0
       husky:
         specifier: ^8.0.3
         version: 8.0.3
@@ -1336,6 +1343,9 @@ importers:
       '@voltagent/core':
         specifier: workspace:*
         version: link:../core
+      uuid:
+        specifier: ^9.0.1
+        version: 9.0.1
       zod:
         specifier: ^3.24.3
         version: 3.24.4
@@ -1346,6 +1356,9 @@ importers:
       '@types/node':
         specifier: ^20.11.30
         version: 20.17.30
+      '@types/uuid':
+        specifier: ^10.0.0
+        version: 10.0.0
       publint:
         specifier: ^0.3.8
         version: 0.3.8

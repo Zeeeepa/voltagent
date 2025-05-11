@@ -3,9 +3,6 @@
   "version": "0.1.0",
   "description": "Task management system for AI-driven development",
   "type": "module",
-  "main": "./dist/cjs/index.js",
-  "module": "./dist/esm/index.js",
-  "types": "./dist/esm/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/esm/index.d.ts",
@@ -13,27 +10,32 @@
       "require": "./dist/cjs/index.js"
     }
   },
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/esm/index.d.ts",
   "files": [
     "dist"
   ],
   "scripts": {
+    "attw": "attw --pack .",
     "build": "tsup",
     "clean": "rimraf dist",
     "dev": "tsup --watch",
     "lint": "biome check .",
     "lint:fix": "biome check . --apply",
+    "publint": "publint",
     "test": "vitest run",
-    "test:watch": "vitest watch",
-    "attw": "attw --pack .",
-    "publint": "publint"
+    "test:watch": "vitest watch"
   },
   "dependencies": {
     "@voltagent/core": "workspace:*",
+    "uuid": "^9.0.1",
     "zod": "^3.24.3"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.17.4",
     "@types/node": "^20.11.30",
+    "@types/uuid": "^10.0.0",
     "publint": "^0.3.8",
     "rimraf": "^5.0.5",
     "tsup": "^8.0.2",
@@ -44,4 +46,3 @@
     "node": ">=18"
   }
 }
-
