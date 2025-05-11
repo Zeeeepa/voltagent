@@ -1,14 +1,14 @@
 /**
  * Task Manager implementation
- * 
+ *
  * This module provides a manager for creating, updating, and managing tasks.
  */
 
-import { v4 as uuidv4 } from 'uuid';
-import { Task, CreateTaskOptions, UpdateTaskOptions } from '../types/task';
-import { TaskStatus } from '../types/status';
-import { TaskDependency, DependencyType } from '../types/dependency';
-import { TaskFSM } from './TaskFSM';
+import { v4 as uuidv4 } from "uuid";
+import { Task, CreateTaskOptions, UpdateTaskOptions } from "../types/task.js";
+import { TaskStatus } from "../types/status.js";
+import { TaskDependency, DependencyType } from "../types/dependency.js";
+import { TaskFSM } from "./TaskFSM.js";
 
 /**
  * Options for creating a TaskManager
@@ -83,7 +83,7 @@ export class TaskManager {
       try {
         this.tasks = await this.storage.loadTasks();
       } catch (error) {
-        console.error('Failed to load tasks from storage:', error);
+        console.error("Failed to load tasks from storage:", error);
         // Continue with empty tasks array
       }
     }
@@ -91,13 +91,13 @@ export class TaskManager {
 
   /**
    * Create a new task
-   * 
+   *
    * @param options - Task creation options
    * @returns The created task
    */
   public async createTask(options: CreateTaskOptions): Promise<Task> {
     const now = new Date().toISOString();
-    
+
     const task: Task = {
       id: uuidv4(),
       title: options.title,
@@ -115,7 +115,7 @@ export class TaskManager {
     };
 
     this.tasks.push(task);
-    
+
     // If this is a subtask, add it to the parent's subtasks
     if (options.parentId) {
       const parentTask = this.getTaskById(options.parentId);
@@ -126,13 +126,13 @@ export class TaskManager {
     }
 
     await this.persistTasks();
-    
+
     return task;
   }
 
   /**
    * Get a task by ID
-   * 
+   *
    * @param id - Task ID
    * @returns The task, or undefined if not found
    */
@@ -142,7 +142,7 @@ export class TaskManager {
 
   /**
    * Get all tasks
-   * 
+   *
    * @returns Array of all tasks
    */
   public getAllTasks(): Task[] {
@@ -151,7 +151,7 @@ export class TaskManager {
 
   /**
    * Get root tasks (tasks without a parent)
-   * 
+   *
    * @returns Array of root tasks
    */
   public getRootTasks(): Task[] {
@@ -160,7 +160,7 @@ export class TaskManager {
 
   /**
    * Update a task
-   * 
+   *
    * @param id - Task ID
    * @param updates - Task updates
    * @returns The updated task, or undefined if not found
@@ -174,9 +174,7 @@ export class TaskManager {
     // Handle status transition if status is being updated
     if (updates.status && updates.status !== task.status) {
       if (!this.fsm.canTransition(task.status, updates.status, task)) {
-        throw new Error(
-          `Invalid status transition from ${task.status} to ${updates.status}`
-        );
+        throw new Error(`Invalid status transition from ${task.status} to ${updates.status}`);
       }
     }
 
@@ -206,13 +204,13 @@ export class TaskManager {
     }
 
     await this.persistTasks();
-    
+
     return updatedTask;
   }
 
   /**
    * Delete a task
-   * 
+   *
    * @param id - Task ID
    * @returns Whether the task was deleted
    */
@@ -244,13 +242,13 @@ export class TaskManager {
     });
 
     await this.persistTasks();
-    
+
     return true;
   }
 
   /**
    * Add a dependency between tasks
-   * 
+   *
    * @param taskId - ID of the dependent task
    * @param dependsOnTaskId - ID of the task that taskId depends on
    * @param type - Type of dependency
@@ -261,7 +259,7 @@ export class TaskManager {
     taskId: string,
     dependsOnTaskId: string,
     type: DependencyType = DependencyType.BLOCKS,
-    description?: string
+    description?: string,
   ): Promise<Task | undefined> {
     const task = this.getTaskById(taskId);
     const dependsOnTask = this.getTaskById(dependsOnTaskId);
@@ -288,22 +286,22 @@ export class TaskManager {
     }
 
     task.updatedAt = new Date().toISOString();
-    
+
     await this.persistTasks();
-    
+
     return task;
   }
 
   /**
    * Remove a dependency between tasks
-   * 
+   *
    * @param taskId - ID of the dependent task
    * @param dependsOnTaskId - ID of the task that taskId depends on
    * @returns The updated task, or undefined if not found
    */
   public async removeDependency(
     taskId: string,
-    dependsOnTaskId: string
+    dependsOnTaskId: string,
   ): Promise<Task | undefined> {
     const task = this.getTaskById(taskId);
     if (!task) {
@@ -312,15 +310,15 @@ export class TaskManager {
 
     task.dependencies = task.dependencies.filter((dep) => dep.taskId !== dependsOnTaskId);
     task.updatedAt = new Date().toISOString();
-    
+
     await this.persistTasks();
-    
+
     return task;
   }
 
   /**
    * Get tasks by status
-   * 
+   *
    * @param status - Task status
    * @returns Array of tasks with the specified status
    */
@@ -330,7 +328,7 @@ export class TaskManager {
 
   /**
    * Get tasks assigned to a specific agent
-   * 
+   *
    * @param agentId - Agent ID
    * @returns Array of tasks assigned to the agent
    */
@@ -340,7 +338,7 @@ export class TaskManager {
 
   /**
    * Get the next available task for an agent
-   * 
+   *
    * @param agentId - Agent ID (optional)
    * @returns The next available task, or undefined if none available
    */
@@ -348,7 +346,7 @@ export class TaskManager {
     // First, check for tasks already assigned to this agent that are in progress
     if (agentId) {
       const assignedInProgress = this.tasks.find(
-        (task) => task.assignedTo === agentId && task.status === TaskStatus.IN_PROGRESS
+        (task) => task.assignedTo === agentId && task.status === TaskStatus.IN_PROGRESS,
       );
       if (assignedInProgress) {
         return assignedInProgress;
@@ -358,7 +356,7 @@ export class TaskManager {
     // Then, check for tasks already assigned to this agent that are ready
     if (agentId) {
       const assignedReady = this.tasks.find(
-        (task) => task.assignedTo === agentId && task.status === TaskStatus.READY
+        (task) => task.assignedTo === agentId && task.status === TaskStatus.READY,
       );
       if (assignedReady) {
         return assignedReady;
@@ -367,7 +365,7 @@ export class TaskManager {
 
     // Then, check for unassigned ready tasks
     const readyTasks = this.tasks.filter(
-      (task) => !task.assignedTo && task.status === TaskStatus.READY
+      (task) => !task.assignedTo && task.status === TaskStatus.READY,
     );
 
     // Sort by priority (lower number = higher priority)
@@ -378,24 +376,19 @@ export class TaskManager {
 
   /**
    * Transition a task to a new status
-   * 
+   *
    * @param id - Task ID
    * @param newStatus - New status
    * @returns The updated task, or undefined if not found or transition not allowed
    */
-  public async transitionTaskStatus(
-    id: string,
-    newStatus: TaskStatus
-  ): Promise<Task | undefined> {
+  public async transitionTaskStatus(id: string, newStatus: TaskStatus): Promise<Task | undefined> {
     const task = this.getTaskById(id);
     if (!task) {
       return undefined;
     }
 
     if (!this.fsm.canTransition(task.status, newStatus, task)) {
-      throw new Error(
-        `Invalid status transition from ${task.status} to ${newStatus}`
-      );
+      throw new Error(`Invalid status transition from ${task.status} to ${newStatus}`);
     }
 
     return this.updateTask(id, { status: newStatus });
@@ -403,7 +396,7 @@ export class TaskManager {
 
   /**
    * Assign a task to an agent
-   * 
+   *
    * @param id - Task ID
    * @param agentId - Agent ID
    * @returns The updated task, or undefined if not found
@@ -414,7 +407,7 @@ export class TaskManager {
 
   /**
    * Unassign a task
-   * 
+   *
    * @param id - Task ID
    * @returns The updated task, or undefined if not found
    */
@@ -424,7 +417,7 @@ export class TaskManager {
 
   /**
    * Get the FSM instance
-   * 
+   *
    * @returns The TaskFSM instance
    */
   public getFSM(): TaskFSM {
@@ -439,9 +432,8 @@ export class TaskManager {
       try {
         await this.storage.saveTasks(this.tasks);
       } catch (error) {
-        console.error('Failed to save tasks to storage:', error);
+        console.error("Failed to save tasks to storage:", error);
       }
     }
   }
 }
-

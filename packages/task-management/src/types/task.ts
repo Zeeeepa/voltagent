@@ -2,8 +2,8 @@
  * Task types for the task management system
  */
 
-import { TaskStatus } from './status';
-import { TaskDependency } from './dependency';
+import { TaskStatus } from "./status.js";
+import { TaskDependency } from "./dependency.js";
 
 /**
  * Represents a task in the task management system
@@ -164,4 +164,3 @@ export interface UpdateTaskOptions {
    */
   metadata?: Record<string, unknown>;
 }
-

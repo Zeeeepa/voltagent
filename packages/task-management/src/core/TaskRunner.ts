@@ -1,13 +1,13 @@
 /**
  * Task Runner implementation
- * 
+ *
  * This module provides a runner for executing tasks using agents.
  */
 
-import { Agent } from '@voltagent/core';
-import { Task } from '../types/task';
-import { TaskStatus } from '../types/status';
-import { TaskManager } from './TaskManager';
+import { Agent } from "@voltagent/core";
+import { Task } from "../types/task.js";
+import { TaskStatus } from "../types/status.js";
+import { TaskManager } from "./TaskManager.js";
 
 /**
  * Options for creating a TaskRunner
@@ -172,7 +172,7 @@ export class TaskRunner {
 
   /**
    * Execute a task
-   * 
+   *
    * @param task - Task to execute
    * @returns Promise that resolves when the task is complete
    */
@@ -198,7 +198,7 @@ export class TaskRunner {
 
   /**
    * Execute a task (internal implementation)
-   * 
+   *
    * @param task - Task to execute
    * @returns Promise that resolves when the task is complete
    */
@@ -218,8 +218,8 @@ export class TaskRunner {
       const result = await this.agent.generateText(
         `Execute the following task: ${task.title}\n\nDescription: ${task.description}`,
         {
-          userContext: new Map([['task', task]]),
-        }
+          userContext: new Map([["task", task]]),
+        },
       );
 
       // Transition the task to REVIEW
@@ -245,7 +245,7 @@ export class TaskRunner {
 
   /**
    * Get the currently running tasks
-   * 
+   *
    * @returns Map of task IDs to execution promises
    */
   public getRunningTasks(): Map<string, Promise<TaskExecutionResult>> {
@@ -254,7 +254,7 @@ export class TaskRunner {
 
   /**
    * Check if the runner is currently running
-   * 
+   *
    * @returns Whether the runner is running
    */
   public isActive(): boolean {
@@ -263,7 +263,7 @@ export class TaskRunner {
 
   /**
    * Get the number of currently running tasks
-   * 
+   *
    * @returns Number of running tasks
    */
   public getRunningTaskCount(): number {
@@ -272,7 +272,7 @@ export class TaskRunner {
 
   /**
    * Get the maximum number of concurrent tasks
-   * 
+   *
    * @returns Maximum number of concurrent tasks
    */
   public getMaxConcurrentTasks(): number {
@@ -281,7 +281,7 @@ export class TaskRunner {
 
   /**
    * Set the maximum number of concurrent tasks
-   * 
+   *
    * @param max - Maximum number of concurrent tasks
    */
   public setMaxConcurrentTasks(max: number): void {
@@ -290,7 +290,7 @@ export class TaskRunner {
 
   /**
    * Get the polling interval
-   * 
+   *
    * @returns Polling interval in milliseconds
    */
   public getPollingInterval(): number {
@@ -299,7 +299,7 @@ export class TaskRunner {
 
   /**
    * Set the polling interval
-   * 
+   *
    * @param interval - Polling interval in milliseconds
    */
   public setPollingInterval(interval: number): void {
@@ -314,4 +314,3 @@ export class TaskRunner {
     }
   }
 }
-

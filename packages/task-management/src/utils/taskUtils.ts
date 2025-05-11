@@ -2,13 +2,13 @@
  * Utility functions for working with tasks
  */
 
-import { Task } from '../types/task';
-import { TaskStatus } from '../types/status';
-import { DependencyType } from '../types/dependency';
+import { Task } from "../types/task.js";
+import { TaskStatus } from "../types/status.js";
+import { DependencyType } from "../types/dependency.js";
 
 /**
  * Check if a task is blocked by its dependencies
- * 
+ *
  * @param task - Task to check
  * @param allTasks - All tasks in the system
  * @returns Whether the task is blocked
@@ -22,10 +22,7 @@ export function isTaskBlockedByDependencies(task: Task, allTasks: Task[]): boole
   // Check each dependency
   for (const dependency of task.dependencies) {
     // Only check BLOCKS and REQUIRES dependencies
-    if (
-      dependency.type !== DependencyType.BLOCKS &&
-      dependency.type !== DependencyType.REQUIRES
-    ) {
+    if (dependency.type !== DependencyType.BLOCKS && dependency.type !== DependencyType.REQUIRES) {
       continue;
     }
 
@@ -48,20 +45,18 @@ export function isTaskBlockedByDependencies(task: Task, allTasks: Task[]): boole
 
 /**
  * Get all tasks that depend on a given task
- * 
+ *
  * @param taskId - ID of the task
  * @param allTasks - All tasks in the system
  * @returns Array of tasks that depend on the given task
  */
 export function getDependentTasks(taskId: string, allTasks: Task[]): Task[] {
-  return allTasks.filter((task) =>
-    task.dependencies.some((dep) => dep.taskId === taskId)
-  );
+  return allTasks.filter((task) => task.dependencies.some((dep) => dep.taskId === taskId));
 }
 
 /**
  * Get all tasks that a given task depends on
- * 
+ *
  * @param task - Task to check
  * @param allTasks - All tasks in the system
  * @returns Array of tasks that the given task depends on
@@ -74,7 +69,7 @@ export function getDependencyTasks(task: Task, allTasks: Task[]): Task[] {
 
 /**
  * Calculate the completion percentage of a task
- * 
+ *
  * @param task - Task to calculate completion for
  * @returns Completion percentage (0-100)
  */
@@ -106,7 +101,7 @@ export function calculateTaskCompletion(task: Task): number {
 
   // If the task has subtasks, calculate based on subtask completion
   const completedSubtasks = task.subtasks.filter(
-    (subtask) => subtask.status === TaskStatus.COMPLETED
+    (subtask) => subtask.status === TaskStatus.COMPLETED,
   ).length;
 
   return Math.round((completedSubtasks / task.subtasks.length) * 100);
@@ -114,7 +109,7 @@ export function calculateTaskCompletion(task: Task): number {
 
 /**
  * Sort tasks by priority
- * 
+ *
  * @param tasks - Tasks to sort
  * @returns Sorted tasks (highest priority first)
  */
@@ -124,7 +119,7 @@ export function sortTasksByPriority(tasks: Task[]): Task[] {
 
 /**
  * Sort tasks by status
- * 
+ *
  * @param tasks - Tasks to sort
  * @returns Sorted tasks
  */
@@ -144,19 +139,19 @@ export function sortTasksByStatus(tasks: Task[]): Task[] {
 
 /**
  * Find the critical path of tasks
- * 
+ *
  * @param tasks - All tasks in the system
  * @returns Array of tasks in the critical path
  */
 export function findCriticalPath(tasks: Task[]): Task[] {
   // Create a dependency graph
   const graph: Record<string, string[]> = {};
-  
+
   // Initialize the graph
   tasks.forEach((task) => {
     graph[task.id] = [];
   });
-  
+
   // Add dependencies to the graph
   tasks.forEach((task) => {
     task.dependencies.forEach((dep) => {
@@ -165,18 +160,18 @@ export function findCriticalPath(tasks: Task[]): Task[] {
       }
     });
   });
-  
+
   // Find tasks with no dependencies (entry points)
   const entryPoints = tasks.filter((task) => task.dependencies.length === 0);
-  
+
   // Find tasks with no dependents (exit points)
   const exitPoints = tasks.filter((task) => {
     return !Object.values(graph).some((deps) => deps.includes(task.id));
   });
-  
+
   // Find the longest path from each entry point to each exit point
   let longestPath: string[] = [];
-  
+
   entryPoints.forEach((entry) => {
     exitPoints.forEach((exit) => {
       const path = findLongestPath(graph, entry.id, exit.id);
@@ -185,46 +180,43 @@ export function findCriticalPath(tasks: Task[]): Task[] {
       }
     });
   });
-  
+
   // Convert the path of IDs back to tasks
-  return longestPath.map((id) => tasks.find((task) => task.id === id)!)
+  return longestPath
+    .map((id) => tasks.find((task) => task.id === id)!)
     .filter((task): task is Task => task !== undefined);
 }
 
 /**
  * Find the longest path between two nodes in a graph
- * 
+ *
  * @param graph - Dependency graph
  * @param start - Start node ID
  * @param end - End node ID
  * @returns Array of node IDs in the longest path
  */
-function findLongestPath(
-  graph: Record<string, string[]>,
-  start: string,
-  end: string
-): string[] {
+function findLongestPath(graph: Record<string, string[]>, start: string, end: string): string[] {
   // If start and end are the same, return a path with just that node
   if (start === end) {
     return [start];
   }
-  
+
   // Initialize distances and paths
   const distances: Record<string, number> = {};
   const paths: Record<string, string[]> = {};
   const visited: Record<string, boolean> = {};
-  
+
   // Initialize all distances to -Infinity
   Object.keys(graph).forEach((node) => {
     distances[node] = -Infinity;
     paths[node] = [];
     visited[node] = false;
   });
-  
+
   // Distance to start is 0
   distances[start] = 0;
   paths[start] = [start];
-  
+
   // Topological sort
   const sorted: string[] = [];
   const visit = (node: string) => {
@@ -237,14 +229,14 @@ function findLongestPath(
     });
     sorted.unshift(node);
   };
-  
+
   // Visit all nodes
   Object.keys(graph).forEach((node) => {
     if (!visited[node]) {
       visit(node);
     }
   });
-  
+
   // Process nodes in topological order
   sorted.forEach((node) => {
     graph[node].forEach((neighbor) => {
@@ -254,8 +246,7 @@ function findLongestPath(
       }
     });
   });
-  
+
   // Return the path to the end node
   return paths[end];
 }
-
