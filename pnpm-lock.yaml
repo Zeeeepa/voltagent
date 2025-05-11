@@ -182,7 +182,7 @@ importers:
         version: link:../../packages/core
       '@voltagent/google-ai':
         specifier: ^0.3.5
-        version: link:../../packages/google-ai
+        version: 0.3.6(@voltagent/core@packages+core)
       zod:
         specifier: ^3.24.2
         version: 3.24.2
@@ -308,7 +308,7 @@ importers:
         version: link:../../packages/core
       '@voltagent/google-ai':
         specifier: ^0.3.5
-        version: link:../../packages/google-ai
+        version: 0.3.6(@voltagent/core@packages+core)
       zod:
         specifier: ^3.24.2
         version: 3.24.2
@@ -6686,6 +6686,22 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: true
+
+  /@voltagent/google-ai@0.3.6(@voltagent/core@packages+core):
+    resolution: {integrity: sha512-48NtioV1YwVaIoDrwYGAHb54AgsMFDu1k7FU9bogiIdotw88wT4vZ29uXBL3t+pXq8qOKbYXjtkYAs0zQqZ4bA==}
+    peerDependencies:
+      '@voltagent/core': ^0.1.0
+    dependencies:
+      '@google/genai': 0.10.0
+      '@voltagent/core': link:packages/core
+      zod: 3.24.2
+      zod-to-json-schema: 3.24.5(zod@3.24.2)
+    transitivePeerDependencies:
+      - bufferutil
+      - encoding
+      - supports-color
+      - utf-8-validate
+    dev: false
 
   /@xsai/embed@0.2.0:
     resolution: {integrity: sha512-xXk6QG/23gHDmlMIEywB4+9JhiQv1DSnxqaJnQiiS2EAqzpKLV4JHT0tjAPAb4Gu+HUGjCQDup0rag6BopfnBg==}

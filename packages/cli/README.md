@@ -48,99 +48,86 @@ Escape the limitations of no-code builders and the complexity of starting from s
 
 **VoltAgent** is an open-source TypeScript framework that acts as this essential toolkit. It simplifies the development of AI agent applications by providing modular building blocks, standardized patterns, and abstractions. Whether you're creating chatbots, virtual assistants, automated workflows, or complex multi-agent systems, VoltAgent handles the underlying complexity, allowing you to focus on defining your agents' capabilities and logic.
 
-Instead of building everything from scratch, VoltAgent provides ready-made, modular building blocks:
+## CLI Features
 
-- **Core Engine (`@voltagent/core`)**: The heart of VoltAgent, providing fundamental capabilities for your AI agents Define individual agents with specific roles, tools, and memory.
-- **Multi-Agent Systems**: Architect complex applications by coordinating multiple specialized agents using Supervisors.
-- **Extensible Packages**: Enhance functionality with packages like `@voltagent/voice` for voice interactions.
-- **Tooling & Integrations**: Equip agents with tools to connect to external APIs, databases, and services, enabling them to perform real-world tasks. **Supports the [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) for standardized tool interactions.**
-- **Data Retrieval & RAG**: Implement specialized retriever agents for efficient information fetching and **Retrieval-Augmented Generation (RAG)**.
-- **Memory**: Enable agents to remember past interactions for more natural and context-aware conversations.
-- **LLM Compatibility**: Works with popular AI models from OpenAI, Google, Anthropic, and more, allowing easy switching.
-- **Developer Ecosystem**: Includes helpers like `create-voltagent-app`, `@voltagent/cli`, and the visual [VoltAgent Console](https://console.voltagent.dev) for quick setup, monitoring, and debugging.
+The VoltAgent CLI provides a comprehensive set of tools for agent development, task management, and MCP (Model Context Protocol) integration:
 
-In essence, VoltAgent helps developers build sophisticated AI applications faster and more reliably, avoiding repetitive setup and the limitations of simpler tools.
+### Agent Commands
 
-## Why VoltAgent?
+- **Chat**: Start an interactive chat session with an agent
+- **Eval**: Evaluation tools for agent testing and benchmarking
+  - **Run**: Run evaluation tests
+  - **List**: List available test cases
+  - **Report**: Generate evaluation reports
 
-Building AI applications often involves a trade-off:
+### Task Commands
 
-1.  **DIY Approach:** Using basic AI provider tools offers control but leads to complex, hard-to-manage code and repeated effort.
-2.  **No-Code Builders:** Simpler initially but often restrictive, limiting customization, provider choice, and complexity.
+- **Parse-PRD**: Parse a PRD file and generate tasks
+- **List**: List all tasks with their status
+- **Next**: Show the next task to work on
+- **Generate**: Generate task files and boilerplate code
+- **Expand**: Add subtasks to a task using AI
+- **Set-Status**: Change the status of a task
+- **Analyze**: Analyze task complexity and dependencies
 
-VoltAgent provides a middle ground, offering structure and components without sacrificing flexibility:
+### MCP Commands
 
-- **Build Faster:** Accelerate development with pre-built components compared to starting from scratch.
-- **Maintainable Code:** Encourages organization for easier updates and debugging.
-- **Scalability:** Start simple and easily scale to complex, multi-agent systems handling intricate workflows.
-- **Flexibility:** Full control over agent behavior, LLM choice, tool integrations, and UI connections.
-- **Avoid Lock-in:** Freedom to switch AI providers and models as needed.
-- **Cost Efficiency:** Features designed to optimize AI service usage and reduce redundant calls.
-- **Visual Monitoring:** Use the [VoltAgent Console](https://console.voltagent.dev) to track agent performance, inspect state, and debug visually.
+- **Server**: Start an MCP server
+- **Client**: Connect to an MCP server
 
-VoltAgent empowers developers to build their envisioned AI applications efficiently, from simple helpers to complex systems.
+### Core Commands
 
-## ⚡ Quick Start
+- **Init**: Initialize a new project
+- **Update**: Check for updates
+- **Whoami**: Show configuration info
+- **Add**: Add components to an agent
 
-Create a new VoltAgent project in seconds using the `create-voltagent-app` CLI tool:
-
-```bash
-npm create voltagent-app@latest
-```
-
-This command guides you through setup.
-
-You'll see the starter code in `src/index.ts` to get you started with the VoltAgent framework.
-
-```typescript
-import { VoltAgent, Agent } from "@voltagent/core";
-import { VercelAIProvider } from "@voltagent/vercel-ai"; // Example provider
-import { openai } from "@ai-sdk/openai"; // Example model
-
-// Define a simple agent
-const agent = new Agent({
-  name: "my-agent",
-  instructions: "A helpful assistant that answers questions without using tools",
-  // Note: You can swap VercelAIProvider and openai with other supported providers/models
-  llm: new VercelAIProvider(),
-  model: openai("gpt-4o-mini"),
-});
-
-// Initialize VoltAgent with your agent(s)
-new VoltAgent({
-  agents: {
-    agent,
-  },
-});
-```
-
-Afterwards, navigate to your project and run:
+## Installation
 
 ```bash
-npm run dev
+# Install globally
+npm install -g @voltagent/cli
+
+# Or with yarn
+yarn global add @voltagent/cli
+
+# Or with pnpm
+pnpm add -g @voltagent/cli
 ```
 
-When you run the dev command, tsx will compile and run your code. You should see the VoltAgent server startup message in your terminal:
+## Usage
 
+```bash
+# Show help
+volt --help
+
+# Initialize a new project
+volt init my-agent-project
+
+# Start a chat session with an agent
+volt agent chat
+
+# Parse a PRD and generate tasks
+volt task parse-prd ./docs/prd.md
+
+# Start an MCP server
+volt mcp server
 ```
-══════════════════════════════════════════════════
-VOLTAGENT SERVER STARTED SUCCESSFULLY
-══════════════════════════════════════════════════
-✓ HTTP Server: http://localhost:3141
 
-Developer Console: https://console.voltagent.dev
-══════════════════════════════════════════════════
-```
+## Documentation
 
-Your agent is now running! To interact with it:
+For detailed documentation on each command, see:
 
-1. Open the Console: Click the [VoltAgent Console](https://console.voltagent.dev) link in your terminal output (or copy-paste it into your browser).
-2. Find Your Agent: On the VoltAgent Console page, you should see your agent listed (e.g., "my-agent").
-3. Open Agent Details: Click on your agent's name.
-4. Start Chatting: On the agent detail page, click the chat icon in the bottom right corner to open the chat window.
-5. Send a Message: Type a message like "Hello" and press Enter.
+- [Agent Commands](./docs/agent-commands.md)
+- [Task Commands](./docs/task-commands.md)
+- [MCP Commands](./docs/mcp-commands.md)
 
-![VoltAgent Developer Console Demo](https://github.com/user-attachments/assets/0adbec33-1373-4cf4-b67d-825f7baf1cb4)
+### Migration Guides
+
+If you're migrating from one of the predecessor projects:
+
+- [Migration Guide: serv to voltagent](./docs/migration-guide-serv.md)
+- [Migration Guide: SwarmMCP to voltagent](./docs/migration-guide-swarmmcp.md)
 
 ## Key Features
 

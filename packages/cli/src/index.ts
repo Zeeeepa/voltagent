@@ -6,6 +6,9 @@ import { registerInitCommand } from "./commands/init";
 import { registerUpdateCommand } from "./commands/update";
 import { registerWhoamiCommand } from "./commands/whoami";
 import { registerAddCommand } from "./commands/add";
+import { registerAgentCommands } from "./commands/agent";
+import { registerTaskCommands } from "./commands/task";
+import { registerMcpCommands } from "./commands/mcp";
 import { captureError } from "./utils/analytics";
 import posthogClient from "./utils/analytics";
 
@@ -15,8 +18,8 @@ const createCLI = () => {
 
   // Set CLI information
   program
-    .name("voltagent")
-    .description("VoltAgent CLI - CLI tool for update checks")
+    .name("volt")
+    .description("VoltAgent CLI - Tools for agent development and task management")
     .version("0.1.0");
 
   // Register commands
@@ -24,6 +27,11 @@ const createCLI = () => {
   registerUpdateCommand(program);
   registerWhoamiCommand(program);
   registerAddCommand(program);
+  
+  // Register command groups
+  registerAgentCommands(program);
+  registerTaskCommands(program);
+  registerMcpCommands(program);
 
   return program;
 };
