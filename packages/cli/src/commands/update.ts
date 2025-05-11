@@ -1,11 +1,11 @@
-import { Command } from "commander";
-import chalk from "chalk";
-import ora from "ora";
-import path from "path";
 import fs from "fs";
-import * as ncuPackage from "npm-check-updates";
+import path from "path";
+import chalk from "chalk";
+import type { Command } from "commander";
 import inquirer from "inquirer";
-import { captureUpdateEvent, captureError } from "../utils/analytics";
+import * as ncuPackage from "npm-check-updates";
+import ora from "ora";
+import { captureError, captureUpdateEvent } from "../utils/analytics";
 
 // Not directly importing from @voltagent/core due to potential circular dependencies
 // instead, we'll implement a simpler version here

@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
-import TOCItems from "@theme/TOCItems";
-import { ShareWidget } from "./ShareWidget";
-import clsx from "clsx";
 import { useLocation } from "@docusaurus/router";
+import TOCItems from "@theme/TOCItems";
+import clsx from "clsx";
+import React, { useEffect, useState } from "react";
+import { ShareWidget } from "./ShareWidget";
 
 const LINK_CLASS_NAME = "table-of-contents__link toc-highlight";
 

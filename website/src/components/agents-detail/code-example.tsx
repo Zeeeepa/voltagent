@@ -1,5 +1,5 @@
+import { AnimatePresence, motion } from "framer-motion";
 import React from "react";
-import { motion, AnimatePresence } from "framer-motion";
 
 type CodeExampleProps = {
   // isVisible: boolean; // TODO: Prop 'isVisible' is declared but never used. Remove or utilize it.

@@ -1,12 +1,12 @@
-import React from "react";
-import Layout from "@theme/Layout";
-import { Manifesto } from "../components/manifesto";
-import { Footer } from "../components/footer";
 import {
   HtmlClassNameProvider,
   ThemeClassNames,
 } from "@docusaurus/theme-common";
+import Layout from "@theme/Layout";
 import clsx from "clsx";
+import React from "react";
+import { Footer } from "../components/footer";
+import { Manifesto } from "../components/manifesto";
 
 export default function ManifestoPage() {
   return (

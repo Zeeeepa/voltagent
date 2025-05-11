@@ -1,14 +1,14 @@
-import React, { useState, useEffect, useRef } from "react";
-import { AnimatedBeam } from "../magicui/animated-beam";
 import {
-  UserIcon,
-  CpuChipIcon,
   ArrowPathIcon,
+  CpuChipIcon,
   FingerPrintIcon,
+  UserIcon,
 } from "@heroicons/react/24/outline";
 import { useMediaQuery } from "@site/src/hooks/use-media-query";
-import { OpenAILogo } from "@site/static/img/logos/openai";
 import { Claude37Logo } from "@site/static/img/logos/claudie";
+import { OpenAILogo } from "@site/static/img/logos/openai";
+import React, { useState, useEffect, useRef } from "react";
+import { AnimatedBeam } from "../magicui/animated-beam";
 
 interface WorkflowCodeExampleProps {
   isVisible: boolean;
@@ -416,9 +416,7 @@ export function WorkflowCodeExample({ isVisible }: WorkflowCodeExampleProps) {
                           {currentThinkingAgent === "A" && (
                             <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 w-full text-center">
                               <div
-                                className={`inline-block text-xs font-mono ${
-                                  agentColors.A.text
-                                } ${
+                                className={`inline-block text-xs font-mono ${agentColors.A.text} ${
                                   agentColors.A.border
                                 } px-2 py-1 rounded-md bg-black/50 ${
                                   currentThinkingAgent === "A"
@@ -475,9 +473,7 @@ export function WorkflowCodeExample({ isVisible }: WorkflowCodeExampleProps) {
                           {currentThinkingAgent === "B" && (
                             <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 w-full text-center">
                               <div
-                                className={`inline-block text-xs font-mono ${
-                                  agentColors.B.text
-                                } ${
+                                className={`inline-block text-xs font-mono ${agentColors.B.text} ${
                                   agentColors.B.border
                                 } px-2 py-1 rounded-md bg-black/50 ${
                                   currentThinkingAgent === "B"
@@ -534,9 +530,7 @@ export function WorkflowCodeExample({ isVisible }: WorkflowCodeExampleProps) {
                           {currentThinkingAgent === "C" && (
                             <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 w-full text-center">
                               <div
-                                className={`inline-block text-xs font-mono ${
-                                  agentColors.C.text
-                                } ${
+                                className={`inline-block text-xs font-mono ${agentColors.C.text} ${
                                   agentColors.C.border
                                 } px-2 py-1 rounded-md bg-black/50 ${
                                   currentThinkingAgent === "C"

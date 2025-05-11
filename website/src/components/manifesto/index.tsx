@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
 import confetti from "canvas-confetti";
+import React, { useEffect, useState } from "react";
 
 const SUDO_CODE = ["s", "u", "d", "o"];
 

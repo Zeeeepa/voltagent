@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
-import { AnimatedBeam } from "../magicui/animated-beam";
 import { FingerPrintIcon } from "@heroicons/react/24/outline";
+import React, { useState, useEffect, useRef } from "react";
 import {
   CohereLogo,
   PineconeLogo,
@@ -9,6 +8,7 @@ import {
 } from "../../../static/img/logos/integrations";
 import { OpenAILogo } from "../../../static/img/logos/openai";
 import { SupabaseLogo } from "../../../static/img/logos/supabase";
+import { AnimatedBeam } from "../magicui/animated-beam";
 
 interface WorkflowCodeExampleProps {
   isVisible: boolean;

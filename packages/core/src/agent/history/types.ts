@@ -1,5 +1,5 @@
-import type { AgentStatus } from "../types";
 import type { UsageInfo } from "../providers/base/types";
+import type { AgentStatus } from "../types";
 
 export interface TimelineEvent {
   id: string;

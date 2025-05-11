@@ -2,8 +2,8 @@ import type { FastMCP } from "fastmcp";
 import { z } from "zod";
 import type { Tool } from "../../tool";
 import type { ToolManager } from "../../tool/manager";
-import { logger } from "./logger";
 import type { AsyncOperationManager } from "./async-manager";
+import { logger } from "./logger";
 
 /**
  * Adapter to register tools from the tool manager with the MCP server
@@ -70,7 +70,7 @@ export class MCPToolAdapter {
         name: tool.name,
         description: tool.description || "",
         inputSchema,
-        handler: async (args, context) => {
+        handler: async (args, _context) => {
           try {
             // Execute the tool
             const result = await tool.execute(args);
@@ -79,7 +79,9 @@ export class MCPToolAdapter {
               data: result,
             };
           } catch (error) {
-            logger.error(`Error executing tool ${tool.name}: ${error instanceof Error ? error.message : String(error)}`);
+            logger.error(
+              `Error executing tool ${tool.name}: ${error instanceof Error ? error.message : String(error)}`,
+            );
             return {
               success: false,
               error: {
@@ -93,7 +95,9 @@ export class MCPToolAdapter {
 
       logger.debug(`Registered tool with MCP server: ${tool.name}`);
     } catch (error) {
-      logger.error(`Failed to register tool ${tool.name}: ${error instanceof Error ? error.message : String(error)}`);
+      logger.error(
+        `Failed to register tool ${tool.name}: ${error instanceof Error ? error.message : String(error)}`,
+      );
     }
   }
 
@@ -123,7 +127,7 @@ export class MCPToolAdapter {
         handler: async (args, context) => {
           // Create an operation ID for this async execution
           const operationId = this.asyncManager.addOperation(
-            async (toolArgs, log, opContext) => {
+            async (toolArgs, log, _opContext) => {
               try {
                 // Execute the tool
                 const result = await tool.execute(toolArgs);
@@ -132,7 +136,9 @@ export class MCPToolAdapter {
                   data: result,
                 };
               } catch (error) {
-                log.error(`Error executing async tool ${tool.name}: ${error instanceof Error ? error.message : String(error)}`);
+                log.error(
+                  `Error executing async tool ${tool.name}: ${error instanceof Error ? error.message : String(error)}`,
+                );
                 return {
                   success: false,
                   error: {
@@ -143,7 +149,7 @@ export class MCPToolAdapter {
               }
             },
             args,
-            context
+            context,
           );
 
           // Return the operation ID immediately
@@ -172,7 +178,7 @@ export class MCPToolAdapter {
           },
           required: ["operationId"],
         },
-        handler: async (args, context) => {
+        handler: async (args, _context) => {
           const { operationId } = args as { operationId: string };
           const status = this.asyncManager.getStatus(operationId);
           return {
@@ -184,7 +190,9 @@ export class MCPToolAdapter {
 
       logger.debug(`Registered async tool with MCP server: ${tool.name}`);
     } catch (error) {
-      logger.error(`Failed to register async tool ${tool.name}: ${error instanceof Error ? error.message : String(error)}`);
+      logger.error(
+        `Failed to register async tool ${tool.name}: ${error instanceof Error ? error.message : String(error)}`,
+      );
     }
   }
 }
@@ -200,4 +208,3 @@ export function createToolRegistrationFn(toolManager: ToolManager) {
     adapter.registerAllTools();
   };
 }
-

@@ -1,22 +1,22 @@
-import React from "react";
-import { motion } from "framer-motion";
 import {
-  ListBulletIcon,
-  EyeIcon,
-  CommandLineIcon,
   ArrowPathIcon,
   ArrowTopRightOnSquareIcon,
+  CommandLineIcon,
+  EyeIcon,
+  ListBulletIcon,
 } from "@heroicons/react/24/outline";
 import { BoltIcon } from "@heroicons/react/24/solid";
+import { motion } from "framer-motion";
+import React from "react";
 import { DotPattern } from "../ui/dot-pattern";
 
-import { useMediaQuery } from "@site/src/hooks/use-media-query";
-import AgentListView from "./AgentListView";
-import AgentDetailView from "./AgentDetailView";
-import AgentChat from "./AgentChat";
-import FlowOverview from "./FlowOverview";
-import { GitHubLogo } from "@site/static/img/logos";
 import Link from "@docusaurus/Link";
+import { useMediaQuery } from "@site/src/hooks/use-media-query";
+import { GitHubLogo } from "@site/static/img/logos";
+import AgentChat from "./AgentChat";
+import AgentDetailView from "./AgentDetailView";
+import AgentListView from "./AgentListView";
+import FlowOverview from "./FlowOverview";
 
 export const Console = () => {
   const isMobile = useMediaQuery("(max-width: 768px)");

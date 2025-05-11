@@ -1,6 +1,6 @@
-import { VoltAgent, Agent, createReasoningTools, type Toolkit } from "@voltagent/core";
-import { VercelAIProvider } from "@voltagent/vercel-ai";
 import { openai } from "@ai-sdk/openai";
+import { Agent, type Toolkit, VoltAgent, createReasoningTools } from "@voltagent/core";
+import { VercelAIProvider } from "@voltagent/vercel-ai";
 
 const reasoningToolkit: Toolkit = createReasoningTools({
   addInstructions: true,

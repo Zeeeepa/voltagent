@@ -1,6 +1,6 @@
-import { VoltAgent, Agent, MCPConfiguration } from "@voltagent/core";
-import { VercelAIProvider } from "@voltagent/vercel-ai";
 import { openai } from "@ai-sdk/openai";
+import { Agent, MCPConfiguration, VoltAgent } from "@voltagent/core";
+import { VercelAIProvider } from "@voltagent/vercel-ai";
 
 (async () => {
   try {

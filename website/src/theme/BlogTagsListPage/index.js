@@ -1,14 +1,14 @@
+import Link from "@docusaurus/Link";
 import {
   HtmlClassNameProvider,
   PageMetadata,
   ThemeClassNames,
 } from "@docusaurus/theme-common";
+import { Footer } from "@site/src/components/footer";
 import BlogLayout from "@theme/BlogLayout";
 import SearchMetadata from "@theme/SearchMetadata";
 import clsx from "clsx";
 import React from "react";
-import Link from "@docusaurus/Link";
-import { Footer } from "@site/src/components/footer";
 
 export default function BlogTagsListPage({ tags }) {
   const allTags = tags || [];

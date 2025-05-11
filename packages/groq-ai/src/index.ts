@@ -12,9 +12,9 @@ import type {
   StreamObjectOptions,
   StreamTextOptions,
 } from "@voltagent/core";
+import { Groq } from "groq-sdk";
 import type { z } from "zod";
 import type { GroqProviderOptions } from "./types";
-import { Groq } from "groq-sdk";
 import { convertToolsForSDK } from "./utils";
 
 export class GroqProvider implements LLMProvider<string> {
@@ -192,7 +192,7 @@ export class GroqProvider implements LLMProvider<string> {
     options: GenerateTextOptions<string>,
   ): Promise<ProviderTextResponse<any>> => {
     try {
-      let groqMessages = options.messages.map(this.toMessage);
+      const groqMessages = options.messages.map(this.toMessage);
       const groqTools = options.tools ? convertToolsForSDK(options.tools) : undefined;
 
       // Extract common parameters
@@ -229,7 +229,7 @@ export class GroqProvider implements LLMProvider<string> {
       // Extract tool calls and results from the response
       const responseMessage = response.choices[0].message;
       const toolCalls = responseMessage.tool_calls;
-      let toolResults = [];
+      const toolResults = [];
 
       if (toolCalls && toolCalls.length > 0 && options && options.tools) {
         for (const toolCall of toolCalls) {
@@ -336,7 +336,7 @@ export class GroqProvider implements LLMProvider<string> {
 
   async streamText(options: StreamTextOptions<string>): Promise<ProviderTextStreamResponse<any>> {
     try {
-      let groqMessages = options.messages.map(this.toMessage);
+      const groqMessages = options.messages.map(this.toMessage);
       const groqTools = options.tools ? convertToolsForSDK(options.tools) : undefined;
       // Extract common parameters
       const {
@@ -404,7 +404,7 @@ export class GroqProvider implements LLMProvider<string> {
               }
 
               const toolCalls = chunk.choices[0]?.delta?.tool_calls || [];
-              let toolResults = [];
+              const toolResults = [];
 
               if (toolCalls && toolCalls.length > 0 && options && options.tools) {
                 for (const toolCall of toolCalls) {

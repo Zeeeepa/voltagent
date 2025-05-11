@@ -41,7 +41,7 @@ export type OperationFn<T = unknown, A = unknown> = (
     reportProgress: OperationContext["reportProgress"];
     mcpLog: OperationContext["log"];
     session: OperationContext["session"];
-  }
+  },
 ) => Promise<OperationResult<T>>;
 
 /**
@@ -116,7 +116,7 @@ export class AsyncOperationManager {
   addOperation<T = unknown, A = unknown>(
     operationFn: OperationFn<T, A>,
     args: A,
-    context: OperationContext
+    context: OperationContext,
   ): string {
     const operationId = `op-${uuidv4()}`;
     const operation: Operation<T> = {
@@ -131,17 +131,14 @@ export class AsyncOperationManager {
       session: context.session,
     };
     this.operations.set(operationId, operation);
-    this.log(operationId, "info", `Operation added.`);
+    this.log(operationId, "info", "Operation added.");
 
     // Start execution in the background (don't await here)
-    this._runOperation(operationId, operationFn, args, context).catch((err) => {
+    this._runOperation(operationId, operationFn, args).catch((err) => {
       // Catch unexpected errors during the async execution setup itself
-      this.log(
-        operationId,
-        "error",
-        `Critical error starting operation: ${err.message}`,
-        { stack: err.stack }
-      );
+      this.log(operationId, "error", `Critical error starting operation: ${err.message}`, {
+        stack: err.stack,
+      });
       operation.status = "failed";
       operation.error = {
         code: "MANAGER_EXECUTION_ERROR",
@@ -161,19 +158,17 @@ export class AsyncOperationManager {
    * @param operationId The ID of the operation
    * @param operationFn The async function to execute
    * @param args Arguments for the function
-   * @param context The original MCP tool context
    */
   private async _runOperation<T = unknown, A = unknown>(
     operationId: string,
     operationFn: OperationFn<T, A>,
     args: A,
-    context: OperationContext
   ): Promise<void> {
     const operation = this.operations.get(operationId) as Operation<T> | undefined;
     if (!operation) return; // Should not happen
 
     operation.status = "running";
-    this.log(operationId, "info", `Operation running.`);
+    this.log(operationId, "info", "Operation running.");
     this.emit("statusChanged", { operationId, status: "running" });
 
     try {
@@ -181,26 +176,21 @@ export class AsyncOperationManager {
       // The direct function needs to be adapted if it needs reportProgress
       // We pass the original context's log, plus our wrapped reportProgress
       const result = await operationFn(args, operation.log, {
-        reportProgress: (progress) =>
-          this._handleProgress(operationId, progress),
+        reportProgress: (progress) => this._handleProgress(operationId, progress),
         mcpLog: operation.log, // Pass log as mcpLog if direct fn expects it
         session: operation.session,
       });
 
       operation.status = result.success ? "completed" : "failed";
-      operation.result = result.success ? result.data as T : null;
-      operation.error = result.success ? null : result.error;
-      this.log(
-        operationId,
-        "info",
-        `Operation finished with status: ${operation.status}`
-      );
+      operation.result = result.success ? (result.data as T) : null;
+      operation.error = result.success ? null : result.error || null;
+      this.log(operationId, "info", `Operation finished with status: ${operation.status}`);
     } catch (error) {
       this.log(
         operationId,
         "error",
         `Operation failed with error: ${error instanceof Error ? error.message : String(error)}`,
-        { stack: error instanceof Error ? error.stack : undefined }
+        { stack: error instanceof Error ? error.stack : undefined },
       );
       operation.status = "failed";
       operation.error = {
@@ -248,7 +238,7 @@ export class AsyncOperationManager {
     if (this.completedOperations.size > this.maxCompletedOperations) {
       // Get the oldest operation (sorted by endTime)
       const oldest = [...this.completedOperations.entries()].sort(
-        (a, b) => a[1].endTime - b[1].endTime
+        (a, b) => a[1].endTime - b[1].endTime,
       )[0];
 
       if (oldest) {
@@ -264,23 +254,19 @@ export class AsyncOperationManager {
    */
   private _handleProgress(
     operationId: string,
-    progress: { progress: number; total?: number }
+    progress: { progress: number; total?: number },
   ): void {
     const operation = this.operations.get(operationId);
-    if (operation && operation.reportProgress) {
+    if (operation?.reportProgress) {
       try {
         // Use the reportProgress function captured from the original context
         operation.reportProgress(progress);
-        this.log(
-          operationId,
-          "debug",
-          `Reported progress: ${JSON.stringify(progress)}`
-        );
+        this.log(operationId, "debug", `Reported progress: ${JSON.stringify(progress)}`);
       } catch (err) {
         this.log(
           operationId,
           "warn",
-          `Failed to report progress: ${err instanceof Error ? err.message : String(err)}`
+          `Failed to report progress: ${err instanceof Error ? err.message : String(err)}`,
         );
         // Don't stop the operation, just log the reporting failure
       }
@@ -343,13 +329,21 @@ export class AsyncOperationManager {
     operationId: string,
     level: "info" | "warn" | "error" | "debug",
     message: string,
-    meta: Record<string, unknown> = {}
+    meta: Record<string, unknown> = {},
   ): void {
     const operation = this.operations.get(operationId);
     // Use the logger instance associated with the operation if available, otherwise console
     const logger = operation?.log || console;
-    const logFn = logger[level] || logger.log || console.log; // Fallback
-    logFn(`[AsyncOp ${operationId}] ${message}`, meta);
+
+    // Handle different logger types
+    if (typeof logger[level] === "function") {
+      logger[level](`[AsyncOp ${operationId}] ${message}`, meta);
+    } else if (typeof console[level] === "function") {
+      console[level](`[AsyncOp ${operationId}] ${message}`, meta);
+    } else {
+      // Fallback to console.log
+      console.log(`[AsyncOp ${operationId}] [${level}] ${message}`, meta);
+    }
   }
 
   /**
@@ -378,4 +372,3 @@ export class AsyncOperationManager {
 
 // Export a singleton instance
 export const asyncOperationManager = new AsyncOperationManager();
-

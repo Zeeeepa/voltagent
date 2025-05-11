@@ -1,8 +1,8 @@
 import { EventEmitter } from "events";
+import { v4 as uuidv4 } from "uuid";
 import type { AgentHistoryEntry, TimelineEvent } from "../agent/history";
 import type { AgentStatus } from "../agent/types";
 import { AgentRegistry } from "../server/registry";
-import { v4 as uuidv4 } from "uuid";
 
 // New type exports
 export type EventStatus = AgentStatus;

@@ -1,4 +1,4 @@
-import { VoltAgent, Agent, createTool } from "@voltagent/core";
+import { Agent, VoltAgent, createTool } from "@voltagent/core";
 import { VercelAIProvider } from "@voltagent/vercel-ai";
 import { z } from "zod";
 

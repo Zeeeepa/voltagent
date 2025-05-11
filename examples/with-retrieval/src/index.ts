@@ -1,6 +1,6 @@
-import { VoltAgent, Agent } from "@voltagent/core";
-import { VercelAIProvider } from "@voltagent/vercel-ai";
 import { openai } from "@ai-sdk/openai";
+import { Agent, VoltAgent } from "@voltagent/core";
+import { VercelAIProvider } from "@voltagent/vercel-ai";
 
 // Import the retrieval tool
 import { retriever } from "./retriever/index.js";

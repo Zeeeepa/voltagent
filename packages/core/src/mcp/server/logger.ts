@@ -63,7 +63,7 @@ export function createLogger(options: LoggerOptions = {}): Logger {
   function log(
     logLevel: keyof typeof LogLevel,
     message: string,
-    meta: Record<string, unknown> = {}
+    meta: Record<string, unknown> = {},
   ): void {
     // Skip logging if silent mode is enabled
     if (silent) {
@@ -147,4 +147,3 @@ export function createLogger(options: LoggerOptions = {}): Logger {
 
 // Create a default logger instance
 export const logger = createLogger();
-

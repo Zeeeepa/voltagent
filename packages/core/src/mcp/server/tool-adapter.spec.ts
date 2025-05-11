@@ -1,8 +1,8 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { MCPToolAdapter, createToolRegistrationFn } from "./tool-adapter";
-import { asyncOperationManager } from "./async-manager";
-import { createTool } from "../../tool";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { z } from "zod";
+import { createTool } from "../../tool";
+import { asyncOperationManager } from "./async-manager";
+import { MCPToolAdapter, createToolRegistrationFn } from "./tool-adapter";
 
 // Mock tool manager
 const mockToolManager = {
@@ -21,9 +21,9 @@ describe("MCPToolAdapter", () => {
     adapter = new MCPToolAdapter(
       mockToolManager as any,
       mockMcpServer as any,
-      asyncOperationManager
+      asyncOperationManager,
     );
-    
+
     // Reset mocks
     mockToolManager.getTools.mockReset();
     mockMcpServer.addTool.mockReset();
@@ -73,10 +73,12 @@ describe("MCPToolAdapter", () => {
     adapter.registerTool(mockTool);
 
     expect(mockMcpServer.addTool).toHaveBeenCalledTimes(1);
-    expect(mockMcpServer.addTool).toHaveBeenCalledWith(expect.objectContaining({
-      name: "tool1",
-      description: "Test tool 1",
-    }));
+    expect(mockMcpServer.addTool).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: "tool1",
+        description: "Test tool 1",
+      }),
+    );
   });
 
   it("should register an async tool", () => {
@@ -92,10 +94,12 @@ describe("MCPToolAdapter", () => {
     adapter.registerAsyncTool(mockTool);
 
     expect(mockMcpServer.addTool).toHaveBeenCalledTimes(2); // Async tool + check status tool
-    expect(mockMcpServer.addTool).toHaveBeenCalledWith(expect.objectContaining({
-      name: "async_tool1",
-      description: expect.stringContaining("Test tool 1"),
-    }));
+    expect(mockMcpServer.addTool).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: "async_tool1",
+        description: expect.stringContaining("Test tool 1"),
+      }),
+    );
   });
 
   it("should skip invalid tools", () => {
@@ -125,4 +129,3 @@ describe("createToolRegistrationFn", () => {
     expect(mockToolManager.getTools).toHaveBeenCalled();
   });
 });
-

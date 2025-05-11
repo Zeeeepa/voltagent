@@ -123,9 +123,7 @@ export const BlogPostPageView = ({ children }) => {
               <div className="flex items-center mb-2 sm:mb-0">
                 {author.imageURL && (
                   <Link
-                    to={`/blog/author/${author.key
-                      .toLowerCase()
-                      .replace(/_/g, "-")}`}
+                    to={`/blog/author/${author.key.toLowerCase().replace(/_/g, "-")}`}
                     className="mr-3"
                   >
                     <img
@@ -138,9 +136,7 @@ export const BlogPostPageView = ({ children }) => {
                 <div>
                   <div className="flex items-center">
                     <Link
-                      to={`/blog/author/${author.key
-                        .toLowerCase()
-                        .replace(/_/g, "-")}`}
+                      to={`/blog/author/${author.key.toLowerCase().replace(/_/g, "-")}`}
                       className="text-main-emerald no-underline font-medium"
                     >
                       {author.name}

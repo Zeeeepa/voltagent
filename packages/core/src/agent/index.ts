@@ -1,10 +1,15 @@
 import type { z } from "zod";
 import { AgentEventEmitter } from "../events";
 import type { EventStatus, EventUpdater } from "../events";
+import type { StandardEventData } from "../events/types";
 import { MemoryManager } from "../memory";
+import type { BaseRetriever } from "../retriever/retriever";
 import type { Tool, Toolkit } from "../tool";
 import { ToolManager } from "../tool";
 import type { ReasoningToolExecuteOptions } from "../tool/reasoning/types";
+import { NodeType, createNodeId } from "../utils/node-utils";
+import { serializeValueForDebug } from "../utils/serialization";
+import type { Voice } from "../voice";
 import { type AgentHistoryEntry, HistoryManager } from "./history";
 import { type AgentHooks, createHooks } from "./hooks";
 import type {
@@ -25,27 +30,22 @@ import type {
   InferStreamTextResponse,
   InternalGenerateOptions,
   ModelType,
+  OperationContext,
   ProviderInstance,
   PublicGenerateOptions,
-  OperationContext,
-  ToolExecutionContext,
-  VoltAgentError,
+  StandardizedObjectResult,
+  StandardizedTextResult,
+  StreamObjectFinishResult,
+  StreamObjectOnFinishCallback,
   StreamOnErrorCallback,
   StreamTextFinishResult,
   StreamTextOnFinishCallback,
-  StreamObjectFinishResult,
-  StreamObjectOnFinishCallback,
-  StandardizedTextResult,
-  StandardizedObjectResult,
+  ToolExecutionContext,
+  VoltAgentError,
 } from "./types";
-import type { BaseRetriever } from "../retriever/retriever";
-import { NodeType, createNodeId } from "../utils/node-utils";
-import type { StandardEventData } from "../events/types";
-import type { Voice } from "../voice";
-import { serializeValueForDebug } from "../utils/serialization";
 
-import { startOperationSpan, endOperationSpan, startToolSpan, endToolSpan } from "./open-telemetry";
 import type { Span } from "@opentelemetry/api";
+import { endOperationSpan, endToolSpan, startOperationSpan, startToolSpan } from "./open-telemetry";
 
 /**
  * Agent class for interacting with AI models

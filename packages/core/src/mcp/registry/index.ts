@@ -1,6 +1,6 @@
+import type { Tool } from "../../tool";
 import { MCPClient } from "../client/index";
 import type { AnyToolConfig, MCPServerConfig, ToolsetWithTools } from "../types";
-import type { Tool } from "../../tool";
 
 // Removed global configurationRegistry Map
 

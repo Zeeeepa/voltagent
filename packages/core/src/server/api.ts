@@ -1,34 +1,34 @@
+import { swaggerUI } from "@hono/swagger-ui";
+import { OpenAPIHono } from "@hono/zod-openapi";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { WebSocketServer } from "ws";
 import type { WebSocket } from "ws";
-import { z } from "zod";
-import { OpenAPIHono } from "@hono/zod-openapi";
-import { swaggerUI } from "@hono/swagger-ui";
+import type { z } from "zod";
 import type { AgentHistoryEntry } from "../agent/history";
-import { AgentEventEmitter } from "../events";
-import { AgentRegistry } from "./registry";
-import type { AgentResponse, ApiContext, ApiResponse } from "./types";
 import type { AgentStatus } from "../agent/types";
+import { AgentEventEmitter } from "../events";
 import {
+  type PackageUpdateInfo,
   checkForUpdates,
   updateAllPackages,
   updateSinglePackage,
-  type PackageUpdateInfo,
 } from "../utils/update";
 import {
+  type AgentResponseSchema,
+  type ErrorSchema,
+  type ObjectRequestSchema,
+  type ObjectResponseSchema,
+  type TextRequestSchema,
+  type TextResponseSchema,
   getAgentsRoute,
-  textRoute,
-  streamRoute,
   objectRoute,
   streamObjectRoute,
-  type ErrorSchema,
-  type TextResponseSchema,
-  type ObjectResponseSchema,
-  type AgentResponseSchema,
-  type TextRequestSchema,
-  type ObjectRequestSchema,
+  streamRoute,
+  textRoute,
 } from "./api.routes";
+import { AgentRegistry } from "./registry";
+import type { AgentResponse, ApiContext, ApiResponse } from "./types";
 
 const app = new OpenAPIHono();
 

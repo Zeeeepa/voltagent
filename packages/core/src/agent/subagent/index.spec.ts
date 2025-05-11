@@ -1,7 +1,7 @@
-import { SubAgentManager } from "./index";
 import type { Agent } from "../index";
-import type { AgentHandoffOptions } from "../types";
 import type { BaseMessage } from "../providers";
+import type { AgentHandoffOptions } from "../types";
+import { SubAgentManager } from "./index";
 
 // Creating a Mock Agent class
 class MockAgent {

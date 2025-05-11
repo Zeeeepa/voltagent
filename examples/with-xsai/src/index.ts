@@ -1,4 +1,4 @@
-import { VoltAgent, Agent } from "@voltagent/core";
+import { Agent, VoltAgent } from "@voltagent/core";
 import { XsAIProvider } from "@voltagent/xsai";
 
 const agent = new Agent({

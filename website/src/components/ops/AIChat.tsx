@@ -1,9 +1,9 @@
-import type React from "react";
-import { useState, useEffect, useCallback, useRef } from "react";
 import {
   ChatBubbleLeftIcon,
   PaperAirplaneIcon,
 } from "@heroicons/react/24/outline";
+import type React from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { OpenAILogo } from "../../../static/img/logos/openai";
 
 type Message = {
@@ -218,9 +218,7 @@ export default function AIChat() {
               {messages.map((message) => (
                 <div
                   key={message.id}
-                  className={`flex ${
-                    message.isUser ? "justify-end" : "justify-start"
-                  }`}
+                  className={`flex ${message.isUser ? "justify-end" : "justify-start"}`}
                 >
                   <div
                     className={`max-w-[80%] p-2 sm:p-3 rounded-lg ${

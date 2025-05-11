@@ -1,5 +1,5 @@
+import { type BaseMessage, BaseRetriever, createTool } from "@voltagent/core";
 import { z } from "zod";
-import { createTool, BaseRetriever, BaseMessage } from "@voltagent/core";
 import { documents } from "../data/documents.js";
 
 /**

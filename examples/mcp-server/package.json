@@ -5,9 +5,9 @@
   "description": "Example of using the VoltAgent MCP server",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc",
-    "start": "node dist/index.js",
-    "dev": "ts-node index.ts"
+    "build": "echo 'No build needed for example' && exit 0",
+    "dev": "ts-node index.ts",
+    "start": "node dist/index.js"
   },
   "dependencies": {
     "@voltagent/core": "workspace:*",
@@ -22,4 +22,3 @@
     "typescript": "^5.0.4"
   }
 }
-

@@ -2,49 +2,42 @@ import type { FastMCP } from "fastmcp";
 import type { AsyncOperationManager } from "./async-manager";
 
 /**
- * Options for the MCP server
+ * MCP server options
  */
 export interface MCPServerOptions {
   /**
-   * Name of the MCP server
+   * Server name
    */
   name: string;
 
   /**
-   * Version of the MCP server
+   * Server version
    */
   version: string;
-
-  /**
-   * Additional options for the MCP server
-   */
-  [key: string]: unknown;
 }
 
 /**
- * Transport type for the MCP server
+ * Transport type
  */
-export type TransportType = "stdio" | "http";
+export type TransportType = "stdio" | "httpStream";
 
 /**
- * Start options for the MCP server
+ * MCP server start options
  */
 export interface MCPServerStartOptions {
   /**
-   * Transport type for the MCP server
-   * @default "stdio"
+   * Transport type
    */
   transportType?: TransportType;
 
   /**
-   * Timeout for MCP operations in milliseconds
-   * @default 120000 (2 minutes)
+   * Timeout in milliseconds
    */
   timeout?: number;
 }
 
 /**
- * Tool registration function type
+ * Tool registration function
  */
 export type ToolRegistrationFn = (server: FastMCP, asyncManager: AsyncOperationManager) => void;
 
@@ -53,25 +46,24 @@ export type ToolRegistrationFn = (server: FastMCP, asyncManager: AsyncOperationM
  */
 export interface IMCPServer {
   /**
-   * Initialize the MCP server
+   * Initialize the server
    */
-  init(): Promise<this>;
+  init(): Promise<IMCPServer>;
 
   /**
-   * Start the MCP server
+   * Start the server
    * @param options Start options
    */
-  start(options?: MCPServerStartOptions): Promise<this>;
+  start(options?: MCPServerStartOptions): Promise<IMCPServer>;
 
   /**
-   * Stop the MCP server
+   * Stop the server
    */
   stop(): Promise<void>;
 
   /**
-   * Register a tool with the MCP server
+   * Register a tool with the server
    * @param registrationFn Tool registration function
    */
   registerTool(registrationFn: ToolRegistrationFn): void;
 }
-

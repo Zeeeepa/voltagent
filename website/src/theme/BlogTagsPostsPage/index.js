@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import ExecutionEnvironment from "@docusaurus/ExecutionEnvironment";
 import Link from "@docusaurus/Link";
 import Translate, { translate } from "@docusaurus/Translate";
 import {
@@ -7,14 +7,14 @@ import {
   ThemeClassNames,
   usePluralForm,
 } from "@docusaurus/theme-common";
+import { Footer } from "@site/src/components/footer";
 import BlogLayout from "@theme/BlogLayout";
 import BlogListPaginator from "@theme/BlogListPaginator";
 import BlogPostItems from "@theme/BlogPostItems";
 import SearchMetadata from "@theme/SearchMetadata";
 import Unlisted from "@theme/Unlisted";
 import clsx from "clsx";
-import { Footer } from "@site/src/components/footer";
-import ExecutionEnvironment from "@docusaurus/ExecutionEnvironment";
+import React, { useEffect, useState, useRef } from "react";
 
 const POSTS_PER_PAGE = 12;
 const ANIMATION_DELAY = 25;

@@ -18,8 +18,8 @@ import type {
 
 // @ts-ignore - To simplify test types
 import type { AgentHistoryEntry } from "../agent/history";
-import type { AgentStatus, OperationContext, ToolExecutionContext } from "./types";
 import { createHooks } from "./hooks";
+import type { AgentStatus, OperationContext, ToolExecutionContext } from "./types";
 
 // Define a generic mock model type locally
 type MockModelType = { modelId: string; [key: string]: any };

@@ -1,8 +1,8 @@
+import boxen from "boxen";
+import chalk from "chalk";
 import figlet from "figlet";
 import gradient from "gradient-string";
 import ora from "ora";
-import boxen from "boxen";
-import chalk from "chalk";
 
 // Nice colorful gradient palette
 const voltageGradient = gradient([

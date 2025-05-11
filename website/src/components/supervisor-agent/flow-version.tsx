@@ -1,16 +1,16 @@
-import { useCallback, useEffect, useState } from "react";
 import {
-  ReactFlow,
-  Node,
-  Edge,
-  Position,
-  useNodesState,
-  useEdgesState,
-  ConnectionMode,
   Background,
+  ConnectionMode,
+  type Edge,
   Handle,
   MarkerType,
+  type Node,
+  Position,
+  ReactFlow,
+  useEdgesState,
+  useNodesState,
 } from "@xyflow/react";
+import { useCallback, useEffect, useState } from "react";
 import "@xyflow/react/dist/style.css";
 
 type FlowVersionProps = {
@@ -253,7 +253,7 @@ const createEdge = (
   source: string,
   target: string,
   color: string,
-  isResponse: boolean = false,
+  isResponse = false,
 ): Edge => {
   const edge: Edge = {
     id: `${source}-${target}`,
@@ -297,7 +297,7 @@ const createUserEdge = (
   source: string,
   target: string,
   color: string,
-  isResponse: boolean = false,
+  isResponse = false,
 ): Edge => {
   const edge: Edge = {
     id: `${source}-${target}`,

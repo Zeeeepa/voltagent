@@ -1,4 +1,4 @@
-import { VoltAgent, Agent } from "@voltagent/core";
+import { Agent, VoltAgent } from "@voltagent/core";
 import { GoogleGenAIProvider } from "@voltagent/google-ai";
 
 const agent = new Agent({

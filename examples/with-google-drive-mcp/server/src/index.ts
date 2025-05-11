@@ -1,19 +1,19 @@
-import { Hono, type Context } from "hono";
-import { cors } from "hono/cors";
 import { openai } from "@ai-sdk/openai";
-import { createTool } from "@voltagent/core";
-import { VercelAIProvider } from "@voltagent/vercel-ai";
 import { serve } from "@hono/node-server";
 import { type JsonSchema, jsonSchemaToZod } from "@n8n/json-schema-to-zod";
+import { createTool } from "@voltagent/core";
+import { VercelAIProvider } from "@voltagent/vercel-ai";
+import { type Context, Hono } from "hono";
+import { cors } from "hono/cors";
 
 import { OpenAIToolSet } from "composio-core";
 
 // Import refactored modules
-import { setupDatabase, saveUserConnection, getUserConnection } from "./db/index.js";
+import { getUserConnection, saveUserConnection, setupDatabase } from "./db/index.js";
 import {
-  storePendingConnection,
   getPendingConnection,
   removePendingConnection,
+  storePendingConnection,
 } from "./db/pendingConnections.js";
 import { generateFunnyVoltAgentId } from "./utils.js";
 import { agent } from "./voltagent/index.js";

@@ -1,9 +1,12 @@
+import Link from "@docusaurus/Link";
+import { useLocation } from "@docusaurus/router";
 import {
   HtmlClassNameProvider,
   PageMetadata,
   ThemeClassNames,
 } from "@docusaurus/theme-common";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
+import { ChevronRightIcon } from "@heroicons/react/24/solid";
 import { Footer } from "@site/src/components/footer";
 import BlogLayout from "@theme/BlogLayout";
 import BlogListPaginator from "@theme/BlogListPaginator";
@@ -11,9 +14,6 @@ import BlogPostItems from "@theme/BlogPostItems";
 import SearchMetadata from "@theme/SearchMetadata";
 import clsx from "clsx";
 import React, { useEffect, useState } from "react";
-import Link from "@docusaurus/Link";
-import { useLocation } from "@docusaurus/router";
-import { ChevronRightIcon } from "@heroicons/react/24/solid";
 
 function BlogListPageMetadata(props) {
   const { metadata } = props;

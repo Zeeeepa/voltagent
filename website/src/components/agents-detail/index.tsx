@@ -1,11 +1,11 @@
-import { CodeExample } from "./code-example";
 import {
-  WindowIcon,
   CircleStackIcon,
   CommandLineIcon,
+  WindowIcon,
   WrenchIcon,
 } from "@heroicons/react/24/outline";
 import React, { useState } from "react";
+import { CodeExample } from "./code-example";
 
 export function AgentsDetail() {
   const [selectedFeature, setSelectedFeature] = useState<

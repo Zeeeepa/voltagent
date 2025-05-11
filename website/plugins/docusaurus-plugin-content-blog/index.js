@@ -150,7 +150,7 @@ async function blogPluginExtended(...pluginArgs) {
     /**
      * Override the default `contentLoaded` hook to access blog posts data
      */
-    contentLoaded: async function (data) {
+    contentLoaded: async (data) => {
       const { content: blogContents, actions } = data;
       const { addRoute, createData } = actions;
       const {

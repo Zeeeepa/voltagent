@@ -1,8 +1,8 @@
 import { v4 as uuidv4 } from "uuid";
 import { AgentEventEmitter } from "../../events";
+import type { MemoryManager } from "../../memory";
 import type { BaseMessage, StepWithContent, UsageInfo } from "../providers/base/types";
 import type { AgentStatus } from "../types";
-import { MemoryManager } from "../../memory";
 
 /**
  * Step information for history

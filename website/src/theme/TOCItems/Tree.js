@@ -1,5 +1,5 @@
-import React from "react";
 import Link from "@docusaurus/Link";
+import React from "react";
 
 // Recursive component rendering the toc tree
 function TOCItemTree({
@@ -17,9 +17,8 @@ function TOCItemTree({
       {toc.map((heading) => {
         const isActive = heading.isActive;
         const activeClassName = isActive ? linkActiveClassName : "";
-        const combinedClassName = `${linkClassName ?? ""} ${
-          activeClassName ?? ""
-        }`.trim();
+        const combinedClassName =
+          `${linkClassName ?? ""} ${activeClassName ?? ""}`.trim();
 
         return (
           <li key={heading.id}>

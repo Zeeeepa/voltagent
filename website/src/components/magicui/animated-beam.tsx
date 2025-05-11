@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { RefObject, useEffect, useId, useState } from "react";
+import { type RefObject, useEffect, useId, useState } from "react";
 
 import { cn } from "@site/src/utils/index";
 
@@ -191,14 +191,10 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
           // First vertical segment with rounded corner
           if (vOffset > 0) {
             d += ` L ${startX},${startY + radius}`;
-            d += ` Q ${startX},${midY - radius} ${startX + radius},${
-              midY - radius
-            }`;
+            d += ` Q ${startX},${midY - radius} ${startX + radius},${midY - radius}`;
           } else {
             d += ` L ${startX},${startY - radius}`;
-            d += ` Q ${startX},${midY + radius} ${startX + radius},${
-              midY + radius
-            }`;
+            d += ` Q ${startX},${midY + radius} ${startX + radius},${midY + radius}`;
           }
 
           // Horizontal segment
@@ -422,7 +418,7 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
             delay,
             duration,
             ease: [0.16, 1, 0.3, 1], // https://easings.net/#easeOutExpo
-            repeat: Infinity,
+            repeat: Number.POSITIVE_INFINITY,
             repeatDelay: 0,
           }}
         >

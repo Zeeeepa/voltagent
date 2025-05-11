@@ -1,7 +1,7 @@
-import { MCPServer, createToolRegistrationFn, logger } from "../../packages/core/src/mcp/server";
-import { ToolManager } from "../../packages/core/src/tool/manager";
-import { createTool } from "../../packages/core/src/tool";
 import { z } from "zod";
+import { MCPServer, createToolRegistrationFn, logger } from "../../packages/core/src/mcp/server";
+import { createTool } from "../../packages/core/src/tool";
+import { ToolManager } from "../../packages/core/src/tool/manager";
 
 // Create a tool manager
 const toolManager = new ToolManager();
@@ -17,7 +17,7 @@ toolManager.addTool(
     execute: async ({ message }) => {
       return { message };
     },
-  })
+  }),
 );
 
 toolManager.addTool(
@@ -31,7 +31,7 @@ toolManager.addTool(
     execute: async ({ a, b }) => {
       return { result: a + b };
     },
-  })
+  }),
 );
 
 // Create an MCP server
@@ -51,7 +51,9 @@ async function startServer() {
       timeout: 120000, // 2 minutes
     });
   } catch (error) {
-    logger.error(`Failed to start MCP server: ${error instanceof Error ? error.message : String(error)}`);
+    logger.error(
+      `Failed to start MCP server: ${error instanceof Error ? error.message : String(error)}`,
+    );
     process.exit(1);
   }
 }
@@ -69,4 +71,3 @@ process.on("SIGTERM", async () => {
 
 // Start the server
 startServer();
-

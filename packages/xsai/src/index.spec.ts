@@ -1,5 +1,5 @@
-import { z } from "zod";
 import type { BaseMessage, BaseTool } from "@voltagent/core";
+import { z } from "zod";
 import { XsAIProvider } from "./index";
 
 // Mock the xsai library functions

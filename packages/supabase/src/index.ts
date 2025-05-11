@@ -1,11 +1,11 @@
+import { type SupabaseClient, createClient } from "@supabase/supabase-js";
 import type {
-  Memory,
   Conversation,
   CreateConversationInput,
-  MessageFilterOptions,
+  Memory,
   MemoryMessage,
+  MessageFilterOptions,
 } from "@voltagent/core";
-import { type SupabaseClient, createClient } from "@supabase/supabase-js";
 
 export interface SupabaseMemoryOptions {
   supabaseUrl: string;

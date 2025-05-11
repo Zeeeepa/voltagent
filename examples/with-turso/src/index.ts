@@ -1,5 +1,5 @@
 import { openai } from "@ai-sdk/openai";
-import { Agent, VoltAgent, LibSQLStorage } from "@voltagent/core";
+import { Agent, LibSQLStorage, VoltAgent } from "@voltagent/core";
 import { VercelAIProvider } from "@voltagent/vercel-ai";
 
 // Configure Turso/LibSQL Memory

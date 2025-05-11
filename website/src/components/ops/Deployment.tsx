@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
   CheckCircleIcon,
-  CpuChipIcon,
-  PaperAirplaneIcon,
   ClockIcon,
-  RocketLaunchIcon,
+  CpuChipIcon,
   ExclamationTriangleIcon,
+  PaperAirplaneIcon,
+  RocketLaunchIcon,
 } from "@heroicons/react/24/outline";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 
 // Types for our data structures
 type StageStatus = "pending" | "in-progress" | "complete" | "failed";

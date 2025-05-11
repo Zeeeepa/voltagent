@@ -3,8 +3,8 @@ import { startServer } from "./server";
 import { AgentRegistry } from "./server/registry";
 import { checkForUpdates } from "./utils/update";
 
-import { NodeTracerProvider } from "@opentelemetry/sdk-trace-node";
 import { BatchSpanProcessor, type SpanExporter } from "@opentelemetry/sdk-trace-base";
+import { NodeTracerProvider } from "@opentelemetry/sdk-trace-node";
 
 export * from "./agent";
 export * from "./agent/hooks";

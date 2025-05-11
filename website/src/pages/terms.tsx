@@ -1,7 +1,7 @@
-import React from "react";
 import Layout from "@theme/Layout";
-import { TermsAndConditions } from "../components/terms";
+import React from "react";
 import { Footer } from "../components/footer";
+import { TermsAndConditions } from "../components/terms";
 
 export default function TermsPage() {
   return (

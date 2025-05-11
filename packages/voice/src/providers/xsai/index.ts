@@ -1,9 +1,12 @@
 import { PassThrough } from "node:stream";
-import type { VoiceMetadata, ReadableStreamType } from "@voltagent/core";
+import type { ReadableStreamType, VoiceMetadata } from "@voltagent/core";
+import { type GenerateSpeechOptions, generateSpeech } from "@xsai/generate-speech";
+import {
+  type GenerateTranscriptionOptions,
+  generateTranscription,
+} from "@xsai/generate-transcription";
 import { BaseVoiceProvider } from "../base";
-import { XsaiVoiceOptions, XsaiSpeakOptions, XsaiListenOptions } from "./types";
-import { generateSpeech, GenerateSpeechOptions } from "@xsai/generate-speech";
-import { generateTranscription, GenerateTranscriptionOptions } from "@xsai/generate-transcription";
+import type { XsaiListenOptions, XsaiSpeakOptions, XsaiVoiceOptions } from "./types";
 
 /* ------------------------------------------------------------------ */
 /*  Helper: bufferise a Node stream                                   */

@@ -1,6 +1,6 @@
-import { VoltAgent, Agent, createTool } from "@voltagent/core";
-import { VercelAIProvider } from "@voltagent/vercel-ai";
 import { openai } from "@ai-sdk/openai";
+import { Agent, VoltAgent, createTool } from "@voltagent/core";
+import { VercelAIProvider } from "@voltagent/vercel-ai";
 import { z } from "zod";
 
 const uppercaseTool = createTool({

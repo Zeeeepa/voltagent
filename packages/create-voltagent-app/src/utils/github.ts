@@ -1,8 +1,8 @@
-import tar from "tar";
-import { createWriteStream, promises as fs } from "fs";
+import { promises as fs, createWriteStream } from "fs";
 import { join } from "path";
 import { Readable } from "stream";
 import { pipeline } from "stream/promises";
+import tar from "tar";
 
 const TEMP_PREFIX = ".voltagent-github.temp";
 

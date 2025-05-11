@@ -1,20 +1,20 @@
-import React, { useState } from "react";
-import styles from "./styles.module.css";
 import Link from "@docusaurus/Link";
 import { useLocation } from "@docusaurus/router";
-import { DiscordLogo } from "../../../static/img/logos/discord";
-import { GitHubLogo } from "../../../static/img/logos/github";
-import { BoltIcon, StarIcon, ChevronDownIcon } from "@heroicons/react/24/solid";
-import {} from "@heroicons/react/24/solid";
 import {
-  ShoppingBagIcon,
-  ServerIcon,
   CommandLineIcon,
   ComputerDesktopIcon,
+  ServerIcon,
+  ShoppingBagIcon,
   ShoppingCartIcon,
 } from "@heroicons/react/24/outline";
-import { useGitHubStars } from "../../contexts/GitHubStarsContext";
+import { BoltIcon, ChevronDownIcon, StarIcon } from "@heroicons/react/24/solid";
+import {} from "@heroicons/react/24/solid";
 import { useMediaQuery } from "@site/src/hooks/use-media-query";
+import React, { useState } from "react";
+import { DiscordLogo } from "../../../static/img/logos/discord";
+import { GitHubLogo } from "../../../static/img/logos/github";
+import { useGitHubStars } from "../../contexts/GitHubStarsContext";
+import styles from "./styles.module.css";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -61,9 +61,7 @@ export default function Navbar() {
             <span className={styles.logoText}>voltagent</span>
           </Link>
           <div
-            className={`${styles.navLinks} ${
-              isMenuOpen ? styles.navLinksOpen : ""
-            }`}
+            className={`${styles.navLinks} ${isMenuOpen ? styles.navLinksOpen : ""}`}
           >
             <div className={`${styles.navLink} group relative`}>
               <div className="flex items-center cursor-pointer">
@@ -109,34 +107,26 @@ export default function Navbar() {
             </div>
             <Link
               to="/manifesto/"
-              className={`${styles.navLink} ${
-                isActive("/manifesto/") ? styles.active : ""
-              }`}
+              className={`${styles.navLink} ${isActive("/manifesto/") ? styles.active : ""}`}
             >
               MANIFESTO
             </Link>
             <Link
               to="/docs/"
-              className={`${styles.navLink} ${
-                isActive("/docs/") ? styles.active : ""
-              }`}
+              className={`${styles.navLink} ${isActive("/docs/") ? styles.active : ""}`}
             >
               DOCUMENTATION
             </Link>
             <Link
               to="https://github.com/voltagent/voltagent/tree/main/examples/"
-              className={`${styles.navLink} ${
-                isActive("/docs/") ? styles.active : ""
-              }`}
+              className={`${styles.navLink} ${isActive("/docs/") ? styles.active : ""}`}
             >
               EXAMPLES
             </Link>
 
             <Link
               to="/blog/"
-              className={`${styles.navLink} ${
-                isActive("/blog/") ? styles.active : ""
-              }`}
+              className={`${styles.navLink} ${isActive("/blog/") ? styles.active : ""}`}
             >
               BLOG
             </Link>
@@ -214,9 +204,7 @@ export default function Navbar() {
 
           <button
             type="button"
-            className={`${styles.menuButton} ${
-              isMenuOpen ? styles.menuButtonOpen : ""
-            }`}
+            className={`${styles.menuButton} ${isMenuOpen ? styles.menuButtonOpen : ""}`}
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label="Toggle menu"
           >
@@ -299,34 +287,26 @@ export default function Navbar() {
           </div>
           <Link
             to="/manifesto/"
-            className={`${styles.mobileNavLink} ${
-              isActive("/manifesto/") ? styles.active : ""
-            }`}
+            className={`${styles.mobileNavLink} ${isActive("/manifesto/") ? styles.active : ""}`}
           >
             MANIFESTO
           </Link>
           <Link
             to="/docs/"
-            className={`${styles.mobileNavLink} ${
-              isActive("/docs/") ? styles.active : ""
-            }`}
+            className={`${styles.mobileNavLink} ${isActive("/docs/") ? styles.active : ""}`}
           >
             DOCUMENTATION
           </Link>
           <Link
             to="https://github.com/voltagent/voltagent/tree/main/examples/"
-            className={`${styles.mobileNavLink} ${
-              isActive("/docs/") ? styles.active : ""
-            }`}
+            className={`${styles.mobileNavLink} ${isActive("/docs/") ? styles.active : ""}`}
           >
             EXAMPLES
           </Link>
 
           <Link
             to="/blog/"
-            className={`${styles.mobileNavLink} ${
-              isActive("/blog/") ? styles.active : ""
-            }`}
+            className={`${styles.mobileNavLink} ${isActive("/blog/") ? styles.active : ""}`}
           >
             BLOG
           </Link>

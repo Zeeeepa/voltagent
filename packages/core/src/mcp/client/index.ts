@@ -12,6 +12,7 @@ import {
   ListResourcesResultSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import { jsonSchemaToZod } from "@n8n/json-schema-to-zod";
+import { type Tool, createTool } from "../../tool";
 import type {
   ClientInfo,
   HTTPServerConfig,
@@ -22,7 +23,6 @@ import type {
   MCPToolResult,
   StdioServerConfig,
 } from "../types";
-import { createTool, type Tool } from "../../tool";
 
 /**
  * Client for interacting with Model Context Protocol (MCP) servers.

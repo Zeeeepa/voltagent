@@ -1,6 +1,6 @@
-import { VoltAgent, Agent, createTool, createHooks } from "@voltagent/core";
-import { VercelAIProvider } from "@voltagent/vercel-ai";
 import { openai } from "@ai-sdk/openai";
+import { Agent, VoltAgent, createHooks, createTool } from "@voltagent/core";
+import { VercelAIProvider } from "@voltagent/vercel-ai";
 import { fetchRepoContributorsTool } from "./tools";
 import { fetchRepoStarsTool } from "./tools";
 

@@ -1,33 +1,33 @@
+import { mistral } from "@ai-sdk/mistral";
 import VoltAgent, { Agent, type OperationContext, type AgentHooks } from "@voltagent/core";
 import { VercelAIProvider } from "@voltagent/vercel-ai";
-import { resetBrowserState as resetBrowserStateInternal } from "./tools/playwrightToolHandler";
 import {
-  navigationTool,
-  goBackTool,
-  goForwardTool,
-  refreshPageTool,
-  closeBrowserTool,
-  clickTool,
-  typeTool,
-  getTextTool,
-  selectOptionTool,
+  assertResponseTool,
   checkTool,
-  uncheckTool,
-  hoverTool,
-  pressKeyTool,
-  waitForElementTool,
-  saveToFileTool,
+  clickTool,
+  closeBrowserTool,
+  expectResponseTool,
   exportPdfTool,
   extractDataTool,
-  expectResponseTool,
-  assertResponseTool,
-  screenshotTool,
+  getTextTool,
   getUserAgentTool,
-  getVisibleTextTool,
   getVisibleHtmlTool,
+  getVisibleTextTool,
+  goBackTool,
+  goForwardTool,
+  hoverTool,
   listInteractiveElementsTool,
+  navigationTool,
+  pressKeyTool,
+  refreshPageTool,
+  saveToFileTool,
+  screenshotTool,
+  selectOptionTool,
+  typeTool,
+  uncheckTool,
+  waitForElementTool,
 } from "./tools";
-import { mistral } from "@ai-sdk/mistral";
+import { resetBrowserState as resetBrowserStateInternal } from "./tools/playwrightToolHandler";
 
 // Create a specialized agent for browsing
 export const browserAgent = new Agent({

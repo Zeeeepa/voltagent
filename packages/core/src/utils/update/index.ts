@@ -1,7 +1,7 @@
+import fs from "node:fs";
 import path from "node:path";
 /* import fs from "fs"; */
 import * as ncuPackage from "npm-check-updates";
-import fs from "node:fs";
 
 type UpdateOptions = {
   filter?: string;

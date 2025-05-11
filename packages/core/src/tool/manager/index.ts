@@ -1,6 +1,6 @@
 import type { BaseTool, ToolExecuteOptions } from "../../agent/providers/base/types";
 import { zodSchemaToJsonUI } from "../../utils/toolParser";
-import { createTool, type AgentTool } from "../index";
+import { type AgentTool, createTool } from "../index";
 import type { Toolkit } from "../toolkit";
 
 /**

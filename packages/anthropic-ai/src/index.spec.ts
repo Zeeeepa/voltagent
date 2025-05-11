@@ -1,7 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
-import { createTool, Tool } from "@voltagent/core";
 //@ts-ignore
 import { EventSourceParser } from "@anthropic-ai/sdk/lib/streaming";
+import { Tool, createTool } from "@voltagent/core";
 import type { BaseMessage } from "@voltagent/core";
 import { z } from "zod";
 import { AnthropicProvider } from ".";

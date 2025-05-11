@@ -1,24 +1,24 @@
 "use client";
 
-import React, { forwardRef, useRef, useState, useEffect } from "react";
-import clsx from "clsx";
-import { AnimatedBeam } from "../magicui/animated-beam";
 import {
+  ArrowPathIcon,
+  ArrowPathRoundedSquareIcon,
   BoltIcon,
   ChatBubbleLeftRightIcon,
-  CommandLineIcon,
-  ArrowPathIcon,
-  DocumentTextIcon,
   CircleStackIcon,
-  CpuChipIcon,
-  WrenchScrewdriverIcon,
-  ArrowPathRoundedSquareIcon,
-  MagnifyingGlassIcon,
-  CommandLineIcon as CodeIcon,
   ClockIcon,
+  CommandLineIcon as CodeIcon,
+  CommandLineIcon,
+  CpuChipIcon,
+  DocumentTextIcon,
   ArrowPathIcon as IntegrationIcon,
+  MagnifyingGlassIcon,
+  WrenchScrewdriverIcon,
 } from "@heroicons/react/24/outline";
 import { useMediaQuery } from "@site/src/hooks/use-media-query";
+import clsx from "clsx";
+import React, { forwardRef, useRef, useState, useEffect } from "react";
+import { AnimatedBeam } from "../magicui/animated-beam";
 
 // Beat types mapping for different node types
 const beatTypes: Record<string, string> = {
@@ -438,7 +438,7 @@ const removeBeat = (beatType: string) => {
 // Handle the stop button click from console
 if (typeof window !== "undefined") {
   const originalConsoleLog = console.log;
-  console.log = function (...args) {
+  console.log = (...args) => {
     if (args[0] === "%cStop Beats" && args.length > 1) {
       const element = document.createElement("div");
       element.setAttribute("style", args[1]);

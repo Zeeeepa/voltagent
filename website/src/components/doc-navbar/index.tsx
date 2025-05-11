@@ -1,12 +1,12 @@
-import React, { useState } from "react";
-import styles from "./styles.module.css";
 import Link from "@docusaurus/Link";
-import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import { useLocation } from "@docusaurus/router";
-import { DiscordLogo } from "../../../static/img/logos/discord";
-import { GitHubLogo } from "../../../static/img/logos/github";
+import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import { BoltIcon } from "@heroicons/react/24/solid";
 import SearchBar from "@theme/SearchBar";
+import React, { useState } from "react";
+import { DiscordLogo } from "../../../static/img/logos/discord";
+import { GitHubLogo } from "../../../static/img/logos/github";
+import styles from "./styles.module.css";
 
 import NavbarMobileSidebarSecondaryMenu from "@theme/Navbar/MobileSidebar/SecondaryMenu";
 import { cn } from "../../utils";
@@ -42,9 +42,7 @@ export default function DocNavbar() {
             <div className={styles.navLinks}>
               <Link
                 to="/docs/"
-                className={`${styles.navLink} ${
-                  isActive("/docs/") ? styles.active : ""
-                }`}
+                className={`${styles.navLink} ${isActive("/docs/") ? styles.active : ""}`}
               >
                 Docs
               </Link>
@@ -82,9 +80,7 @@ export default function DocNavbar() {
             </Link>
 
             <button
-              className={`${styles.menuButton} ${
-                isMenuOpen ? styles.menuButtonOpen : ""
-              }`}
+              className={`${styles.menuButton} ${isMenuOpen ? styles.menuButtonOpen : ""}`}
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               aria-label="Toggle menu"
             >
@@ -116,18 +112,14 @@ export default function DocNavbar() {
             <div className={styles.versionBadgeMobile}>v0.1.x</div>
             <Link
               to="/docs/"
-              className={`${styles.mobileNavLink} ${
-                isActive("/docs/") ? styles.active : ""
-              }`}
+              className={`${styles.mobileNavLink} ${isActive("/docs/") ? styles.active : ""}`}
               onClick={() => setIsMenuOpen(false)}
             >
               Documentation
             </Link>
             <Link
               to="/docs/"
-              className={`${styles.navLink} ${
-                isActive("/docs/") ? styles.active : ""
-              }`}
+              className={`${styles.navLink} ${isActive("/docs/") ? styles.active : ""}`}
             >
               Changelog
             </Link>

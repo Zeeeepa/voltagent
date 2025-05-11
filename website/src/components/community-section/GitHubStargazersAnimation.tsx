@@ -1,6 +1,6 @@
-import React from "react";
 import { useGitHubStars } from "@site/src/contexts/GitHubStarsContext";
 import { useMediaQuery } from "@site/src/hooks/use-media-query";
+import React from "react";
 
 // Mobile version that animates automatically without hover
 const MobileGitHubStargazersAnimation = () => {

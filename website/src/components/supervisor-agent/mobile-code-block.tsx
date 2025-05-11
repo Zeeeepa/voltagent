@@ -1,10 +1,10 @@
-import { useState } from "react";
 import {
   CpuChipIcon,
-  UserPlusIcon,
   EyeIcon,
+  UserPlusIcon,
   UsersIcon,
 } from "@heroicons/react/24/outline";
+import { useState } from "react";
 
 type Feature = "centralized" | "specialized" | "memory" | "dynamic";
 
@@ -200,9 +200,7 @@ export const MobileCodeBlock = ({ isVisible }: MobileCodeBlockProps) => {
 
               {/* Shared Memory System */}
               <span
-                className={`block ${getHighlightClasses(
-                  "memory",
-                )} break-words whitespace-pre-wrap`}
+                className={`block ${getHighlightClasses("memory")} break-words whitespace-pre-wrap`}
                 onClick={(e) => handleFeatureClick("memory", e)}
               >
                 <span className="text-gray-300">

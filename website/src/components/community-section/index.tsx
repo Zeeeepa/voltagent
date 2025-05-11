@@ -1,9 +1,9 @@
-import React from "react";
 import { DocumentTextIcon } from "@heroicons/react/24/solid";
-import { GitHubLogo } from "../../../static/img/logos/github";
-import { DiscordLogo } from "../../../static/img/logos/discord";
-import { useMediaQuery } from "@site/src/hooks/use-media-query";
 import { GitHubStarsProvider } from "@site/src/contexts/GitHubStarsContext";
+import { useMediaQuery } from "@site/src/hooks/use-media-query";
+import React from "react";
+import { DiscordLogo } from "../../../static/img/logos/discord";
+import { GitHubLogo } from "../../../static/img/logos/github";
 import { GitHubStargazersAnimation } from "./GitHubStargazersAnimation";
 
 interface CommunityLink {

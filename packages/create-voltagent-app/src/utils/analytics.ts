@@ -1,7 +1,7 @@
+import crypto from "crypto";
+import os from "os";
 import { PostHog } from "posthog-node";
 import { v4 as uuidv4 } from "uuid";
-import os from "os";
-import crypto from "crypto";
 
 // Check if telemetry is disabled via environment variable
 const isTelemetryDisabled = (): boolean => {

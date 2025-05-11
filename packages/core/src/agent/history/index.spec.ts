@@ -1,9 +1,9 @@
 import { HistoryManager } from ".";
-import type { BaseMessage } from "../providers";
-import type { AgentStatus } from "../types";
-import type { StepWithContent } from "../providers/base/types";
 import { AgentEventEmitter } from "../../events";
 import { MemoryManager } from "../../memory";
+import type { BaseMessage } from "../providers";
+import type { StepWithContent } from "../providers/base/types";
+import type { AgentStatus } from "../types";
 
 // Mock dependencies
 jest.mock("../../events");

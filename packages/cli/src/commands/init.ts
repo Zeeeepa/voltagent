@@ -1,9 +1,9 @@
-import { Command } from "commander";
-import chalk from "chalk";
+import { execSync } from "child_process";
 import fs from "fs";
 import path from "path";
-import { execSync } from "child_process";
-import { captureInitEvent, captureError } from "../utils/analytics";
+import chalk from "chalk";
+import type { Command } from "commander";
+import { captureError, captureInitEvent } from "../utils/analytics";
 
 export const registerInitCommand = (program: Command): void => {
   program

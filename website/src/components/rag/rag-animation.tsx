@@ -1,25 +1,25 @@
+import {
+  CircleStackIcon,
+  CpuChipIcon,
+  FingerPrintIcon,
+  LightBulbIcon,
+  QueueListIcon,
+  Square3Stack3DIcon,
+  UserIcon,
+} from "@heroicons/react/24/outline";
 import React, { useState, useEffect, useRef } from "react";
 import { AnimatedBeam } from "../magicui/animated-beam";
-import {
-  UserIcon,
-  CpuChipIcon,
-  LightBulbIcon,
-  CircleStackIcon,
-  Square3Stack3DIcon,
-  QueueListIcon,
-  FingerPrintIcon,
-} from "@heroicons/react/24/outline";
 
+import { Claude37Logo } from "../../../static/img/logos/claudie";
 import {
   CohereLogo,
   PineconeLogo,
   PostgresLogo,
   VoyageLogo,
 } from "../../../static/img/logos/integrations";
+import { MistralLogo } from "../../../static/img/logos/mistral";
 import { OpenAILogo } from "../../../static/img/logos/openai";
 import { SupabaseLogo } from "../../../static/img/logos/supabase";
-import { MistralLogo } from "../../../static/img/logos/mistral";
-import { Claude37Logo } from "../../../static/img/logos/claudie";
 
 interface WorkflowCodeExampleProps {
   isVisible: boolean;

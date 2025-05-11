@@ -1,8 +1,8 @@
 import type {
   GenerateContentConfig,
   GenerateContentResponse,
-  ToolConfig,
   Tool,
+  ToolConfig,
 } from "@google/genai";
 import type { BaseMessage, BaseTool, StepWithContent } from "@voltagent/core";
 

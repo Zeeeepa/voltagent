@@ -1,10 +1,10 @@
-import { BlogPostProvider } from "@docusaurus/theme-common/internal";
-import BlogPostItem from "@theme/BlogPostItem";
-import React, { useEffect, useRef, useState } from "react";
-import clsx from "clsx";
-import { Footer } from "@site/src/components/footer";
-import Link from "@docusaurus/Link";
 import ExecutionEnvironment from "@docusaurus/ExecutionEnvironment";
+import Link from "@docusaurus/Link";
+import { BlogPostProvider } from "@docusaurus/theme-common/internal";
+import { Footer } from "@site/src/components/footer";
+import BlogPostItem from "@theme/BlogPostItem";
+import clsx from "clsx";
+import React, { useEffect, useRef, useState } from "react";
 
 const POSTS_PER_PAGE = 12;
 const ANIMATION_DELAY = 25;
@@ -85,10 +85,7 @@ export default function BlogPostItems({
               style={
                 ExecutionEnvironment.canUseDOM
                   ? {
-                      animationDelay: `${Math.min(
-                        index * ANIMATION_DELAY,
-                        300,
-                      )}ms`,
+                      animationDelay: `${Math.min(index * ANIMATION_DELAY, 300)}ms`,
                       animationFillMode: "forwards",
                     }
                   : undefined

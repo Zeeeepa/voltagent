@@ -1,8 +1,8 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { MCPServer } from "./index";
-import { asyncOperationManager } from "./async-manager";
-import { createTool } from "../../tool";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { z } from "zod";
+import { createTool } from "../../tool";
+import { asyncOperationManager } from "./async-manager";
+import { MCPServer } from "./index";
 
 // Mock FastMCP
 vi.mock("fastmcp", () => {
@@ -43,37 +43,37 @@ describe("MCPServer", () => {
 
   it("should initialize the server", async () => {
     await server.init();
-    expect(server["initialized"]).toBe(true);
+    expect(server.initialized).toBe(true);
   });
 
   it("should start the server", async () => {
     await server.start();
-    expect(server["server"].start).toHaveBeenCalled();
+    expect(server.server.start).toHaveBeenCalled();
   });
 
   it("should stop the server", async () => {
     await server.stop();
-    expect(server["server"].stop).toHaveBeenCalled();
+    expect(server.server.stop).toHaveBeenCalled();
   });
 
   it("should register a tool", async () => {
     const registrationFn = vi.fn();
     server.registerTool(registrationFn);
-    
-    expect(server["toolRegistrations"].length).toBe(1);
-    
+
+    expect(server.toolRegistrations.length).toBe(1);
+
     // Initialize to trigger registration
     await server.init();
-    expect(registrationFn).toHaveBeenCalledWith(server["server"], asyncOperationManager);
+    expect(registrationFn).toHaveBeenCalledWith(server.server, asyncOperationManager);
   });
 
   it("should register a tool after initialization", async () => {
     await server.init();
-    
+
     const registrationFn = vi.fn();
     server.registerTool(registrationFn);
-    
-    expect(registrationFn).toHaveBeenCalledWith(server["server"], asyncOperationManager);
+
+    expect(registrationFn).toHaveBeenCalledWith(server.server, asyncOperationManager);
   });
 });
 
@@ -110,9 +110,8 @@ describe("AsyncOperationManager", () => {
 
     const operationId = asyncOperationManager.addOperation(operationFn, { test: true }, context);
     const status = asyncOperationManager.getStatus(operationId);
-    
+
     expect(status.id).toBe(operationId);
     expect(status.status).toBe("pending");
   });
 });
-

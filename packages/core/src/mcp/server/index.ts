@@ -1,14 +1,17 @@
+import fs from "node:fs";
+import path from "node:path";
 import { FastMCP } from "fastmcp";
-import path from "path";
-import { fileURLToPath } from "url";
-import fs from "fs";
 import { asyncOperationManager } from "./async-manager";
 import { logger } from "./logger";
-import type { IMCPServer, MCPServerOptions, MCPServerStartOptions, ToolRegistrationFn } from "./types";
+import type {
+  IMCPServer,
+  MCPServerOptions,
+  MCPServerStartOptions,
+  ToolRegistrationFn,
+} from "./types";
 
-// Get __dirname equivalent in ESM
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// Get package directory path
+const packageDir = path.resolve(__dirname, "../../../../../");
 
 /**
  * MCP server implementation
@@ -47,13 +50,15 @@ export class MCPServer implements IMCPServer {
     // Try to get version from package.json
     let version = "0.1.0";
     try {
-      const packagePath = path.join(__dirname, "../../../../../package.json");
+      const packagePath = path.join(packageDir, "package.json");
       if (fs.existsSync(packagePath)) {
         const packageJson = JSON.parse(fs.readFileSync(packagePath, "utf8"));
         version = packageJson.version || version;
       }
     } catch (error) {
-      logger.warn(`Failed to get version from package.json: ${error instanceof Error ? error.message : String(error)}`);
+      logger.warn(
+        `Failed to get version from package.json: ${error instanceof Error ? error.message : String(error)}`,
+      );
     }
 
     this.options = {
@@ -62,11 +67,11 @@ export class MCPServer implements IMCPServer {
       ...options,
     };
 
-    this.server = new FastMCP(this.options);
-    
-    // Add empty resource and resource template
-    this.server.addResource({});
-    this.server.addResourceTemplate({});
+    // Create FastMCP instance with server options
+    this.server = new FastMCP({
+      name: this.options.name,
+      version: this.options.version as `${number}.${number}.${number}`,
+    });
 
     // Bind methods
     this.init = this.init.bind(this);
@@ -86,7 +91,9 @@ export class MCPServer implements IMCPServer {
       try {
         registrationFn(this.server, this.asyncManager);
       } catch (error) {
-        logger.error(`Failed to register tool: ${error instanceof Error ? error.message : String(error)}`);
+        logger.error(
+          `Failed to register tool: ${error instanceof Error ? error.message : String(error)}`,
+        );
       }
     }
 
@@ -103,18 +110,24 @@ export class MCPServer implements IMCPServer {
       await this.init();
     }
 
-    const startOptions = {
-      transportType: options?.transportType || "stdio",
-      timeout: options?.timeout || 120000, // 2 minutes
-    };
+    const transportType = options?.transportType || "stdio";
 
     // Start the FastMCP server
-    await this.server.start({
-      transportType: startOptions.transportType,
-      timeout: startOptions.timeout,
-    });
+    if (transportType === "stdio") {
+      await this.server.start({
+        transportType: "stdio",
+      });
+    } else if (transportType === "httpStream") {
+      await this.server.start({
+        transportType: "httpStream",
+        httpStream: {
+          endpoint: "/mcp",
+          port: 3000,
+        },
+      });
+    }
 
-    logger.info(`MCP server started with transport: ${startOptions.transportType}`);
+    logger.info(`MCP server started with transport: ${transportType}`);
     return this;
   }
 
@@ -129,19 +142,20 @@ export class MCPServer implements IMCPServer {
   }
 
   /**
-   * Register a tool with the MCP server
+   * Register a tool with the server
    * @param registrationFn Tool registration function
    */
   registerTool(registrationFn: ToolRegistrationFn): void {
     this.toolRegistrations.push(registrationFn);
-    
-    // If already initialized, register the tool immediately
-    if (this.initialized && this.server) {
+
+    // If already initialized, register immediately
+    if (this.initialized) {
       try {
         registrationFn(this.server, this.asyncManager);
-        logger.debug("Registered tool with MCP server");
       } catch (error) {
-        logger.error(`Failed to register tool: ${error instanceof Error ? error.message : String(error)}`);
+        logger.error(
+          `Failed to register tool: ${error instanceof Error ? error.message : String(error)}`,
+        );
       }
     }
   }
@@ -151,4 +165,3 @@ export class MCPServer implements IMCPServer {
 export * from "./types";
 export * from "./async-manager";
 export * from "./logger";
-

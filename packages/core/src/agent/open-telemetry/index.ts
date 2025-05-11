@@ -1,10 +1,10 @@
 import {
-  trace,
+  type Attributes,
   type Span,
   SpanKind,
   SpanStatusCode,
-  type Attributes,
   context as apiContext,
+  trace,
 } from "@opentelemetry/api";
 import type { EventStatus, StandardEventData } from "../../events/types";
 import type { UsageInfo } from "../providers/base/types";

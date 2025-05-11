@@ -1,14 +1,14 @@
-import { WorkflowCodeExample } from "./workflow-code-example";
 import {
-  UserPlusIcon,
-  EyeIcon,
-  UsersIcon,
   CpuChipIcon,
+  EyeIcon,
+  UserPlusIcon,
+  UsersIcon,
 } from "@heroicons/react/24/outline";
 import { useMediaQuery } from "@site/src/hooks/use-media-query";
 import { useState } from "react";
-import { MobileVersion } from "./mobile-version";
 import { MobileCodeBlock } from "./mobile-code-block";
+import { MobileVersion } from "./mobile-version";
+import { WorkflowCodeExample } from "./workflow-code-example";
 
 export function SupervisorAgent() {
   const [highlightedSection, setHighlightedSection] = useState<string | null>(
@@ -113,9 +113,7 @@ export function SupervisorAgent() {
                     <code className="py-5 px-3 block text-xs">
                       {/* Orchestrator initialization - Common for all features */}
                       <span
-                        className={`block ${getHighlightClasses(
-                          "orchestrator",
-                        )}`}
+                        className={`block ${getHighlightClasses("orchestrator")}`}
                       >
                         <span className="text-blue-400">import</span>
                         <span>
@@ -158,14 +156,10 @@ export function SupervisorAgent() {
 
                       {/* Centralized Coordination */}
                       <span
-                        className={`block ${getHighlightClasses(
-                          "centralized",
-                        )}`}
+                        className={`block ${getHighlightClasses("centralized")}`}
                       >
                         {/* Define supervisor agent */}
-                        <span className="text-gray-300">
-                          {`// Define supervisor agent`}
-                        </span>
+                        <span className="text-gray-300">{`// Define supervisor agent`}</span>
                         <br />
                         <span className="text-blue-400">const</span>
                         <span> supervisorAgent = </span>
@@ -210,9 +204,7 @@ export function SupervisorAgent() {
 
                       {/* Specialized Agent Roles */}
                       <span
-                        className={`block ${getHighlightClasses(
-                          "specialized",
-                        )}`}
+                        className={`block ${getHighlightClasses("specialized")}`}
                       >
                         {/* Define story agent */}
                         <span className="text-gray-300">{`// Define story agent`}</span>

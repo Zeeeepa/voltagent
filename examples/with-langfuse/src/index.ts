@@ -2,7 +2,7 @@ import { openai } from "@ai-sdk/openai";
 import { Agent, VoltAgent } from "@voltagent/core";
 import { LangfuseExporter } from "@voltagent/langfuse-exporter";
 import { VercelAIProvider } from "@voltagent/vercel-ai";
-import { weatherTool, searchTool, checkCalendarTool, addCalendarEventTool } from "./tools";
+import { addCalendarEventTool, checkCalendarTool, searchTool, weatherTool } from "./tools";
 
 const agent = new Agent({
   name: "Base Agent",

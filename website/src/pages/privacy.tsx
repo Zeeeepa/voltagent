@@ -1,7 +1,7 @@
-import React from "react";
 import Layout from "@theme/Layout";
-import { PrivacyPolicy } from "../components/privacy-policy";
+import React from "react";
 import { Footer } from "../components/footer";
+import { PrivacyPolicy } from "../components/privacy-policy";
 
 export default function PrivacyPolicyPage() {
   return (
