@@ -1,10 +1,16 @@
 import type { z } from "zod";
 import { AgentEventEmitter } from "../events";
-import type { EventStatus, EventUpdater } from "../events";
+import type { EventUpdater } from "../events";
+import type { EventStatus } from "../events";
+import type { StandardEventData } from "../events/types";
 import { MemoryManager } from "../memory";
+import type { BaseRetriever } from "../retriever/retriever";
 import type { Tool, Toolkit } from "../tool";
 import { ToolManager } from "../tool";
 import type { ReasoningToolExecuteOptions } from "../tool/reasoning/types";
+import { NodeType, createNodeId } from "../utils/node-utils";
+import { serializeValueForDebug } from "../utils/serialization";
+import type { Voice } from "../voice";
 import { type AgentHistoryEntry, HistoryManager } from "./history";
 import { type AgentHooks, createHooks } from "./hooks";
 import type {
@@ -25,27 +31,22 @@ import type {
   InferStreamTextResponse,
   InternalGenerateOptions,
   ModelType,
+  OperationContext,
   ProviderInstance,
   PublicGenerateOptions,
-  OperationContext,
-  ToolExecutionContext,
-  VoltAgentError,
+  StandardizedObjectResult,
+  StandardizedTextResult,
+  StreamObjectFinishResult,
+  StreamObjectOnFinishCallback,
   StreamOnErrorCallback,
   StreamTextFinishResult,
   StreamTextOnFinishCallback,
-  StreamObjectFinishResult,
-  StreamObjectOnFinishCallback,
-  StandardizedTextResult,
-  StandardizedObjectResult,
+  ToolExecutionContext,
+  VoltAgentError,
 } from "./types";
-import type { BaseRetriever } from "../retriever/retriever";
-import { NodeType, createNodeId } from "../utils/node-utils";
-import type { StandardEventData } from "../events/types";
-import type { Voice } from "../voice";
-import { serializeValueForDebug } from "../utils/serialization";
 
-import { startOperationSpan, endOperationSpan, startToolSpan, endToolSpan } from "./open-telemetry";
 import type { Span } from "@opentelemetry/api";
+import { endOperationSpan, endToolSpan, startOperationSpan, startToolSpan } from "./open-telemetry";
 
 /**
  * Agent class for interacting with AI models
@@ -215,19 +216,7 @@ export class Agent<TProvider extends { llm: LLMProvider<unknown> }> {
 
       // Create tracked event
       const eventEmitter = AgentEventEmitter.getInstance();
-      const eventUpdater = await eventEmitter.createTrackedEvent({
-        agentId: this.id,
-        historyId: historyEntryId,
-        name: "retriever:working",
-        status: "working" as AgentStatus,
-        data: {
-          affectedNodeId: retrieverNodeId,
-          status: "working" as EventStatus,
-          timestamp: new Date().toISOString(),
-          input: input,
-        },
-        type: "retriever",
-      });
+      const eventUpdater = await eventEmitter.createTrackedEvent(this.id, EventStatus.READY);
 
       try {
         const context = await this.retriever.retrieve(input);
@@ -584,15 +573,16 @@ export class Agent<TProvider extends { llm: LLMProvider<unknown> }> {
     }
 
     // Create the event data, including the serialized userContext
-    const eventData: Partial<StandardEventData> & {
-      userContext?: Record<string, unknown>;
-    } = {
-      affectedNodeId,
-      status: status as any,
-      timestamp: new Date().toISOString(),
-      sourceAgentId: this.id,
-      ...data,
-      ...(userContextData && { userContext: userContextData }), // Add userContext if available
+    const eventData = {
+      data: {
+        status: EventStatus.ERROR,
+        updatedAt: new Date().toISOString(),
+        error: "error",
+        errorMessage: error.message,
+        output: {
+          success: false,
+        },
+      },
     };
 
     // Create the event payload
@@ -641,7 +631,7 @@ export class Agent<TProvider extends { llm: LLMProvider<unknown> }> {
     const toolNodeId = createNodeId(NodeType.TOOL, toolName, this.id);
     const toolCallId = data.toolId?.toString();
 
-    if (toolCallId && status === "working") {
+    if (toolCallId && status === EventStatus.WORKING) {
       if (context.toolSpans.has(toolCallId)) {
         console.warn(`[VoltAgentCore] OTEL tool span already exists for toolCallId: ${toolCallId}`);
       } else {

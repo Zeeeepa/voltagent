@@ -1,12 +1,12 @@
 import type { StepWithContent } from "../../agent/providers";
 import type { BaseMessage } from "../../agent/providers/base/types";
+import type { OperationContext } from "../../agent/types";
 import { AgentEventEmitter } from "../../events";
 import type { EventStatus, EventUpdater } from "../../events";
+import type { StandardEventData } from "../../events/types";
+import { NodeType, createNodeId } from "../../utils/node-utils";
 import { LibSQLStorage } from "../index";
 import type { Memory, MemoryMessage, MemoryOptions } from "../types";
-import { NodeType, createNodeId } from "../../utils/node-utils";
-import type { OperationContext } from "../../agent/types";
-import { StandardEventData } from "../../events/types";
 
 /**
  * Convert BaseMessage to MemoryMessage for memory storage
@@ -125,7 +125,7 @@ export class MemoryManager {
     if (!this.memory || !userId) return;
 
     // Create a tracked event for this operation
-    const eventUpdater = await this.createMemoryEvent(context, "saveMessage", "working", {
+    const eventUpdater = await this.createMemoryEvent(context, "saveMessage", EventStatus.WORKING, {
       messageType: type,
       userId,
       conversationId,
@@ -167,7 +167,7 @@ export class MemoryManager {
         },
       });
 
-      console.error(`[Memory] Failed to save message:`, error);
+      console.error("[Memory] Failed to save message:", error);
     }
   }
 
@@ -183,7 +183,7 @@ export class MemoryManager {
     if (!this.memory || !userId || !conversationId) return [];
 
     // Create a tracked event for this operation
-    const eventUpdater = await this.createMemoryEvent(context, "getMessages", "working", {
+    const eventUpdater = await this.createMemoryEvent(context, "getMessages", EventStatus.WORKING, {
       userId,
       conversationId,
       limit,
@@ -237,7 +237,7 @@ export class MemoryManager {
         },
       });
 
-      console.error(`[Memory] Failed to get messages:`, error);
+      console.error("[Memory] Failed to get messages:", error);
       return [];
     }
   }
@@ -300,7 +300,7 @@ export class MemoryManager {
         const eventUpdater = await this.createMemoryEvent(
           context,
           "createConversation",
-          "working",
+          EventStatus.WORKING,
           {
             userId,
             conversationId,
@@ -345,10 +345,15 @@ export class MemoryManager {
         await this.memory.updateConversation(conversationId, {});
       }
 
-      const eventUpdater = await this.createMemoryEvent(context, "getMessages", "working", {
-        userId,
-        conversationId,
-      });
+      const eventUpdater = await this.createMemoryEvent(
+        context,
+        "getMessages",
+        EventStatus.WORKING,
+        {
+          userId,
+          conversationId,
+        },
+      );
 
       try {
         const memoryMessages = await this.memory.getMessages({
@@ -493,7 +498,7 @@ export class MemoryManager {
         await this.addStepsToHistoryEntry(agentId, entry.id, entry.steps);
       }
     } catch (error) {
-      console.error(`[Memory] Failed to store history entry:`, error);
+      console.error("[Memory] Failed to store history entry:", error);
     }
   }
 
@@ -517,7 +522,7 @@ export class MemoryManager {
       }
       return undefined;
     } catch (error) {
-      console.error(`[Memory] Failed to get history entry:`, error);
+      console.error("[Memory] Failed to get history entry:", error);
       return undefined;
     }
   }
@@ -536,7 +541,7 @@ export class MemoryManager {
       const agentEntries = await this.memory.getAllHistoryEntriesByAgent(agentId);
       return agentEntries;
     } catch (error) {
-      console.error(`[Memory] Failed to get all history entries:`, error);
+      console.error("[Memory] Failed to get all history entries:", error);
       return [];
     }
   }
@@ -602,7 +607,7 @@ export class MemoryManager {
       // Return the updated record with all relationships
       return await this.getHistoryEntryById(agentId, entryId);
     } catch (error) {
-      console.error(`[Memory] Failed to update history entry:`, error);
+      console.error("[Memory] Failed to update history entry:", error);
       return undefined;
     }
   }
@@ -640,8 +645,8 @@ export class MemoryManager {
         ...existingEvent,
         name: event.name || existingEvent.name,
         type: event.type || existingEvent.type,
-        affectedNodeId: event.affectedNodeId || existingEvent.affectedNodeId, // use camelCase
-        _trackedEventId: event.data?._trackedEventId || existingEvent._trackedEventId,
+        affectedNodeId: event.data.affectedNodeId,
+        _trackedEventId: event.data?._trackedEventId,
         metadata: {
           ...(existingEvent.metadata || {}),
           ...(event.data || {}),
@@ -654,7 +659,7 @@ export class MemoryManager {
 
       return updatedEvent;
     } catch (error) {
-      console.error(`[Memory] Failed to update event in history entry:`, error);
+      console.error("[Memory] Failed to update event in history entry:", error);
       return undefined;
     }
   }
@@ -703,7 +708,7 @@ export class MemoryManager {
       // Return the updated record with all relationships
       return await this.getHistoryEntryById(agentId, entryId);
     } catch (error) {
-      console.error(`[Memory] Failed to add steps to history entry:`, error);
+      console.error("[Memory] Failed to add steps to history entry:", error);
       return undefined;
     }
   }
@@ -750,7 +755,7 @@ export class MemoryManager {
 
       return await this.getHistoryEntryById(agentId, entryId);
     } catch (error) {
-      console.error(`[Memory] Failed to add event to history entry:`, error);
+      console.error("[Memory] Failed to add event to history entry:", error);
       return undefined;
     }
   }

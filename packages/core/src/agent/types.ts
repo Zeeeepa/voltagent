@@ -1,14 +1,14 @@
+import type { Span } from "@opentelemetry/api";
 import type { BaseMessage } from "../agent/providers/base/types";
+import type { EventUpdater } from "../events";
 import type { Memory, MemoryOptions } from "../memory/types";
 import type { Tool, Toolkit } from "../tool";
+import type { AgentHistoryEntry } from "./history";
 import type { LLMProvider } from "./providers";
 import type { BaseTool } from "./providers";
 import type { StepWithContent } from "./providers";
-import type { AgentHistoryEntry } from "./history";
-import type { EventUpdater } from "../events";
 import type { ToolExecuteOptions } from "./providers/base/types";
 import type { UsageInfo } from "./providers/base/types";
-import type { Span } from "@opentelemetry/api";
 
 /**
  * Provider options type for LLM configurations
