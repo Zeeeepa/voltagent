@@ -1,7 +1,8 @@
 import type { z } from "zod";
 import { AgentEventEmitter } from "../events";
+import { EventStatus } from "../events";
 import type { EventUpdater } from "../events";
-import type { EventStatus } from "../events";
+import { AgentStatus } from "./history/types";
 import type { StandardEventData } from "../events/types";
 import { MemoryManager } from "../memory";
 import type { BaseRetriever } from "../retriever/retriever";
@@ -23,7 +24,6 @@ import type {
 import { SubAgentManager } from "./subagent";
 import type {
   AgentOptions,
-  AgentStatus,
   CommonGenerateOptions,
   InferGenerateObjectResponse,
   InferGenerateTextResponse,
@@ -214,9 +214,10 @@ export class Agent<TProvider extends { llm: LLMProvider<unknown> }> {
       // Create retriever node ID
       const retrieverNodeId = createNodeId(NodeType.RETRIEVER, this.retriever.tool.name, this.id);
 
-      // Create tracked event
-      const eventEmitter = AgentEventEmitter.getInstance();
-      const eventUpdater = await eventEmitter.createTrackedEvent(this.id, EventStatus.READY);
+      // Create tracked event for the retriever
+      const eventUpdater = await this.createTrackedEvent("retriever", EventStatus.WORKING, {
+        retrieverNodeId,
+      });
 
       try {
         const context = await this.retriever.retrieve(input);
@@ -224,22 +225,15 @@ export class Agent<TProvider extends { llm: LLMProvider<unknown> }> {
           finalInstructions = `${finalInstructions}\n\nRelevant Context:\n${context}`;
 
           // Update the event
-          eventUpdater({
-            data: {
-              status: "completed" as EventStatus,
-              output: context,
-            },
+          eventUpdater(EventStatus.COMPLETED, {
+            output: context,
           });
         }
       } catch (error) {
-        // Update the event as error
-        eventUpdater({
-          status: "error" as AgentStatus,
-          data: {
-            status: "error" as EventStatus,
-            error: error,
-            errorMessage: error instanceof Error ? error.message : "Unknown error",
-          },
+        // Update the event with the error
+        eventUpdater(EventStatus.ERROR, {
+          error,
+          errorMessage: error instanceof Error ? error.message : String(error),
         });
         console.warn("Failed to retrieve context:", error);
       }
