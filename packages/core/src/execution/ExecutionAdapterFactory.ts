@@ -1,0 +1,176 @@
+/**
+ * ExecutionAdapterFactory.ts
+ * 
+ * Factory function to create the appropriate execution adapter
+ */
+
+import { 
+  ExecutionAdapter, 
+  ExecutionAdapterOptions, 
+  ExecutionAdapterResult 
+} from './ExecutionAdapter';
+import { LocalExecutionAdapter } from './LocalExecutionAdapter';
+import { DockerExecutionAdapter } from './DockerExecutionAdapter';
+import { DockerContainerManager } from './DockerContainerManager';
+import { E2BExecutionAdapter } from './E2BExecutionAdapter';
+import { CheckpointingExecutionAdapter } from './CheckpointingExecutionAdapter';
+import { LogCategory } from '../utils/logger';
+
+/**
+ * Factory function to create the appropriate execution adapter
+ */
+export async function createExecutionAdapter(
+  options: ExecutionAdapterOptions
+): Promise<ExecutionAdapterResult> {
+  const { 
+    type = 'docker', 
+    autoFallback = true, 
+    logger 
+  } = options;
+  
+  console.log(`Creating execution adapter: Requested type = ${type}, default = docker`, 'system');
+  console.log('Options:', JSON.stringify(options, null, 2));
+  
+  // Track reasons for fallback for logging
+  let fallbackReason = '';
+  
+  // Try to create the requested adapter type
+  try {
+    if (type === 'docker') {
+      logger?.info('Attempting to create Docker execution adapter', LogCategory.EXECUTION);
+      
+      // Create the container manager (caller must provide projectRoot)
+      if (!options.docker?.projectRoot) {
+        throw new Error('projectRoot must be provided when creating a Docker execution adapter');
+      }
+      
+      const containerManager = new DockerContainerManager({
+        projectRoot: options.docker.projectRoot,
+        composeFilePath: options.docker.composeFilePath,
+        serviceName: options.docker.serviceName,
+        projectName: options.docker.projectName,
+        logger
+      });
+      
+      // Check if Docker is available
+      const dockerAvailable = await containerManager.isDockerAvailable();
+      if (!dockerAvailable) {
+        fallbackReason = 'Docker is not available on this system';
+        throw new Error(fallbackReason);
+      }
+      
+      // Ensure container is running
+      const containerInfo = await containerManager.ensureContainer();
+      if (!containerInfo) {
+        fallbackReason = 'Failed to start Docker container';
+        throw new Error(fallbackReason);
+      }
+      
+      // Create Docker execution adapter
+      const dockerAdapter = new DockerExecutionAdapter(containerManager, { logger });
+      
+      // Verify Docker adapter is working by running a simple test command
+      try {
+        const { exitCode } = await dockerAdapter.executeCommand('docker-test', 'echo "Docker test"');
+        if (exitCode !== 0) {
+          fallbackReason = 'Docker container is not responding to commands';
+          throw new Error(fallbackReason);
+        }
+      } catch (cmdError) {
+        fallbackReason = `Docker command execution failed: ${cmdError instanceof Error ? cmdError.message : String(cmdError)}`;
+        throw cmdError;
+      }
+      
+      logger?.info('Successfully created Docker execution adapter', LogCategory.EXECUTION);
+      
+      // Create concrete adapter
+      let concreteAdapter: ExecutionAdapter = dockerAdapter;
+      
+      const res = await dockerAdapter.executeCommand('get-pwd', 'pwd');
+      const pwd = res.stdout.trim();
+      
+      let attempts = 0;
+      while (!dockerAdapter.initialized && attempts < 10) {
+        console.log('Waiting for Docker container to initialize...', attempts);
+        await new Promise(resolve => setTimeout(resolve, 100));
+        attempts++;
+      }
+      
+      if (!dockerAdapter.initialized) {
+        throw new Error('Docker container failed to initialize');
+      }
+      
+      // Wrap with checkpointing
+      concreteAdapter = new CheckpointingExecutionAdapter(dockerAdapter, pwd, options.sessionId || 'default');
+      console.log('Wrapped Docker adapter with checkpointing', LogCategory.EXECUTION);
+      
+      return {
+        adapter: concreteAdapter,
+        type: 'docker'
+      };
+    }
+    
+    if (type === 'e2b') {
+      logger?.info('Creating E2B execution adapter', LogCategory.EXECUTION);
+      
+      if (!options.e2b?.sandboxId) {
+        fallbackReason = 'E2B sandbox ID is required';
+        throw new Error(fallbackReason);
+      }
+      
+      const e2bAdapter = await E2BExecutionAdapter.create(options.e2b.sandboxId, { logger });
+      
+      // Create concrete adapter
+      let concreteAdapter: ExecutionAdapter = e2bAdapter;
+      
+      const res = await e2bAdapter.executeCommand('get-pwd', 'pwd');
+      const pwd = res.stdout.trim();
+      
+      concreteAdapter = new CheckpointingExecutionAdapter(e2bAdapter, pwd, options.sessionId || 'default');
+      console.log('Wrapped E2B adapter with checkpointing', LogCategory.EXECUTION);
+      
+      return {
+        adapter: concreteAdapter,
+        type: 'e2b'
+      };
+    }
+  } catch (error) {
+    // Add detailed error logging
+    logger?.error(
+      `Failed to create ${type} execution adapter: ${error instanceof Error ? error.message : String(error)}`,
+      error instanceof Error ? error : new Error(String(error)),
+      LogCategory.EXECUTION
+    );
+    
+    // If auto fallback is disabled, rethrow the error
+    if (!autoFallback) {
+      throw error;
+    }
+    
+    // Log warning about fallback
+    logger?.warn(
+      `Falling back to local execution: ${fallbackReason || (error instanceof Error ? error.message : String(error))}`,
+      LogCategory.EXECUTION
+    );
+  }
+  
+  // Fall back to local execution
+  logger?.info('Creating local execution adapter', LogCategory.EXECUTION);
+  
+  // Create concrete adapter
+  const localAdapter = new LocalExecutionAdapter({ logger });
+  let concreteAdapter: ExecutionAdapter = localAdapter;
+  
+  const res = await localAdapter.executeCommand('get-pwd', 'pwd');
+  const pwd = res.stdout.trim();
+  
+  // Wrap with checkpointing 
+  concreteAdapter = new CheckpointingExecutionAdapter(localAdapter, pwd, options.sessionId || 'default');
+  console.log('Wrapped local adapter with checkpointing', LogCategory.EXECUTION);
+  
+  return {
+    adapter: concreteAdapter,
+    type: 'local'
+  };
+}
+

@@ -1,26 +1,20 @@
 {
-  "name": "voltagent-example-with-mcp",
+  "name": "voltagent-mcp-execution-example",
   "version": "0.1.0",
-  "private": true,
-  "description": "VoltAgent example demonstrating MCP integration with a filesystem server.",
-  "type": "module",
-  "main": "dist/index.js",
+  "description": "Example of using execution environments with the MCP server",
+  "main": "dist/execution-example.js",
   "scripts": {
     "build": "tsc",
-    "dev": "tsx watch --env-file=.env ./src",
-    "start": "node dist/index.js",
-    "volt": "volt"
+    "start": "node dist/execution-example.js",
+    "dev": "ts-node src/execution-example.ts"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^1.3.10",
-    "@voltagent/cli": "^0.1.5",
-    "@voltagent/core": "^0.1.17",
-    "@voltagent/vercel-ai": "^0.1.8",
-    "zod": "^3.24.2"
+    "@voltagent/core": "workspace:*",
+    "fastmcp": "^0.1.0"
   },
   "devDependencies": {
-    "@types/node": "^22.13.5",
-    "tsx": "^4.19.3",
-    "typescript": "^5.8.2"
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.4"
   }
 }
+
