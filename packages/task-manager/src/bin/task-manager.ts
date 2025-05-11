@@ -2,66 +2,30 @@
 
 /**
  * Task Manager CLI
- * 
- * This module provides a command-line interface for the task management system.
+ *
+ * Command-line interface for the VoltAgent Task Manager
  */
 
-import { Command } from 'commander';
-import { TaskManager } from '../index';
+import { TaskManager } from "../index";
 
-const program = new Command();
-const taskManager = new TaskManager();
+async function main() {
+  try {
+    const taskManager = new TaskManager();
 
-program
-  .name('voltagent-task')
-  .description('VoltAgent Task Manager')
-  .version('0.1.0');
+    // Example usage
+    const task = await taskManager.createTask({
+      title: "Example task",
+      description: "This is an example task created from the CLI",
+    });
 
-program
-  .command('init')
-  .description('Initialize a new project')
-  .action(async () => {
-    console.log('Initializing new project...');
-    // Implementation will be added in future PRs
-  });
+    console.log("Task created:", task);
 
-program
-  .command('list')
-  .description('List all tasks')
-  .action(async () => {
-    console.log('Listing tasks...');
-    // Implementation will be added in future PRs
-  });
+    const runningTask = await taskManager.runTask(task.id);
+    console.log("Task completed:", runningTask);
+  } catch (error) {
+    console.error("Error:", error);
+    process.exit(1);
+  }
+}
 
-program
-  .command('create <title>')
-  .description('Create a new task')
-  .option('-d, --description <description>', 'Task description')
-  .action(async (title, options) => {
-    try {
-      const task = await taskManager.createTask({
-        title,
-        description: options.description,
-      });
-      console.log(`Task created with ID: ${task.id}`);
-    } catch (error) {
-      console.error('Failed to create task:', error);
-      process.exit(1);
-    }
-  });
-
-program
-  .command('run <taskId>')
-  .description('Run a task')
-  .action(async (taskId) => {
-    try {
-      const task = await taskManager.runTask(taskId);
-      console.log(`Task ${taskId} is now ${task.status}`);
-    } catch (error) {
-      console.error('Failed to run task:', error);
-      process.exit(1);
-    }
-  });
-
-program.parse(process.argv);
-
+main();

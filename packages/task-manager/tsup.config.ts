@@ -10,12 +10,4 @@ export default defineConfig({
   outDir: "dist",
   minify: false,
   dts: true,
-  esbuildOptions(options) {
-    options.keepNames = true;
-    return options;
-  },
-  banner: {
-    js: "#!/usr/bin/env node",
-  },
 });
-

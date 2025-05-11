@@ -1,67 +1,113 @@
 /**
- * Task Manager for VoltAgent
- * 
- * This module provides the task management system for VoltAgent,
- * allowing you to manage AI-driven development tasks.
+ * VoltAgent Task Manager
+ *
+ * This module provides a task management system for the VoltAgent framework.
  */
 
 export interface Task {
   id: string;
   title: string;
   description?: string;
-  status: 'pending' | 'in-progress' | 'completed' | 'failed';
+  status: "pending" | "running" | "completed" | "failed";
   createdAt: Date;
   updatedAt: Date;
+  completedAt?: Date;
+}
+
+export interface CreateTaskOptions {
+  title: string;
+  description?: string;
 }
 
 export interface TaskManagerOptions {
-  anthropicApiKey?: string;
-  openaiApiKey?: string;
-  storagePath?: string;
+  // Add configuration options as needed
 }
 
 export class TaskManager {
-  private options: TaskManagerOptions;
+  private tasks: Map<string, Task> = new Map();
 
   constructor(options: TaskManagerOptions = {}) {
-    this.options = {
-      anthropicApiKey: options.anthropicApiKey || process.env.ANTHROPIC_API_KEY,
-      openaiApiKey: options.openaiApiKey || process.env.OPENAI_API_KEY,
-      storagePath: options.storagePath || './.voltagent/tasks',
-    };
+    // Initialize with options
   }
 
-  async createTask(taskData: { title: string; description?: string }): Promise<Task> {
+  /**
+   * Create a new task
+   *
+   * @param options Task creation options
+   * @returns The created task
+   */
+  async createTask(options: CreateTaskOptions): Promise<Task> {
+    const id = Math.random().toString(36).substring(2, 9);
+    const now = new Date();
+
     const task: Task = {
-      id: Math.random().toString(36).substring(2, 9),
-      title: taskData.title,
-      description: taskData.description,
-      status: 'pending',
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      id,
+      title: options.title,
+      description: options.description,
+      status: "pending",
+      createdAt: now,
+      updatedAt: now,
     };
 
-    // Implementation will be added in future PRs
-    console.log(`Created task: ${task.id}`);
-
+    this.tasks.set(id, task);
     return task;
   }
 
-  async runTask(taskId: string): Promise<Task> {
-    // Implementation will be added in future PRs
-    console.log(`Running task: ${taskId}`);
+  /**
+   * Get a task by ID
+   *
+   * @param id Task ID
+   * @returns The task or undefined if not found
+   */
+  getTask(id: string): Task | undefined {
+    return this.tasks.get(id);
+  }
 
-    return {
-      id: taskId,
-      title: 'Sample Task',
-      status: 'in-progress',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
+  /**
+   * Run a task
+   *
+   * @param id Task ID
+   * @returns The updated task
+   */
+  async runTask(id: string): Promise<Task> {
+    const task = this.tasks.get(id);
+    if (!task) {
+      throw new Error(`Task with ID ${id} not found`);
+    }
+
+    // Update task status
+    task.status = "running";
+    task.updatedAt = new Date();
+    this.tasks.set(id, task);
+
+    try {
+      // Simulate task execution
+      // In a real implementation, this would execute the actual task
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Update task status to completed
+      task.status = "completed";
+      task.updatedAt = new Date();
+      task.completedAt = new Date();
+      this.tasks.set(id, task);
+
+      return task;
+    } catch (error) {
+      // Update task status to failed
+      task.status = "failed";
+      task.updatedAt = new Date();
+      this.tasks.set(id, task);
+
+      throw error;
+    }
+  }
+
+  /**
+   * List all tasks
+   *
+   * @returns Array of all tasks
+   */
+  listTasks(): Task[] {
+    return Array.from(this.tasks.values());
   }
 }
-
-export default {
-  TaskManager,
-};
-

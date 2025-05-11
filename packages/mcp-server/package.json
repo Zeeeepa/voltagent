@@ -1,8 +1,7 @@
 {
   "name": "@voltagent/mcp-server",
   "version": "0.1.0",
-  "description": "MCP server implementation for VoltAgent",
-  "license": "MIT",
+  "description": "Model Context Protocol (MCP) server implementation for VoltAgent",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -21,13 +20,15 @@
   ],
   "scripts": {
     "build": "tsup",
+    "clean": "rimraf dist",
     "dev": "tsup --watch",
-    "lint": "eslint src --ext .ts,.tsx",
+    "lint": "biome check src",
+    "lint:fix": "biome check --apply src",
     "test": "jest"
   },
   "dependencies": {
-    "@voltagent/core": "workspace:*",
     "@anthropic-ai/sdk": "^0.39.0",
+    "@voltagent/core": "workspace:*",
     "boxen": "^8.0.1",
     "chalk": "^4.1.2",
     "commander": "^11.1.0",
@@ -54,6 +55,8 @@
     "ts-jest": "^29.1.0",
     "tsup": "^6.7.0",
     "typescript": "^5.0.4"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
-

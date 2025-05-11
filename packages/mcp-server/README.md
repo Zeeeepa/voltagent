@@ -1,14 +1,39 @@
 # VoltAgent MCP Server
 
-This package provides the Model Context Protocol (MCP) server implementation for VoltAgent.
+The Model Context Protocol (MCP) server implementation for the VoltAgent framework.
 
 ## Installation
 
 ```bash
 npm install @voltagent/mcp-server
+# or
+yarn add @voltagent/mcp-server
+# or
+pnpm add @voltagent/mcp-server
 ```
 
 ## Usage
+
+### As a library
+
+```typescript
+import { createMCPServer } from "@voltagent/mcp-server";
+
+const server = createMCPServer({
+  port: 3000,
+  host: "localhost",
+  // other options...
+});
+
+server
+  .start()
+  .then(() => {
+    console.log("MCP server started successfully");
+  })
+  .catch((error) => {
+    console.error("Failed to start MCP server:", error);
+  });
+```
 
 ### As a CLI
 
@@ -16,57 +41,22 @@ npm install @voltagent/mcp-server
 # Install globally
 npm install -g @voltagent/mcp-server
 
-# Run the MCP server
+# Run the server
 voltagent-mcp
-```
 
-### As a library
-
-```typescript
-import { createMCPServer } from '@voltagent/mcp-server';
-
-// Create and start the MCP server
-const server = createMCPServer({
-  port: 3000,
-  // other options...
-});
-
-server.start();
+# With custom port
+MCP_PORT=4000 voltagent-mcp
 ```
 
 ## Configuration
 
-The MCP server can be configured using environment variables or by passing options to the `createMCPServer` function.
+The MCP server can be configured with the following options:
 
-### Environment Variables
+| Option | Environment Variable | Default     | Description           |
+| ------ | -------------------- | ----------- | --------------------- |
+| `port` | `MCP_PORT`           | `3000`      | The port to listen on |
+| `host` | `MCP_HOST`           | `localhost` | The host to bind to   |
 
-- `PORT`: The port to run the server on (default: 3000)
-- `HOST`: The host to bind to (default: localhost)
-- `ANTHROPIC_API_KEY`: Your Anthropic API key
-- `OPENAI_API_KEY`: Your OpenAI API key
+## License
 
-### Configuration Options
-
-```typescript
-const server = createMCPServer({
-  port: 3000,
-  host: 'localhost',
-  anthropicApiKey: 'your-anthropic-api-key',
-  openaiApiKey: 'your-openai-api-key',
-  // other options...
-});
-```
-
-## Development
-
-```bash
-# Install dependencies
-pnpm install
-
-# Build the package
-pnpm build
-
-# Run in development mode
-pnpm dev
-```
-
+MIT

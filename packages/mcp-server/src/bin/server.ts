@@ -2,47 +2,37 @@
 
 /**
  * MCP Server CLI
- * 
- * This module provides a command-line interface for the MCP server.
+ *
+ * Command-line interface for the VoltAgent MCP Server
  */
 
-import { Command } from 'commander';
-import { createMCPServer } from '../index';
+import { createMCPServer } from "../index";
 
-const program = new Command();
-
-program
-  .name('voltagent-mcp')
-  .description('VoltAgent MCP Server')
-  .version('0.1.0')
-  .option('-p, --port <port>', 'Port to run the server on', '3000')
-  .option('-h, --host <host>', 'Host to bind to', 'localhost')
-  .action(async (options) => {
+async function main() {
+  try {
     const server = createMCPServer({
-      port: parseInt(options.port, 10),
-      host: options.host,
+      port: parseInt(process.env.MCP_PORT || "3000", 10),
+      host: process.env.MCP_HOST || "localhost",
     });
 
-    try {
-      await server.start();
-      
-      // Handle graceful shutdown
-      process.on('SIGINT', async () => {
-        console.log('Shutting down MCP server...');
-        await server.stop();
-        process.exit(0);
-      });
-      
-      process.on('SIGTERM', async () => {
-        console.log('Shutting down MCP server...');
-        await server.stop();
-        process.exit(0);
-      });
-    } catch (error) {
-      console.error('Failed to start MCP server:', error);
-      process.exit(1);
-    }
-  });
+    await server.start();
 
-program.parse(process.argv);
+    // Handle graceful shutdown
+    process.on("SIGINT", async () => {
+      console.log("Shutting down MCP server...");
+      await server.stop();
+      process.exit(0);
+    });
 
+    process.on("SIGTERM", async () => {
+      console.log("Shutting down MCP server...");
+      await server.stop();
+      process.exit(0);
+    });
+  } catch (error) {
+    console.error("Failed to start MCP server:", error);
+    process.exit(1);
+  }
+}
+
+main();
