@@ -1,0 +1,17 @@
+{
+  "name": "with-task-management",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "tsx index.ts"
+  },
+  "dependencies": {
+    "@voltagent/core": "workspace:*",
+    "@voltagent/anthropic-ai": "workspace:*"
+  },
+  "devDependencies": {
+    "tsx": "^4.7.0",
+    "typescript": "^5.0.4"
+  }
+}
+
