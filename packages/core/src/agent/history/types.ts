@@ -1,25 +1,52 @@
-import type { AgentStatus } from "../types";
-import type { UsageInfo } from "../providers/base/types";
+/**
+ * agent/history/types.ts
+ *
+ * Types for the agent history system
+ */
 
-export interface TimelineEvent {
-  id: string;
-  timestamp: Date | string;
-  name: string;
-  type: "memory" | "tool" | "agent" | "retriever";
-  data: Record<string, any>;
-  updatedAt?: Date | string;
-  affectedNodeId?: string;
-  agentState?: Record<string, any>;
+import { BaseMessage } from "../types";
+
+/**
+ * History entry type
+ */
+export enum HistoryEntryType {
+  MESSAGE = "message",
+  STATUS = "status",
+  USAGE = "usage",
+  CUSTOM = "custom",
 }
 
-export interface AgentHistoryEntry {
+/**
+ * History entry interface
+ */
+export interface HistoryEntry {
   id: string;
-  timestamp: Date | string;
-  status: AgentStatus;
-  input: any;
-  output?: any;
-  events?: TimelineEvent[];
-  steps?: any[]; // Could be more specific in the future
-  usage?: UsageInfo;
-  _sequenceNumber?: number; // Added for event ordering
+  type: HistoryEntryType;
+  timestamp: string;
+  data: any;
+}
+
+/**
+ * History options interface
+ */
+export interface HistoryOptions {
+  maxEntries?: number;
+}
+
+/**
+ * Agent status interface
+ */
+export interface AgentStatus {
+  status: string;
+  timestamp: string;
+}
+
+/**
+ * Usage info interface
+ */
+export interface UsageInfo {
+  promptTokens: number;
+  completionTokens: number;
+  totalTokens: number;
+  timestamp: string;
 }

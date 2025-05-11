@@ -5,7 +5,14 @@
  */
 
 import { EventEmitter } from "node:events";
-import { BaseMessage } from "../agent/types";
+
+/**
+ * Message interface for BaseMessage
+ */
+export interface BaseMessage {
+  content: string;
+  role: string;
+}
 
 /**
  * Status of an agent environment
