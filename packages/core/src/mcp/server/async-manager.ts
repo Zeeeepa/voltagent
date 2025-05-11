@@ -131,7 +131,7 @@ export class AsyncOperationManager {
       session: context.session,
     };
     this.operations.set(operationId, operation);
-    this.log(operationId, "info", "Operation added.");
+    this.log(operationId, "info", `Operation added.`);
 
     // Start execution in the background (don't await here)
     this._runOperation(operationId, operationFn, args).catch((err) => {
@@ -168,7 +168,7 @@ export class AsyncOperationManager {
     if (!operation) return; // Should not happen
 
     operation.status = "running";
-    this.log(operationId, "info", "Operation running.");
+    this.log(operationId, "info", `Operation running.`);
     this.emit("statusChanged", { operationId, status: "running" });
 
     try {
