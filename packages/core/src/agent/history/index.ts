@@ -1,8 +1,8 @@
 import { v4 as uuidv4 } from "uuid";
 import { AgentEventEmitter } from "../../events";
-import type { BaseMessage, StepWithContent, UsageInfo } from "../providers/base/types";
-import type { AgentStatus } from "../types";
-import { MemoryManager } from "../../memory";
+import { MemoryManager } from "../../memory/manager";
+import { BaseMessage } from "../types";
+import { HistoryEntry, HistoryEntryType, HistoryOptions, AgentStatus, UsageInfo } from "./types";
 
 /**
  * Step information for history
@@ -131,14 +131,12 @@ export class HistoryManager {
    * Create a new history manager
    *
    * @param maxEntries - Maximum number of history entries to keep (0 = unlimited)
-   * @param agentId - Agent ID for emitting events
-   * @param memoryManager - Memory manager instance to use
+   * @param agentId - ID of the agent this history belongs to
+   * @param memoryManager - Memory manager instance
    */
-  constructor(maxEntries = 0, agentId: string, memoryManager: MemoryManager) {
+  constructor(maxEntries: number, agentId: string, memoryManager: MemoryManager) {
     this.maxEntries = maxEntries;
     this.agentId = agentId;
-
-    // Use provided memory manager
     this.memoryManager = memoryManager;
   }
 
