@@ -1,0 +1,11 @@
+{
+  "name": "voltagent-module-disassembler-example",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Module Disassembler example using Codegen SDK",
+  "scripts": {
+    "start": "python module_disassembler.py",
+    "test": "python test_module_disassembler.py"
+  }
+}
+
