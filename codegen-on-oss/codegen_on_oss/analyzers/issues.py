@@ -6,7 +6,7 @@ import uuid
 from collections.abc import Callable
 from dataclasses import asdict, dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, cast
 
 # Configure logging
 logging.basicConfig(
@@ -137,7 +137,7 @@ class Issue:
         Returns:
             Dictionary representation of the issue
         """
-        result = {
+        result: dict[str, Any] = {
             "id": self.id,
             "message": self.message,
             "severity": self.severity,
@@ -155,12 +155,11 @@ class Issue:
             result["suggestion"] = self.suggestion
 
         if self.related_symbols:
-            result["related_symbols"] = self.related_symbols  # type: ignore
+            result["related_symbols"] = self.related_symbols
 
         if self.related_locations:
-            result["related_locations"] = [  # type: ignore
-                loc.to_dict() for loc in self.related_locations
-            ]
+            # Convert list of Location objects to list of dicts
+            result["related_locations"] = [loc.to_dict() for loc in self.related_locations]
 
         return result
 

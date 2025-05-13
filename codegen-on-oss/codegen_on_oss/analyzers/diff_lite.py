@@ -114,8 +114,9 @@ class DiffLite(NamedTuple):
         if git_diff.a_blob:
             old = git_diff.a_blob.data_stream.read()
 
-        # Ensure path is never None
-        path = Path(git_diff.a_path) if git_diff.a_path else Path("")
+        # Ensure path is never None by using an empty path as fallback
+        path_str = git_diff.a_path if git_diff.a_path else git_diff.b_path if git_diff.b_path else ""
+        path = Path(path_str)
 
         return cls(
             change_type=ChangeType.from_git_change_type(git_diff.change_type),
