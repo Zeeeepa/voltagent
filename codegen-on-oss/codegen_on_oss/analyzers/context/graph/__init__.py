@@ -65,14 +65,15 @@ def find_hubs(graph: nx.DiGraph, threshold: int = 5) -> list[Any]:
         # Count both incoming and outgoing connections
         in_degree = graph.in_degree(node)
         out_degree = graph.out_degree(node)
-        connection_count = in_degree + out_degree
+        # Convert DiDegreeView objects to integers
+        connection_count = int(in_degree) + int(out_degree)
 
         if connection_count >= threshold:
             hubs.append(node)
 
     # Sort by connection count in descending order
     hubs.sort(
-        key=lambda node: graph.in_degree(node) + graph.out_degree(node), reverse=True
+        key=lambda node: int(graph.in_degree(node)) + int(graph.out_degree(node)), reverse=True
     )
 
     return hubs
@@ -360,4 +361,3 @@ def get_graph_summary(graph: nx.DiGraph) -> dict[str, Any]:
         "isolated_nodes": len(find_isolated_nodes(graph)),
         "hubs": len(find_hubs(graph)),
     }
-
