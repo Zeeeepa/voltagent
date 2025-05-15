@@ -71,4 +71,3 @@ results = api.analyze_codebase()
 ## Migration
 
 See the [Migration Guide](consolidated/MIGRATION.md) for details on migrating from the original structure to the consolidated structure.
-

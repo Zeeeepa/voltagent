@@ -34,23 +34,23 @@ from codegen_on_oss.analyzers.consolidated import (
 
 ## Class and Function Mapping
 
-| Original | Consolidated |
-|----------|--------------|
-| `base_analyzer.BaseCodeAnalyzer` | `core.BaseCodeAnalyzer` |
-| `issues.Issue` | `core.Issue` |
-| `issues.IssueCategory` | `core.IssueCategory` |
-| `issues.IssueSeverity` | `core.IssueSeverity` |
-| `issues.IssueCollection` | `core.IssueCollection` |
-| `issues.create_issue` | `core.create_issue` |
-| `analysis_result.AnalysisResult` | `core.AnalysisResult` |
-| `codebase_analysis.*` | `analysis.*` |
-| `code_quality.CodeQualityAnalyzer` | `analysis.CodeQualityAnalyzer` |
-| `api.CodegenAnalyzerAPI` | `api.CodegenAnalyzerAPI` |
-| `api.create_api` | `api.create_api` |
-| `snapshot_manager.SnapshotManager` | `management.SnapshotManager` |
+| Original                                 | Consolidated                    |
+| ---------------------------------------- | ------------------------------- |
+| `base_analyzer.BaseCodeAnalyzer`         | `core.BaseCodeAnalyzer`         |
+| `issues.Issue`                           | `core.Issue`                    |
+| `issues.IssueCategory`                   | `core.IssueCategory`            |
+| `issues.IssueSeverity`                   | `core.IssueSeverity`            |
+| `issues.IssueCollection`                 | `core.IssueCollection`          |
+| `issues.create_issue`                    | `core.create_issue`             |
+| `analysis_result.AnalysisResult`         | `core.AnalysisResult`           |
+| `codebase_analysis.*`                    | `analysis.*`                    |
+| `code_quality.CodeQualityAnalyzer`       | `analysis.CodeQualityAnalyzer`  |
+| `api.CodegenAnalyzerAPI`                 | `api.CodegenAnalyzerAPI`        |
+| `api.create_api`                         | `api.create_api`                |
+| `snapshot_manager.SnapshotManager`       | `management.SnapshotManager`    |
 | `transaction_manager.TransactionManager` | `management.TransactionManager` |
-| `transactions.Transaction` | `management.Transaction` |
-| `visualization.visualizer.Visualizer` | `visualization.Visualizer` |
+| `transactions.Transaction`               | `management.Transaction`        |
+| `visualization.visualizer.Visualizer`    | `visualization.Visualizer`      |
 
 ## Backward Compatibility
 
@@ -70,4 +70,3 @@ The original files are still available in the parent directory for backward comp
 2. Replace any direct references to the original files with their consolidated equivalents
 3. Test your code to ensure it works with the consolidated structure
 4. Update any documentation or comments to reflect the new structure
-

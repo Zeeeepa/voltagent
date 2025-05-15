@@ -20,6 +20,14 @@ from codegen_on_oss.analyzers.consolidated.core import (
     create_issue,
 )
 
+# Import analysis components
+from codegen_on_oss.analyzers.consolidated.analysis import (
+    CodeQualityAnalyzer,
+    analyze_codebase_structure,
+    analyze_dependencies,
+    get_codebase_summary,
+)
+
 # Import visualization components
 from codegen_on_oss.analyzers.consolidated.visualization import (
     Visualizer,
@@ -39,8 +47,13 @@ __all__ = [
     "IssueStatus",
     "create_issue",
     
+    # Analysis
+    "CodeQualityAnalyzer",
+    "analyze_codebase_structure",
+    "analyze_dependencies",
+    "get_codebase_summary",
+    
     # Visualization
     "Visualizer",
     "create_visualizer",
 ]
-
