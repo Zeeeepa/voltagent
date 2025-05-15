@@ -1,24 +1,10 @@
-# WiseFlow Task Management Migration Guide
+# Task Management Migration Guide
 
-This guide provides instructions for migrating from the original or new task management implementations to the consolidated task management system.
+This guide helps you transition from the original or new task management implementations to the consolidated system.
 
 ## Overview
 
-WiseFlow previously had two parallel task management implementations:
-
-1. **Original Implementation (`run_task.py`)**:
-   - Feature-rich with comprehensive resource monitoring
-   - Advanced error handling and retry mechanisms
-   - Task dependencies and priorities
-   - Cross-source analysis capabilities
-
-2. **New Implementation (`run_task_new.py`)**:
-   - Modular, plugin-based architecture
-   - Cleaner code organization
-   - Better separation of concerns
-   - More maintainable and extensible design
-
-The consolidated task management system (`run_task_consolidated.py`) combines the best features of both implementations into a single, robust system with:
+The consolidated task management system combines the best features of both the original and new implementations, providing:
 
 - Modular, plugin-based architecture
 - Comprehensive resource monitoring and auto-shutdown
@@ -28,220 +14,268 @@ The consolidated task management system (`run_task_consolidated.py`) combines th
 - Better separation of concerns
 - Improved code maintainability and extensibility
 
-## Migration Steps
+## Migration from Original Task Management
 
-### 1. Update Imports
+If you're using the original task management system (`run_task.py`), follow these steps:
 
-Replace imports from the original or new task management implementations with imports from the consolidated system:
+### Step 1: Import the Consolidated System
 
-**Original Implementation:**
-```python
-from core.imports import (
-    TaskManager,
-    TaskStatus,
-    TaskPriority,
-    ThreadPoolManager,
-    ResourceMonitor
-)
+```typescript
+// Before
+import { runTask, registerTask } from '@voltagent/core/task/run-task';
+
+// After
+import { createConsolidatedTaskRunner } from '@voltagent/core/task/run-task-consolidated';
+
+const taskRunner = createConsolidatedTaskRunner();
 ```
 
-**New Implementation:**
-```python
-from core.task import AsyncTaskManager, Task, create_task_id
+### Step 2: Update Task Registration
+
+```typescript
+// Before
+registerTask('processData', async (data) => {
+  // Process data
+  return result;
+});
+
+// After
+taskRunner.registerTask(
+  'processData',
+  'Process Data Task',
+  async (data) => {
+    // Process data
+    return result;
+  },
+  {
+    priority: 'medium',
+    retries: 1
+  }
+);
 ```
 
-**Consolidated Implementation:**
-```python
-from core.consolidated import (
-    TaskManager,
-    Task,
-    TaskStatus,
-    TaskPriority,
-    ThreadPoolManager,
-    ResourceMonitor,
-    PluginManager,
-    TaskMonitor
-)
+### Step 3: Update Task Execution
+
+```typescript
+// Before
+const result = await runTask('processData', inputData);
+
+// After
+const result = await taskRunner.executeTask('processData', inputData);
 ```
 
-### 2. Update Task Registration
+### Step 4: Use Adapter for Gradual Migration
 
-#### Original Implementation:
+If you need to maintain backward compatibility during migration:
 
-```python
-task_id = task_manager.register_task(
-    name="Data Collection",
-    func=process_data,
-    args=(data,),
-    priority=TaskPriority.HIGH,
-    max_retries=2,
-    retry_delay=60.0
-)
+```typescript
+// Use the original API adapter
+const { originalAdapter } = createConsolidatedTaskRunner();
+
+// Register using original API
+originalAdapter.registerTask('processData', async (data) => {
+  // Process data
+  return result;
+});
+
+// Execute using original API
+const result = await originalAdapter.runTask('processData', inputData);
 ```
 
-#### New Implementation:
+## Migration from New Task Management
 
-```python
-task = Task(
-    task_id=create_task_id(),
-    focus_id=focus_id,
-    function=process_data,
-    args=(data,),
-    auto_shutdown=auto_shutdown
-)
+If you're using the new task management system (`run_task_new.py`), follow these steps:
 
-await task_manager.submit_task(task)
+### Step 1: Import the Consolidated System
+
+```typescript
+// Before
+import { executeTask, addTask } from '@voltagent/core/task/run-task-new';
+
+// After
+import { createConsolidatedTaskRunner } from '@voltagent/core/task/run-task-consolidated';
+
+const taskRunner = createConsolidatedTaskRunner();
 ```
 
-#### Consolidated Implementation:
+### Step 2: Update Task Registration
 
-```python
-task_id = task_manager.register_task(
-    name="Data Collection",
-    func=process_data,
-    data,
-    priority=TaskPriority.HIGH,
-    max_retries=2,
-    retry_delay=60.0,
-    focus_id=focus_id,
-    auto_shutdown=auto_shutdown,
-    description="Process data for analysis",
-    tags=["data_collection", focus_id]
-)
+```typescript
+// Before
+addTask('analyzeData', async (config) => {
+  // Analyze data
+  return analysis;
+}, {
+  priority: 2,
+  dependencies: ['fetchData']
+});
+
+// After
+taskRunner.registerTask(
+  'analyzeData',
+  'Analyze Data Task',
+  async (config) => {
+    // Analyze data
+    return analysis;
+  },
+  {
+    priority: 'high', // equivalent to 2 in the new system
+    dependencies: ['fetchData']
+  }
+);
 ```
 
-### 3. Update Task Execution
+### Step 3: Update Task Execution
 
-#### Original Implementation:
+```typescript
+// Before
+const analysis = await executeTask('analyzeData', config);
 
-```python
-execution_id = task_manager.execute_task(task_id, wait=False)
+// After
+const analysis = await taskRunner.executeTask('analyzeData', config);
 ```
 
-#### New Implementation:
+### Step 4: Use Adapter for Gradual Migration
 
-```python
-await task_manager.submit_task(task)
+If you need to maintain backward compatibility during migration:
+
+```typescript
+// Use the new API adapter
+const { newAdapter } = createConsolidatedTaskRunner();
+
+// Register using new API
+newAdapter.addTask('analyzeData', async (config) => {
+  // Analyze data
+  return analysis;
+}, {
+  priority: 2,
+  dependencies: ['fetchData']
+});
+
+// Execute using new API
+const analysis = await newAdapter.executeTask('analyzeData', config);
 ```
 
-#### Consolidated Implementation:
+## Advanced Features
 
-```python
-execution_id = await task_manager.execute_task(task_id, wait=False)
+The consolidated system offers several advanced features:
+
+### Resource Monitoring
+
+```typescript
+const taskRunner = createConsolidatedTaskRunner({
+  monitorResources: true
+});
+
+// Access the resource monitor
+const { taskManager } = taskRunner;
+const { resourceMonitor } = taskManager;
+
+// Set custom thresholds
+resourceMonitor.setWarningThreshold('memory', 75);
+resourceMonitor.setCriticalThreshold('memory', 90);
+
+// Register callbacks
+resourceMonitor.onWarningResource((resource, value) => {
+  console.warn(`Resource ${resource} at ${value}% (warning)`);
+});
 ```
 
-### 4. Update Task Status Checking
+### Thread Pool Management
 
-#### Original Implementation:
+```typescript
+const { taskManager } = taskRunner;
+const { threadPoolManager } = taskManager;
 
-```python
-status = task_manager.get_task_status(task_id)
+// Adjust pool size based on workload
+threadPoolManager.increasePoolSize(2);
 ```
 
-#### New Implementation:
+### Plugin System
 
-```python
-task = task_manager.get_task(task_id)
-status = task.status
+```typescript
+const { taskManager } = taskRunner;
+const { pluginManager } = taskManager;
+
+// Register a plugin
+pluginManager.registerPlugin({
+  id: 'metrics-plugin',
+  name: 'Metrics Plugin',
+  version: '1.0.0',
+  initialize: async () => {
+    // Set up metrics collection
+  },
+  shutdown: async () => {
+    // Clean up
+  },
+  recordMetric: (name, value) => {
+    // Record a metric
+  }
+}, {
+  autoInitialize: true
+});
+
+// Use the plugin
+const metricsPlugin = pluginManager.getPlugin('metrics-plugin');
+metricsPlugin.recordMetric('task_execution_time', 150);
 ```
 
-#### Consolidated Implementation:
+### Task Monitoring
 
-```python
-status = task_manager.get_task_status(task_id)
+```typescript
+const { taskManager } = taskRunner;
+const { taskMonitor } = taskManager;
+
+// Get task status
+const status = taskMonitor.getTaskStatus('processData');
+
+// Get task metrics
+const metrics = taskMonitor.getTaskMetrics('processData');
+console.log(`Task duration: ${metrics.duration}ms`);
+
+// Generate a report
+const report = taskMonitor.generateReport();
+console.log(`Total tasks: ${report.summary.total}`);
+console.log(`Completed tasks: ${report.summary.completed}`);
 ```
 
-### 5. Update Task Cancellation
+## Best Practices
 
-#### Original Implementation:
+1. **Use Descriptive Task IDs**: Choose clear, descriptive task IDs that indicate the purpose of the task.
 
-```python
-success = task_manager.cancel_task(task_id)
-```
+2. **Set Appropriate Priorities**: Use priorities to ensure critical tasks are executed first.
 
-#### New Implementation:
+3. **Define Dependencies**: Explicitly define task dependencies to ensure proper execution order.
 
-```python
-await task_manager.cancel_task(task_id)
-```
+4. **Handle Errors**: Implement proper error handling and use the retry mechanism for transient failures.
 
-#### Consolidated Implementation:
+5. **Monitor Resource Usage**: Use the resource monitoring capabilities to prevent system overload.
 
-```python
-success = await task_manager.cancel_task(task_id)
-```
+6. **Clean Up Resources**: Always call `shutdown()` when done to release resources.
 
-### 6. Update Resource Monitoring
+7. **Use Plugins for Extensions**: Extend functionality through plugins rather than modifying core components.
 
-#### Original Implementation:
+## Troubleshooting
 
-```python
-resource_monitor.add_callback(resource_alert)
-```
+### Task Not Executing
 
-#### New Implementation:
+- Check if the task is registered correctly
+- Verify that all dependencies are registered and completed successfully
+- Ensure the thread pool has available workers
 
-Not directly available
+### High Resource Usage
 
-#### Consolidated Implementation:
+- Reduce thread pool size
+- Increase monitoring frequency
+- Set lower thresholds for resource warnings
 
-```python
-resource_monitor.add_callback(resource_alert)
-```
+### Task Failures
 
-### 7. Update Plugin Management
-
-#### Original Implementation:
-
-Not directly available
-
-#### New Implementation:
-
-```python
-plugins = plugin_manager.load_all_plugins()
-plugin_manager.initialize_all_plugins(configs)
-connector = plugin_manager.get_plugin("web_connector")
-```
-
-#### Consolidated Implementation:
-
-```python
-plugins = plugin_manager.load_all_plugins()
-plugin_manager.initialize_all_plugins(configs)
-connector = plugin_manager.get_plugin("web_connector")
-```
-
-## Running the Consolidated Task Management System
-
-To use the consolidated task management system, run:
-
-```bash
-python -m core.run_task_consolidated
-```
-
-## Backward Compatibility
-
-The consolidated task management system maintains backward compatibility with both original and new implementations through adapter classes and compatible APIs. However, it's recommended to migrate to the new consolidated API for better performance, maintainability, and access to all features.
-
-## Common Migration Issues
-
-### 1. Task Status Enum Values
-
-The consolidated system uses a different `TaskStatus` enum. Make sure to update any code that checks task status values.
-
-### 2. Async vs. Sync Functions
-
-The consolidated system supports both synchronous and asynchronous functions. Make sure to use the appropriate execution method based on your function type.
-
-### 3. Plugin System
-
-If you've developed custom plugins for the new implementation, they should work with the consolidated system with minimal changes. Review the plugin interface documentation for any adjustments needed.
-
-### 4. Configuration Changes
-
-The consolidated system uses a unified configuration approach. Update your configuration files to use the new consolidated configuration format.
+- Check error messages in task monitor
+- Verify input data is correct
+- Increase retry count for transient failures
 
 ## Support
 
-If you encounter any issues during migration, please contact the WiseFlow development team for assistance.
+For additional help, please refer to the API documentation or contact the development team.
 
