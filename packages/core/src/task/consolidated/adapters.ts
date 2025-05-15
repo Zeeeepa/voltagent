@@ -1,4 +1,4 @@
-import { TaskManager, Task, TaskConfig, TaskPriority, TaskStatus } from './task-manager';
+import { TaskManager, Task, TaskConfig, TaskPriority } from './task-manager';
 
 /**
  * Interface for the original task runner
@@ -144,4 +144,3 @@ export class NewTaskRunnerAdapter implements NewTaskRunner {
     }
   }
 }
-
