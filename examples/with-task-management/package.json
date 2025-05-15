@@ -1,0 +1,20 @@
+{
+  "name": "with-task-management",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "ts-node src/index.ts",
+    "build": "tsc",
+    "dev": "ts-node-dev --respawn src/index.ts"
+  },
+  "dependencies": {
+    "@voltagent/core": "latest",
+    "@voltagent/anthropic-ai": "latest"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.1",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.0.4"
+  }
+}
+
