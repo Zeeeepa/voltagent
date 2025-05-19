@@ -1,192 +1,98 @@
-<div align="center">
-<a href="https://voltagent.dev/">
-<img width="1800" alt="435380213-b6253409-8741-462b-a346-834cd18565a9" src="https://github.com/user-attachments/assets/452a03e7-eeda-4394-9ee7-0ffbcf37245c" />
-</a>
+# CodebaseErrorCheck Prompt Engineering Template
 
-<br/>
-<br/>
+## Overview
 
-<div align="center">
-    <a href="https://voltagent.dev">Home Page</a> |
-    <a href="https://voltagent.dev/docs/">Documentation</a> |
-    <a href="https://github.com/voltagent/voltagent/tree/main/examples">Examples</a> |
-    <a href="https://s.voltagent.dev/discord">Discord</a> |
-    <a href="https://voltagent.dev/blog/">Blog</a>
-</div>
-</div>
-
-<br/>
-
-<div align="center">
-    <strong>VoltAgent is an open source TypeScript framework for building and orchestrating AI agents.</strong><br>
-Escape the limitations of no-code builders and the complexity of starting from scratch.
-    <br />
-    <br />
-</div>
-
-<div align="center">
-    
-[![npm version](https://img.shields.io/npm/v/@voltagent/core.svg)](https://www.npmjs.com/package/@voltagent/core)
-[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.0-4baaaa.svg)](CODE_OF_CONDUCT.md)
-[![Discord](https://img.shields.io/discord/1361559153780195478.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://s.voltagent.dev/discord)
-[![Twitter Follow](https://img.shields.io/twitter/follow/voltagent_dev?style=social)](https://twitter.com/voltagent_dev)
-    
-</div>
-
-<br/>
-
-<div align="center">
-<a href="https://voltagent.dev/">
-<img width="896" alt="flow" src="https://github.com/user-attachments/assets/f0627868-6153-4f63-ba7f-bdfcc5dd603d" />
-</a>
-
-</div>
-
-## What is VoltAgent?
-
-> An **AI Agent Framework** provides the foundational structure and tools needed to build applications powered by autonomous agents. These agents, often driven by Large Language Models (LLMs), can perceive their environment, make decisions, and take actions to achieve specific goals. Building such agents from scratch involves managing complex interactions with LLMs, handling state, connecting to external tools and data, and orchestrating workflows.
-
-[![VoltAgent Developer Console Demo](https://github.com/user-attachments/assets/0adbec33-1373-4cf4-b67d-825f7baf1cb4)](https://github.com/VoltAgent/voltagent/blob/main/CONSOLE.md)
-
-**VoltAgent** is an open-source TypeScript framework that acts as this essential toolkit. It simplifies the development of AI agent applications by providing modular building blocks, standardized patterns, and abstractions. Whether you're creating chatbots, virtual assistants, automated workflows, or complex multi-agent systems, VoltAgent handles the underlying complexity, allowing you to focus on defining your agents' capabilities and logic.
-
-Instead of building everything from scratch, VoltAgent provides ready-made, modular building blocks:
-
-- **Core Engine (`@voltagent/core`)**: The heart of VoltAgent, providing fundamental capabilities for your AI agents Define individual agents with specific roles, tools, and memory.
-- **Multi-Agent Systems**: Architect complex applications by coordinating multiple specialized agents using Supervisors.
-- **Extensible Packages**: Enhance functionality with packages like `@voltagent/voice` for voice interactions.
-- **Tooling & Integrations**: Equip agents with tools to connect to external APIs, databases, and services, enabling them to perform real-world tasks. **Supports the [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) for standardized tool interactions.**
-- **Data Retrieval & RAG**: Implement specialized retriever agents for efficient information fetching and **Retrieval-Augmented Generation (RAG)**.
-- **Memory**: Enable agents to remember past interactions for more natural and context-aware conversations.
-- **LLM Compatibility**: Works with popular AI models from OpenAI, Google, Anthropic, and more, allowing easy switching.
-- **Developer Ecosystem**: Includes helpers like `create-voltagent-app`, `@voltagent/cli`, and the visual [VoltAgent Console](https://console.voltagent.dev) for quick setup, monitoring, and debugging.
-
-In essence, VoltAgent helps developers build sophisticated AI applications faster and more reliably, avoiding repetitive setup and the limitations of simpler tools.
-
-## Why VoltAgent?
-
-Building AI applications often involves a trade-off:
-
-1.  **DIY Approach:** Using basic AI provider tools offers control but leads to complex, hard-to-manage code and repeated effort.
-2.  **No-Code Builders:** Simpler initially but often restrictive, limiting customization, provider choice, and complexity.
-
-VoltAgent provides a middle ground, offering structure and components without sacrificing flexibility:
-
-- **Build Faster:** Accelerate development with pre-built components compared to starting from scratch.
-- **Maintainable Code:** Encourages organization for easier updates and debugging.
-- **Scalability:** Start simple and easily scale to complex, multi-agent systems handling intricate workflows.
-- **Flexibility:** Full control over agent behavior, LLM choice, tool integrations, and UI connections.
-- **Avoid Lock-in:** Freedom to switch AI providers and models as needed.
-- **Cost Efficiency:** Features designed to optimize AI service usage and reduce redundant calls.
-- **Visual Monitoring:** Use the [VoltAgent Console](https://console.voltagent.dev) to track agent performance, inspect state, and debug visually.
-
-VoltAgent empowers developers to build their envisioned AI applications efficiently, from simple helpers to complex systems.
-
-## ⚡ Quick Start
-
-Create a new VoltAgent project in seconds using the `create-voltagent-app` CLI tool:
-
-```bash
-npm create voltagent-app@latest
-```
-
-This command guides you through setup.
-
-You'll see the starter code in `src/index.ts` to get you started with the VoltAgent framework.
-
-```typescript
-import { VoltAgent, Agent } from "@voltagent/core";
-import { VercelAIProvider } from "@voltagent/vercel-ai"; // Example provider
-import { openai } from "@ai-sdk/openai"; // Example model
-
-// Define a simple agent
-const agent = new Agent({
-  name: "my-agent",
-  instructions: "A helpful assistant that answers questions without using tools",
-  // Note: You can swap VercelAIProvider and openai with other supported providers/models
-  llm: new VercelAIProvider(),
-  model: openai("gpt-4o-mini"),
-});
-
-// Initialize VoltAgent with your agent(s)
-new VoltAgent({
-  agents: {
-    agent,
-  },
-});
-```
-
-Afterwards, navigate to your project and run:
-
-```bash
-npm run dev
-```
-
-When you run the dev command, tsx will compile and run your code. You should see the VoltAgent server startup message in your terminal:
-
-```
-══════════════════════════════════════════════════
-VOLTAGENT SERVER STARTED SUCCESSFULLY
-══════════════════════════════════════════════════
-✓ HTTP Server: http://localhost:3141
-
-Developer Console: https://console.voltagent.dev
-══════════════════════════════════════════════════
-```
-
-Your agent is now running! To interact with it:
-
-1. Open the Console: Click the [VoltAgent Console](https://console.voltagent.dev) link in your terminal output (or copy-paste it into your browser).
-2. Find Your Agent: On the VoltAgent Console page, you should see your agent listed (e.g., "my-agent").
-3. Open Agent Details: Click on your agent's name.
-4. Start Chatting: On the agent detail page, click the chat icon in the bottom right corner to open the chat window.
-5. Send a Message: Type a message like "Hello" and press Enter.
-
-[![VoltAgent Developer Console Demo](https://github.com/user-attachments/assets/0adbec33-1373-4cf4-b67d-825f7baf1cb4)](https://console.voltagent.dev/)
+The CodebaseErrorCheck Prompt Engineering Template is a comprehensive framework for systematic codebase error detection, analysis, and remediation. It helps identify bugs, security vulnerabilities, and performance issues across various technology stacks and project types.
 
 ## Key Features
 
-- **Agent Core:** Define agents with descriptions, LLM providers, tools, and memory management.
-- **Multi-Agent Systems:** Build complex workflows using Supervisor Agents coordinating multiple specialized Sub-Agents.
-- **Tool Usage & Lifecycle:** Equip agents with custom or pre-built tools (functions) with type-safety (Zod), lifecycle hooks, and cancellation support to interact with external systems.
-- **Flexible LLM Support:** Integrate seamlessly with various LLM providers (OpenAI, Anthropic, Google, etc.) and easily switch between models.
-- **Memory Management:** Enable agents to retain context across interactions using different configurable memory providers.
-- **Observability & Debugging:** Visually monitor agent states, interactions, logs, and performance via the [VoltAgent Console](https://console.voltagent.dev).
-- **Voice Interaction:** Build voice-enabled agents capable of speech recognition and synthesis using the `@voltagent/voice` package.
-- **Data Retrieval & RAG:** Integrate specialized retriever agents for efficient information fetching and **Retrieval-Augmented Generation (RAG)** from various sources.
-- **Model Context Protocol (MCP) Support:** Connect to external tool servers (HTTP/stdio) adhering to the [MCP standard](https://modelcontextprotocol.io/) for extended capabilities.
-- **Prompt Engineering Tools:** Leverage utilities like `createPrompt` for crafting and managing effective prompts for your agents.
-- **Framework Compatibility:** Designed for easy integration into existing Node.js applications and popular frameworks.
+- **Comprehensive Analysis Framework**: Covers static analysis, security vulnerability assessment, performance analysis, code quality assessment, and architecture review
+- **Detailed Remediation Planning**: Provides structured approach to fixing identified issues with code examples and verification steps
+- **Parallel Processing Strategy**: Enables efficient analysis through zone-based division and concurrent processing
+- **Technology Stack Adaptability**: Customizable for different programming languages and frameworks
+- **Integration with Development Workflows**: Seamlessly fits into existing Agile and DevOps processes
+- **Codegen Integration**: Designed to work with Codegen for automated analysis and remediation
 
-## Use Cases
+## Repository Structure
 
-VoltAgent is versatile and can power a wide range of AI-driven applications:
+- [`codebase_error_check_template.md`](codebase_error_check_template.md): The core template with all sections and placeholders
+- [`implementations/`](implementations/): Example implementations for different technology stacks
+  - [`nodejs_react_implementation.md`](implementations/nodejs_react_implementation.md): Implementation for Node.js and React applications
+  - [`python_django_implementation.md`](implementations/python_django_implementation.md): Implementation for Python and Django applications
+  - [`java_spring_implementation.md`](implementations/java_spring_implementation.md): Implementation for Java and Spring Boot applications
+- [`customization_guidelines.md`](customization_guidelines.md): Detailed guide for adapting the template to specific project types
+- [`codegen_integration.md`](codegen_integration.md): Instructions for using the template with Codegen
 
-- **Complex Workflow Automation:** Orchestrate multi-step processes involving various tools, APIs, and decision points using coordinated agents.
-- **Intelligent Data Pipelines:** Build agents that fetch, process, analyze, and transform data from diverse sources.
-- **AI-Powered Internal Tools & Dashboards:** Create interactive internal applications that leverage AI for analysis, reporting, or task automation, often integrated with UIs using hooks.
-- **Automated Customer Support Agents:** Develop sophisticated chatbots that can understand context (memory), use tools (e.g., check order status), and escalate complex issues.
-- **Repository Analysis & Codebase Automation:** Analyze code repositories, automate refactoring tasks, generate documentation, or manage CI/CD processes.
-- **Retrieval-Augmented Generation (RAG) Systems:** Build agents that retrieve relevant information from knowledge bases (using retriever agents) before generating informed responses.
-- **Voice-Controlled Interfaces & Applications:** Utilize the `@voltagent/voice` package to create applications that respond to and generate spoken language.
-- **Personalized User Experiences:** Develop agents that adapt responses and actions based on user history and preferences stored in memory.
-- **Real-time Monitoring & Alerting:** Design agents that continuously monitor data streams or systems and trigger actions or notifications based on defined conditions.
-- **And Virtually Anything Else...**: If you can imagine an AI agent doing it, VoltAgent can likely help you build it! ⚡
+## Getting Started
 
-## Learning VoltAgent
+1. **Select the appropriate template**: Choose the base template or a specific implementation based on your technology stack
+2. **Customize for your project**: Follow the customization guidelines to adapt the template to your specific needs
+3. **Set up Codegen integration**: Use the integration guide to configure Codegen for automated analysis
+4. **Create Linear issues**: Set up the main issue and sub-issues for parallel processing
+5. **Execute the analysis**: Run the analysis using Codegen and collect findings
+6. **Implement remediation**: Use the remediation planning framework to fix identified issues
 
-- **[Documentation](https://voltagent.dev/docs/)**: Dive into guides, concepts, and tutorials.
-- **[Examples](https://github.com/voltagent/voltagent/tree/main/examples)**: Explore practical implementations.
-- **[Blog](https://voltagent.dev/blog/)**: Read more about technical insights, and best practices.
+## Example Usage
 
-## Contribution
+### Basic Usage
 
-We welcome contributions! Please refer to the contribution guidelines (link needed if available). Join our [Discord](https://s.voltagent.dev/discord) server for questions and discussions.
+1. Create a new Linear issue with the title "CodebaseErrorCheck: [Your Project Name]"
+2. Copy the content from `codebase_error_check_template.md` into the issue description
+3. Replace all placeholders (text in [SQUARE_BRACKETS]) with your project-specific information
+4. Assign the issue to Codegen
+5. Follow Codegen's instructions for next steps
 
-## Community ♥️ Thanks
+### Advanced Usage with Parallel Processing
 
-Your stars help us reach more developers! If you find VoltAgent useful, please consider giving us a star on GitHub to support the project and help others discover it.
+1. Create the main issue as described above
+2. Instruct Codegen to create sub-issues for different analysis categories
+3. Configure each sub-issue with specific focus areas and methodologies
+4. Use the main issue for coordination and consolidation
+5. Follow the remediation planning process for identified issues
+
+## Customization
+
+The template can be customized based on:
+
+- **Technology Stack**: Adapt for different programming languages and frameworks
+- **Project Type**: Customize for monoliths, microservices, or serverless architectures
+- **Team Structure**: Adjust for different team sizes and expertise levels
+- **Organizational Requirements**: Incorporate specific compliance or security standards
+- **Analysis Depth**: Scale from lightweight reviews to comprehensive audits
+
+See [`customization_guidelines.md`](customization_guidelines.md) for detailed instructions.
+
+## Integration with Codegen
+
+The template is designed to work seamlessly with Codegen:
+
+- **Automated Analysis**: Leverage Codegen's code analysis capabilities
+- **Parallel Processing**: Distribute work across multiple Codegen agents
+- **Remediation Assistance**: Get help implementing fixes for identified issues
+- **Documentation Generation**: Automatically generate reports and documentation
+
+See [`codegen_integration.md`](codegen_integration.md) for detailed integration instructions.
+
+## Example Implementations
+
+The repository includes example implementations for common technology stacks:
+
+- **Node.js/React**: Web applications using JavaScript/TypeScript
+- **Python/Django**: Web applications using Python
+- **Java/Spring Boot**: Enterprise applications using Java
+
+Each implementation includes technology-specific analysis methodologies, patterns to identify, and example remediation approaches.
+
+## Contributing
+
+To contribute to this template:
+
+1. Fork the repository
+2. Create a new implementation for your technology stack
+3. Submit a pull request with your changes
+4. Ensure your implementation follows the established structure
 
 ## License
 
-Licensed under the MIT License, Copyright © 2025-present VoltAgent.
+This project is licensed under the MIT License - see the LICENSE file for details.
+
