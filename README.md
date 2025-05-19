@@ -8,13 +8,13 @@ The Feature Implementation Excellence Framework provides a structured approach t
 
 ## Repository Structure
 
-- [feature-implement-template.md](feature-implement-template.md) - The core template with all sections and guidelines
-- [customization-guide.md](customization-guide.md) - Guide for customizing the template for different project types
-- [integration-guide.md](integration-guide.md) - Guide for integrating the template with Codegen and development workflows
-- [examples/](examples/) - Example implementations for different technology stacks:
-  - [nodejs-react-example.md](examples/nodejs-react-example.md) - Example for Node.js/React stack
-  - [python-django-example.md](examples/python-django-example.md) - Example for Python/Django stack
-  - [java-spring-example.md](examples/java-spring-example.md) - Example for Java/Spring stack
+- [feature-implement-template.md](docs/feature-implement-template.md) - The core template with all sections and guidelines
+- [customization-guide.md](docs/customization-guide.md) - Guide for customizing the template for different project types
+- [integration-guide.md](docs/integration-guide.md) - Guide for integrating the template with Codegen and development workflows
+- Example implementations for different technology stacks:
+  - [nodejs-react-example.md](docs/nodejs-react-example.md) - Example for Node.js/React stack
+  - [python-django-example.md](docs/python-django-example.md) - Example for Python/Django stack
+  - [java-spring-example.md](docs/java-spring-example.md) - Example for Java/Spring stack
 
 ## Key Features
 
@@ -27,10 +27,10 @@ The Feature Implementation Excellence Framework provides a structured approach t
 
 ## How to Use
 
-1. Start with the [feature-implement-template.md](feature-implement-template.md) as your base template
-2. Customize the template for your specific project using the [customization-guide.md](customization-guide.md)
-3. Follow the [integration-guide.md](integration-guide.md) to integrate with Codegen and your development workflow
-4. Reference the examples in the [examples/](examples/) directory for inspiration
+1. Start with the [feature-implement-template.md](docs/feature-implement-template.md) as your base template
+2. Customize the template for your specific project using the [customization-guide.md](docs/customization-guide.md)
+3. Follow the [integration-guide.md](docs/integration-guide.md) to integrate with Codegen and your development workflow
+4. Reference the examples for inspiration
 
 ## Template Structure
 
@@ -61,4 +61,3 @@ Contributions to improve the template are welcome! Please feel free to submit pu
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
-
