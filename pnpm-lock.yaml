@@ -744,6 +744,28 @@ importers:
         specifier: ^5.8.2
         version: 5.8.2
 
+  examples/with-vector-retrieval:
+    dependencies:
+      '@ai-sdk/openai':
+        specifier: ^1.0.0
+        version: 1.3.10(zod@3.24.2)
+      '@voltagent/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      '@voltagent/vercel-ai':
+        specifier: workspace:*
+        version: link:../../packages/vercel-ai
+    devDependencies:
+      '@types/node':
+        specifier: ^18.15.11
+        version: 18.19.97
+      tsx:
+        specifier: ^4.7.0
+        version: 4.19.3
+      typescript:
+        specifier: ^5.0.4
+        version: 5.8.3
+
   examples/with-vercel-ai:
     dependencies:
       '@ai-sdk/openai':
@@ -6457,12 +6479,12 @@ packages:
     resolution: {integrity: sha512-OIAAu6ypnVZHmsHCeJ+7CCSub38QNBS9uceMQeg7K5Ur0Jr+wG9wEOEvvMbhp09pxD5czIUy/jND7s7Tb6Nw7A==}
     dependencies:
       undici-types: 5.26.5
+    dev: true
 
   /@types/node@18.19.97:
     resolution: {integrity: sha512-4r3Y9EuCJjWduiam85Fo4GBQtneaEuoaBSdiKo+o6qwQUh0JFVBe7cRUK6I6yVzA0S1gBJJfoQx4VtBH4e5ikg==}
     dependencies:
       undici-types: 5.26.5
-    dev: false
 
   /@types/node@20.17.30:
     resolution: {integrity: sha512-7zf4YyHA+jvBNfVrk2Gtvs6x7E8V+YDW05bNfG2XkWDJfYRXrTiP/DsB2zSYTaHX0bGIujTBQdMVAhb+j7mwpg==}
@@ -13129,7 +13151,7 @@ packages:
       zod:
         optional: true
     dependencies:
-      '@types/node': 18.19.87
+      '@types/node': 18.19.97
       '@types/node-fetch': 2.6.12
       abort-controller: 3.0.0
       agentkeepalive: 4.6.0
