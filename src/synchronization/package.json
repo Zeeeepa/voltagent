@@ -1,0 +1,52 @@
+{
+  "name": "@voltagent/synchronization",
+  "version": "1.0.0",
+  "description": "A comprehensive system for managing synchronization points between parallel workstreams",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "lint": "eslint src --ext .ts",
+    "docs": "typedoc --out docs src"
+  },
+  "keywords": [
+    "synchronization",
+    "parallel",
+    "workstream",
+    "barrier",
+    "semaphore",
+    "mutex",
+    "latch",
+    "data-exchange",
+    "conflict-resolution",
+    "deadlock-prevention",
+    "transaction",
+    "notification"
+  ],
+  "author": "Voltagent Team",
+  "license": "MIT",
+  "dependencies": {
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.0",
+    "@types/node": "^18.15.11",
+    "@types/uuid": "^9.0.1",
+    "@typescript-eslint/eslint-plugin": "^5.57.1",
+    "@typescript-eslint/parser": "^5.57.1",
+    "eslint": "^8.37.0",
+    "jest": "^29.5.0",
+    "ts-jest": "^29.1.0",
+    "typedoc": "^0.24.1",
+    "typescript": "^5.0.3"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/*.test.ts"
+    ]
+  }
+}
+
