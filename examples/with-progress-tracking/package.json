@@ -1,0 +1,25 @@
+{
+  "name": "with-progress-tracking",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts",
+    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "lint": "eslint \"src/**/*.ts*\"",
+    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
+  },
+  "dependencies": {
+    "@voltagent/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.6",
+    "eslint": "^8.56.0",
+    "eslint-config-custom": "workspace:*",
+    "tsconfig": "workspace:*",
+    "tsup": "^8.0.1",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3"
+  }
+}
+
