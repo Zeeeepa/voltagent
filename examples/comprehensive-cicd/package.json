@@ -1,0 +1,28 @@
+{
+  "name": "voltagent-comprehensive-cicd-example",
+  "version": "0.1.0",
+  "description": "Example application demonstrating VoltAgent's comprehensive CI/CD system with PostgreSQL task storage",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "docker:up": "docker-compose -f ../../docker/comprehensive-cicd/docker-compose.yml up -d",
+    "docker:down": "docker-compose -f ../../docker/comprehensive-cicd/docker-compose.yml down",
+    "docker:logs": "docker-compose -f ../../docker/comprehensive-cicd/docker-compose.yml logs -f",
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "dependencies": {
+    "@voltagent/core": "^0.1.14",
+    "@voltagent/task-storage": "^0.1.0",
+    "@voltagent/ci-cd-core": "^0.1.0",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "@types/node": "^18.15.11",
+    "tsx": "^4.7.1",
+    "typescript": "^5.0.4"
+  }
+}
+
