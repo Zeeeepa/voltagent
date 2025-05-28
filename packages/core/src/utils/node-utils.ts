@@ -1,14 +1,12 @@
 /**
- * Node types for agents, tools, and other components
+ * Node types for the VoltAgent system
  */
 export enum NodeType {
   AGENT = "agent",
-  SUBAGENT = "agent",
   TOOL = "tool",
   MEMORY = "memory",
-  MESSAGE = "message",
-  OUTPUT = "output",
   RETRIEVER = "retriever",
+  WEBHOOK = "webhook", // Add webhook node type
 }
 
 /**

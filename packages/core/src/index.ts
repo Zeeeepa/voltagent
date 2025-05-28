@@ -258,3 +258,6 @@ export default VoltAgent;
 if (typeof require !== "undefined" && typeof module !== "undefined" && require.main === module) {
   new VoltAgent({ agents: {}, autoStart: true, checkDependencies: true });
 }
+
+// Webhook Event System
+export * from "./webhooks";

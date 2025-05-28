@@ -29,6 +29,7 @@ import {
   type TextRequestSchema,
   type ObjectRequestSchema,
 } from "./api.routes";
+import { addWebhookRoutes } from "../webhooks";
 
 const app = new OpenAPIHono();
 
@@ -592,6 +593,9 @@ app.doc("/doc", {
 
 // Swagger UI endpoint
 app.get("/ui", swaggerUI({ url: "/doc" }));
+
+// Add webhook routes to the app
+addWebhookRoutes(app);
 
 export { app as default };
 
