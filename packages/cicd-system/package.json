@@ -1,0 +1,59 @@
+{
+  "name": "@voltagent/cicd-system",
+  "version": "1.0.0",
+  "description": "Complete CI/CD System Integration - Comprehensive AI-driven CI/CD pipeline merging all foundation components",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./nlp": "./src/nlp_engine/index.js",
+    "./database": "./src/database/index.js",
+    "./codegen": "./src/codegen_integration/index.js",
+    "./claude-code": "./src/claude_code_engine/index.js",
+    "./workflow": "./src/workflow_orchestration/index.js",
+    "./agentapi": "./src/agentapi_integration/index.js"
+  },
+  "scripts": {
+    "dev": "node src/index.js",
+    "test": "echo \"Tests not implemented yet\"",
+    "lint": "echo \"Linting not configured yet\"",
+    "build": "echo \"Build not required for this package\""
+  },
+  "keywords": [
+    "cicd",
+    "ai",
+    "automation",
+    "codegen",
+    "claude-code",
+    "nlp",
+    "workflow",
+    "orchestration",
+    "postgresql",
+    "wsl2",
+    "agentapi"
+  ],
+  "author": "Voltagent Team",
+  "license": "MIT",
+  "dependencies": {
+    "pg": "^8.11.0"
+  },
+  "peerDependencies": {
+    "@voltagent/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.10.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Zeeeepa/voltagent.git",
+    "directory": "packages/cicd-system"
+  },
+  "bugs": {
+    "url": "https://github.com/Zeeeepa/voltagent/issues"
+  },
+  "homepage": "https://github.com/Zeeeepa/voltagent/tree/main/packages/cicd-system#readme"
+}
+
