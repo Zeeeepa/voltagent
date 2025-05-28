@@ -13,6 +13,10 @@ export * from "./tool";
 export * from "./tool/reasoning/index";
 export * from "./memory";
 export * from "./agent/providers";
+
+// Export unified monitoring system
+export * from "./monitoring";
+
 export type {
   AgentOptions,
   AgentResponse,
