@@ -1,0 +1,39 @@
+{
+  "name": "voltagent-core-architecture-consolidation-example",
+  "version": "1.0.0",
+  "description": "Example demonstrating the unified VoltAgent core system architecture consolidation",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "npm run build && node dist/index.js",
+    "dev": "ts-node src/index.ts",
+    "clean": "rm -rf dist",
+    "lint": "eslint src/**/*.ts",
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": [
+    "voltagent",
+    "core-architecture",
+    "orchestration",
+    "consolidation",
+    "ai-agents",
+    "typescript"
+  ],
+  "author": "VoltAgent Team",
+  "license": "MIT",
+  "dependencies": {
+    "@voltagent/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "ts-node": "^10.9.0",
+    "eslint": "^8.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
+
