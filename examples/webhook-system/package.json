@@ -1,0 +1,31 @@
+{
+  "name": "webhook-system-example",
+  "version": "1.0.0",
+  "description": "Comprehensive webhook event system example for VoltAgent",
+  "main": "index.ts",
+  "scripts": {
+    "start": "tsx index.ts",
+    "dev": "tsx watch index.ts",
+    "build": "tsc",
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "keywords": [
+    "voltagent",
+    "webhook",
+    "github",
+    "automation",
+    "event-processing",
+    "routing",
+    "validation"
+  ],
+  "author": "VoltAgent Team",
+  "license": "MIT",
+  "dependencies": {
+    "@voltagent/core": "workspace:*"
+  },
+  "devDependencies": {
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0"
+  }
+}
+
