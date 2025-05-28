@@ -1,0 +1,59 @@
+# CI/CD API Server Dockerfile
+FROM node:18-alpine AS base
+
+# Install dependencies only when needed
+FROM base AS deps
+RUN apk add --no-cache libc6-compat curl
+WORKDIR /app
+
+# Copy package files
+COPY package.json pnpm-lock.yaml ./
+COPY packages/ci-cd-core/package.json ./packages/ci-cd-core/
+COPY packages/task-storage/package.json ./packages/task-storage/
+COPY packages/core/package.json ./packages/core/
+
+# Install dependencies
+RUN npm install -g pnpm
+RUN pnpm install --frozen-lockfile
+
+# Rebuild the source code only when needed
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+
+# Build the packages
+RUN npm install -g pnpm
+RUN pnpm build --filter=@voltagent/task-storage
+RUN pnpm build --filter=@voltagent/ci-cd-core
+
+# Production image, copy all the files and run the app
+FROM base AS runner
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 cicdapi
+RUN apk add --no-cache curl
+
+# Copy built applications
+COPY --from=builder /app/packages/ci-cd-core/dist ./dist
+COPY --from=builder /app/packages/ci-cd-core/package.json ./package.json
+
+# Copy node_modules
+COPY --from=deps /app/node_modules ./node_modules
+
+USER cicdapi
+
+EXPOSE 3001
+
+ENV PORT=3001
+ENV HOSTNAME="0.0.0.0"
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+  CMD curl -f http://localhost:3001/health || exit 1
+
+CMD ["node", "dist/index.js"]
+
