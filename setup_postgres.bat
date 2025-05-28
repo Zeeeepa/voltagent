@@ -42,6 +42,18 @@ if not "%CLOUDFLARE_WORKER_URL%"=="" (
     set CLOUDFLARE_WORKER_URL=https://neon-db.pixeliumperfecto.workers.dev
 )
 
+REM PostgreSQL admin credentials (optional)
+if not "%POSTGRES_ADMIN_USER%"=="" (
+    echo Using provided PostgreSQL admin user: %POSTGRES_ADMIN_USER%
+)
+
+if not "%POSTGRES_ADMIN_PASSWORD%"=="" (
+    echo Using provided PostgreSQL admin password
+) else (
+    echo.
+    echo NOTE: If PostgreSQL connection fails, you'll be prompted for admin credentials
+)
+
 echo.
 echo Starting Postgres setup...
 echo.
@@ -54,4 +66,3 @@ echo Setup completed! Check the output above for any errors.
 echo Your database credentials are saved in .env file
 echo.
 pause
-

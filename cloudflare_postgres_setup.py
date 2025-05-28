@@ -32,6 +32,10 @@ class CloudflarePostgresSetup:
         self.local_user = "codegen_user"
         self.local_password = self._generate_password()
         
+        # PostgreSQL admin credentials (for setup)
+        self.admin_user = os.getenv('POSTGRES_ADMIN_USER', 'postgres')
+        self.admin_password = os.getenv('POSTGRES_ADMIN_PASSWORD')
+        
         # Headers for Cloudflare API
         self.headers = {
             'Authorization': f'Bearer {self.cf_api_token}',
@@ -39,7 +43,7 @@ class CloudflarePostgresSetup:
         }
         
         self.env_file = Path('.env')
-        
+    
     def _generate_password(self) -> str:
         """Generate a secure password for the database user"""
         return str(uuid.uuid4()).replace('-', '')[:16]
@@ -53,21 +57,66 @@ class CloudflarePostgresSetup:
     
     def check_postgres_running(self) -> bool:
         """Check if PostgreSQL is running locally"""
+        # Try different authentication methods
+        auth_methods = [
+            # Method 1: Use provided admin password
+            {'user': self.admin_user, 'password': self.admin_password} if self.admin_password else None,
+            # Method 2: Try common default passwords
+            {'user': 'postgres', 'password': 'postgres'},
+            {'user': 'postgres', 'password': 'admin'},
+            {'user': 'postgres', 'password': ''},
+            # Method 3: Try Windows authentication
+            {'user': os.getenv('USERNAME', 'postgres'), 'password': ''},
+        ]
+        
+        # Filter out None values
+        auth_methods = [method for method in auth_methods if method is not None]
+        
+        for i, auth in enumerate(auth_methods):
+            try:
+                print(f"🔐 Trying authentication method {i+1}...")
+                conn = psycopg2.connect(
+                    host=self.local_host,
+                    port=self.local_port,
+                    database="postgres",
+                    user=auth['user'],
+                    password=auth['password']
+                )
+                conn.close()
+                print(f"✅ PostgreSQL server is running (authenticated as {auth['user']})")
+                # Store successful credentials for later use
+                self.admin_user = auth['user']
+                self.admin_password = auth['password']
+                return True
+            except Exception as e:
+                print(f"   ❌ Method {i+1} failed: {str(e)[:100]}...")
+                continue
+        
+        # If all methods fail, prompt for password
+        print("\n🔑 All automatic authentication methods failed.")
+        print("Please provide your PostgreSQL admin credentials:")
+        
         try:
-            # Try to connect to default postgres database
+            import getpass
+            self.admin_user = input(f"PostgreSQL admin username (default: postgres): ").strip() or 'postgres'
+            self.admin_password = getpass.getpass("PostgreSQL admin password: ")
+            
+            # Test the provided credentials
             conn = psycopg2.connect(
                 host=self.local_host,
                 port=self.local_port,
                 database="postgres",
-                user="postgres",
-                password="postgres"  # Default password, might need adjustment
+                user=self.admin_user,
+                password=self.admin_password
             )
             conn.close()
-            print("✅ PostgreSQL server is running")
+            print(f"✅ PostgreSQL server is running (authenticated as {self.admin_user})")
             return True
+            
         except Exception as e:
             print(f"❌ PostgreSQL server not accessible: {e}")
             print(f"💡 Make sure PostgreSQL is running at {self.local_host}:{self.local_port}")
+            print("💡 Check your username and password")
             return False
     
     def setup_database_and_user(self) -> bool:
@@ -78,8 +127,8 @@ class CloudflarePostgresSetup:
                 host=self.local_host,
                 port=self.local_port,
                 database="postgres",
-                user="postgres",
-                password="postgres"  # You might need to adjust this
+                user=self.admin_user,
+                password=self.admin_password
             )
             conn.autocommit = True
             cur = conn.cursor()
@@ -100,6 +149,9 @@ class CloudflarePostgresSetup:
                     sql.Identifier(self.local_user)), (self.local_password,))
             else:
                 print(f"✅ User {self.local_user} already exists")
+                # Update password in case it changed
+                cur.execute(sql.SQL("ALTER USER {} WITH PASSWORD %s").format(
+                    sql.Identifier(self.local_user)), (self.local_password,))
             
             # Grant permissions (READ-ONLY for Codegen safety)
             cur.execute(sql.SQL("GRANT CONNECT ON DATABASE {} TO {}").format(
@@ -112,8 +164,8 @@ class CloudflarePostgresSetup:
                 host=self.local_host,
                 port=self.local_port,
                 database=self.local_db,
-                user="postgres",
-                password="postgres"
+                user=self.admin_user,
+                password=self.admin_password
             )
             conn.autocommit = True
             cur = conn.cursor()
@@ -387,7 +439,7 @@ CODEGEN_DB_PASSWORD={self.local_password}
                 return False
             
             # Wait a moment for deployment
-            print("⏳ Waiting for worker deployment...")
+            print("��� Waiting for worker deployment...")
             time.sleep(3)
         
         # Step 4: Test worker
@@ -428,4 +480,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

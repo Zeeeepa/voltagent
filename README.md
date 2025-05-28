@@ -20,6 +20,10 @@ CLOUDFLARE_API_TOKEN=eae82cf159577a8838cc83612104c09c5a0d6
 CLOUDFLARE_ACCOUNT_ID=2b2a1d3effa7f7fe4fe2a8c4e48681e3
 CLOUDFLARE_WORKER_NAME=neon-db
 CLOUDFLARE_WORKER_URL=https://neon-db.pixeliumperfecto.workers.dev
+
+# Optional: PostgreSQL admin credentials (if not using defaults)
+POSTGRES_ADMIN_USER=postgres
+POSTGRES_ADMIN_PASSWORD=your_postgres_password
 ```
 
 ### Installation & Setup
@@ -164,6 +168,23 @@ net start postgresql-x64-17
 - Check Windows Firewall settings
 - Ensure `pg_hba.conf` allows local connections
 
+### Authentication Issues
+The script tries multiple authentication methods automatically:
+1. Environment variable `POSTGRES_ADMIN_PASSWORD`
+2. Common default passwords (`postgres`, `admin`, empty)
+3. Windows username authentication
+4. Interactive prompt for credentials
+
+**If authentication fails:**
+- Set environment variables before running:
+  ```cmd
+  set POSTGRES_ADMIN_USER=postgres
+  set POSTGRES_ADMIN_PASSWORD=your_actual_password
+  setup_postgres.bat
+  ```
+- Or run the script and enter credentials when prompted
+- Check your PostgreSQL installation's default user/password
+
 ### Cloudflare Worker Issues
 - Verify API token has Workers:Edit permissions
 - Check account ID is correct
@@ -213,4 +234,3 @@ If you encounter issues:
   - VPN access
   - More restrictive database permissions
   - Regular credential rotation
-

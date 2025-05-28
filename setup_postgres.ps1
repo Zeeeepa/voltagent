@@ -38,6 +38,18 @@ if (-not $env:CLOUDFLARE_WORKER_URL) {
     Write-Host "Using default Worker URL" -ForegroundColor Yellow
 }
 
+# PostgreSQL admin credentials (optional)
+if ($env:POSTGRES_ADMIN_USER) {
+    Write-Host "Using provided PostgreSQL admin user: $env:POSTGRES_ADMIN_USER" -ForegroundColor Green
+}
+
+if ($env:POSTGRES_ADMIN_PASSWORD) {
+    Write-Host "Using provided PostgreSQL admin password" -ForegroundColor Green
+} else {
+    Write-Host ""
+    Write-Host "NOTE: If PostgreSQL connection fails, you'll be prompted for admin credentials" -ForegroundColor Yellow
+}
+
 Write-Host ""
 Write-Host "Installing required Python packages..." -ForegroundColor Blue
 try {
@@ -67,4 +79,3 @@ Write-Host ""
 Write-Host "You can now run 'python test_connection.py' to verify the setup" -ForegroundColor Cyan
 Write-Host ""
 Read-Host "Press Enter to exit"
-
