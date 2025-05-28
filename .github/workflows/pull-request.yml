@@ -56,7 +56,11 @@ jobs:
         run: pnpm attw:all
       - name: Test
         run: pnpm test:all --skip-nx-cache
-
+      - name: Test Consolidated Framework
+        run: |
+          pnpm test:unit
+          pnpm test:integration
+          pnpm test:e2e
   tsdoc-check:
     runs-on: ubuntu-latest
     name: Check TSDoc Links
@@ -67,4 +71,4 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
       - name: Check TSDoc Links
-        run: npx tsdoc-link-check --patterns packages/** 
+        run: npx tsdoc-link-check --patterns packages/**

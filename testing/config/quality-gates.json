@@ -1,0 +1,54 @@
+{
+  "coverage": {
+    "global": {
+      "branches": 80,
+      "functions": 80,
+      "lines": 80,
+      "statements": 80
+    },
+    "perFile": {
+      "branches": 70,
+      "functions": 70,
+      "lines": 70,
+      "statements": 70
+    }
+  },
+  "performance": {
+    "unit": {
+      "maxDuration": 5000,
+      "timeoutPerTest": 10000
+    },
+    "integration": {
+      "maxDuration": 30000,
+      "timeoutPerTest": 60000
+    },
+    "e2e": {
+      "maxDuration": 120000,
+      "timeoutPerTest": 120000
+    }
+  },
+  "quality": {
+    "maxFailures": 0,
+    "requiredPassRate": 100,
+    "allowSkippedTests": false
+  },
+  "validation": {
+    "requireDescriptions": true,
+    "requireAssertions": true,
+    "maxTestComplexity": 10,
+    "maxNestedDescribes": 3
+  },
+  "reporting": {
+    "formats": ["text", "lcov", "html", "json"],
+    "outputDirectory": "testing/reports",
+    "includeUncoveredFiles": true,
+    "collectCoverageFrom": [
+      "packages/*/src/**/*.ts",
+      "!packages/*/src/**/*.d.ts",
+      "!packages/*/src/**/index.ts",
+      "!packages/*/src/**/*.spec.ts",
+      "!packages/*/src/**/*.test.ts"
+    ]
+  }
+}
+
