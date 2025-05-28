@@ -599,7 +599,31 @@ export { app as default };
 export const createWebSocketServer = () => {
   const wss = new WebSocketServer({ noServer: true });
 
-  // Subscribe to history updates
+  // Initialize unified status synchronization system
+  let statusSyncIntegration: any = null;
+  
+  const initializeStatusSync = async () => {
+    try {
+      const { getBroadcaster, getStatusSync } = await import("../status");
+      statusSyncIntegration = {
+        broadcaster: getBroadcaster(),
+        coordinator: getStatusSync(),
+      };
+      
+      // Subscribe to unified status updates
+      statusSyncIntegration.coordinator.onAnyStatusChange((event: any) => {
+        statusSyncIntegration.broadcaster.broadcastStatusChange(event);
+      });
+      
+      console.log("[WebSocketServer] Integrated with unified status synchronization system");
+    } catch (error) {
+      console.warn("[WebSocketServer] Failed to integrate with status sync system, using legacy events:", error);
+    }
+  };
+  
+  initializeStatusSync();
+
+  // Subscribe to legacy history updates for backward compatibility
   AgentEventEmitter.getInstance().onHistoryUpdate((agentId, historyEntry) => {
     const connections = agentConnections.get(agentId);
     if (!connections) return;
@@ -687,7 +711,15 @@ export const createWebSocketServer = () => {
       return;
     }
 
-    // Add connection to the agent's connection set
+    // Generate unique connection ID
+    const connectionId = `ws_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+    // Add connection to unified broadcaster if available
+    if (statusSyncIntegration?.broadcaster) {
+      statusSyncIntegration.broadcaster.addWebSocketConnection(connectionId, ws, agentId);
+    }
+
+    // Add connection to legacy system for backward compatibility
     if (!agentConnections.has(agentId)) {
       agentConnections.set(agentId, new Set());
     }
@@ -727,7 +759,12 @@ export const createWebSocketServer = () => {
     }
 
     ws.on("close", () => {
-      // Remove connection from the agent's connection set
+      // Remove connection from unified broadcaster
+      if (statusSyncIntegration?.broadcaster) {
+        statusSyncIntegration.broadcaster.removeConnection(connectionId);
+      }
+      
+      // Remove connection from legacy system
       agentConnections.get(agentId)?.delete(ws);
       if (agentConnections.get(agentId)?.size === 0) {
         agentConnections.delete(agentId);
@@ -736,6 +773,11 @@ export const createWebSocketServer = () => {
 
     ws.on("error", (error) => {
       console.error("[WebSocket] Error:", error);
+      
+      // Remove connection from unified broadcaster on error
+      if (statusSyncIntegration?.broadcaster) {
+        statusSyncIntegration.broadcaster.removeConnection(connectionId);
+      }
     });
   });
 

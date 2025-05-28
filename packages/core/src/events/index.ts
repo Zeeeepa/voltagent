@@ -62,13 +62,36 @@ export interface AgentEvents {
 
 /**
  * Singleton class for managing agent events
+ * 
+ * @deprecated This class is being consolidated into the unified status synchronization system.
+ * Use StatusSynchronizationCoordinator from '../status' for new implementations.
  */
 export class AgentEventEmitter extends EventEmitter {
   private static instance: AgentEventEmitter | null = null;
   private trackedEvents: Map<string, TimelineEvent> = new Map();
+  private statusSyncIntegration: any = null;
 
   private constructor() {
     super();
+    this.initializeStatusSyncIntegration();
+  }
+
+  /**
+   * Initialize integration with unified status synchronization system
+   */
+  private async initializeStatusSyncIntegration(): Promise<void> {
+    try {
+      // Dynamically import to avoid circular dependencies
+      const { getStatusSync, getBroadcaster } = await import("../status");
+      this.statusSyncIntegration = {
+        coordinator: getStatusSync(),
+        broadcaster: getBroadcaster(),
+      };
+      
+      console.log("[AgentEventEmitter] Integrated with unified status synchronization system");
+    } catch (error) {
+      console.warn("[AgentEventEmitter] Failed to integrate with status sync system:", error);
+    }
   }
 
   /**
@@ -101,6 +124,49 @@ export class AgentEventEmitter extends EventEmitter {
     type: "memory" | "tool" | "agent" | "retriever";
   }): Promise<AgentHistoryEntry | undefined> {
     // For backward compatibility: use name if eventName is not provided
+    const { agentId, historyId, status, additionalData, type, eventName } = params;
+
+    // Delegate status updates to unified status synchronization system if available
+    if (this.statusSyncIntegration && status) {
+      try {
+        await this.statusSyncIntegration.coordinator.updateStatus({
+          agentId,
+          historyId,
+          status,
+          metadata: additionalData,
+          source: "agent",
+          eventName,
+          eventType: type,
+          additionalData,
+        });
+        
+        // Get the updated history entry
+        const agent = AgentRegistry.getInstance().getAgent(agentId);
+        if (agent) {
+          const history = await agent.getHistory();
+          return history.find((entry) => entry.id === historyId);
+        }
+      } catch (error) {
+        console.warn("[AgentEventEmitter] Failed to use unified status sync, falling back to legacy method:", error);
+      }
+    }
+
+    // Legacy implementation for backward compatibility
+    return this.addHistoryEventLegacy(params);
+  }
+
+  /**
+   * Legacy implementation of addHistoryEvent
+   * @deprecated Use unified status synchronization system instead
+   */
+  private async addHistoryEventLegacy(params: {
+    agentId: string;
+    historyId: string;
+    eventName: string;
+    status?: AgentStatus;
+    additionalData: Record<string, any>;
+    type: "memory" | "tool" | "agent" | "retriever";
+  }): Promise<AgentHistoryEntry | undefined> {
     const { agentId, historyId, status, additionalData, type, eventName } = params;
 
     // Get agent from registry
