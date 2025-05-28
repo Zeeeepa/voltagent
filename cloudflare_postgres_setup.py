@@ -19,7 +19,8 @@ import uuid
 class CloudflarePostgresSetup:
     def __init__(self):
         # Cloudflare credentials from environment
-        self.cf_api_token = os.getenv('CLOUDFLARE_API_TOKEN', 'eae82cf159577a8838cc83612104c09c5a0d6')
+        self.cf_api_key = os.getenv('CLOUDFLARE_GLOBAL_API_KEY', 'eae82cf159577a8838cc83612104c09c5a0d6')
+        self.cf_email = os.getenv('CLOUDFLARE_EMAIL', 'your-email@example.com')  # You'll need to provide this
         self.cf_account_id = os.getenv('CLOUDFLARE_ACCOUNT_ID', '2b2a1d3effa7f7fe4fe2a8c4e48681e3')
         self.cf_worker_name = os.getenv('CLOUDFLARE_WORKER_NAME', 'neon-db')
         self.cf_worker_url = os.getenv('CLOUDFLARE_WORKER_URL', 'https://neon-db.pixeliumperfecto.workers.dev')
@@ -36,9 +37,10 @@ class CloudflarePostgresSetup:
         self.admin_user = os.getenv('POSTGRES_ADMIN_USER', 'postgres')
         self.admin_password = os.getenv('POSTGRES_ADMIN_PASSWORD')
         
-        # Headers for Cloudflare API
+        # Headers for Cloudflare API (Global API Key format)
         self.headers = {
-            'Authorization': f'Bearer {self.cf_api_token}',
+            'X-Auth-Key': self.cf_api_key,
+            'X-Auth-Email': self.cf_email,
             'Content-Type': 'application/json'
         }
         
@@ -277,7 +279,7 @@ export default {{
                 'worker.js': (None, worker_script, 'application/javascript+module')
             }
             
-            headers = {'Authorization': f'Bearer {self.cf_api_token}'}
+            headers = {'X-Auth-Key': self.cf_api_key, 'X-Auth-Email': self.cf_email}
             response = requests.put(url, headers=headers, files=files)
             
             if response.status_code in [200, 201]:
@@ -328,7 +330,8 @@ POSTGRES_SSL_MODE=prefer
 DATABASE_URL=postgresql://{self.local_user}:{self.local_password}@{self.local_host}:{self.local_port}/{self.local_db}?sslmode=prefer
 
 # Cloudflare Configuration
-CLOUDFLARE_API_TOKEN={self.cf_api_token}
+CLOUDFLARE_GLOBAL_API_KEY={self.cf_api_key}
+CLOUDFLARE_EMAIL={self.cf_email}
 CLOUDFLARE_ACCOUNT_ID={self.cf_account_id}
 CLOUDFLARE_WORKER_NAME={self.cf_worker_name}
 CLOUDFLARE_WORKER_URL={self.cf_worker_url}
@@ -378,7 +381,7 @@ CODEGEN_DB_PASSWORD={self.local_password}
             print(f"   Status: ❌ CONNECTION FAILED - {e}")
         
         # Cloudflare Status
-        print(f"\n☁️ CLOUDFLARE STATUS:")
+        print(f"\n���️ CLOUDFLARE STATUS:")
         print(f"   Worker Name: {self.cf_worker_name}")
         print(f"   Worker URL: {self.cf_worker_url}")
         print(f"   Account ID: {self.cf_account_id}")

@@ -18,10 +18,18 @@ echo Installing required Python packages...
 pip install -r requirements.txt
 
 REM Set environment variables if provided
-if not "%CLOUDFLARE_API_TOKEN%"=="" (
-    echo Using provided Cloudflare API Token
+if not "%CLOUDFLARE_GLOBAL_API_KEY%"=="" (
+    echo Using provided Cloudflare Global API Key
 ) else (
-    set CLOUDFLARE_API_TOKEN=eae82cf159577a8838cc83612104c09c5a0d6
+    set CLOUDFLARE_GLOBAL_API_KEY=eae82cf159577a8838cc83612104c09c5a0d6
+)
+
+if not "%CLOUDFLARE_EMAIL%"=="" (
+    echo Using provided Cloudflare Email: %CLOUDFLARE_EMAIL%
+) else (
+    echo.
+    echo WARNING: CLOUDFLARE_EMAIL not set - you may need to provide it
+    echo Set it with: set CLOUDFLARE_EMAIL=your-email@example.com
 )
 
 if not "%CLOUDFLARE_ACCOUNT_ID%"=="" (
