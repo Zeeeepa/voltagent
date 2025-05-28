@@ -1,0 +1,44 @@
+# Dockerfile for Codegen Integration Service
+FROM node:18-alpine
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies
+RUN apk add --no-cache \
+    curl \
+    git \
+    python3 \
+    make \
+    g++ \
+    && rm -rf /var/cache/apk/*
+
+# Copy package files
+COPY package*.json ./
+COPY pnpm-lock.yaml ./
+
+# Install pnpm
+RUN npm install -g pnpm
+
+# Install dependencies
+RUN pnpm install --frozen-lockfile --production
+
+# Copy source code
+COPY src/comprehensive_cicd ./src/comprehensive_cicd
+
+# Create logs directory
+RUN mkdir -p logs
+
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nodejs -u 1001
+
+# Change ownership of app directory
+RUN chown -R nodejs:nodejs /app
+
+# Switch to non-root user
+USER nodejs
+
+# Start the codegen integration service
+CMD ["node", "-e", "const CodegenIntegration = require('./src/comprehensive_cicd/services/codegen-integration'); const service = new CodegenIntegration(); service.initialize().then(() => console.log('Codegen Integration Service started')).catch(console.error);"]
+
