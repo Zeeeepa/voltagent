@@ -13,6 +13,7 @@ export * from "./tool";
 export * from "./tool/reasoning/index";
 export * from "./memory";
 export * from "./agent/providers";
+export * from "./task"; // Export task management system
 export type {
   AgentOptions,
   AgentResponse,
