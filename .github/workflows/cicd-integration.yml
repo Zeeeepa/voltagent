@@ -1,0 +1,413 @@
+name: CI/CD Integration Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'packages/cicd-integration/**'
+      - '.github/workflows/cicd-integration.yml'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'packages/cicd-integration/**'
+      - '.github/workflows/cicd-integration.yml'
+
+env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '9'
+
+jobs:
+  # Lint and format check
+  lint:
+    runs-on: ubuntu-latest
+    name: Lint & Format Check
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: pnpm/action-setup@v3
+        with:
+          version: ${{ env.PNPM_VERSION }}
+          
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+          
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+        
+      - name: Lint CI/CD Integration
+        run: pnpm --filter @voltagent/cicd-integration lint
+        
+      - name: Check TypeScript
+        run: pnpm --filter @voltagent/cicd-integration build
+
+  # Unit tests
+  test:
+    runs-on: ubuntu-latest
+    name: Unit Tests
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_USER: test_user
+          POSTGRES_DB: test_cicd
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+          
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: pnpm/action-setup@v3
+        with:
+          version: ${{ env.PNPM_VERSION }}
+          
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+          
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+        
+      - name: Build Dependencies
+        run: pnpm build:all
+        
+      - name: Run Tests
+        run: pnpm --filter @voltagent/cicd-integration test
+        env:
+          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/test_cicd
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY_TEST }}
+          
+      - name: Upload Coverage
+        uses: codecov/codecov-action@v3
+        with:
+          file: packages/cicd-integration/coverage/lcov.info
+          flags: cicd-integration
+
+  # Integration tests
+  integration-test:
+    runs-on: ubuntu-latest
+    name: Integration Tests
+    if: github.event_name == 'pull_request'
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: integration_password
+          POSTGRES_USER: integration_user
+          POSTGRES_DB: integration_cicd
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+          
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: pnpm/action-setup@v3
+        with:
+          version: ${{ env.PNPM_VERSION }}
+          
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+          
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+        
+      - name: Build All Packages
+        run: pnpm build:all
+        
+      - name: Run Integration Tests
+        run: |
+          cd packages/cicd-integration
+          npm run test:integration
+        env:
+          DATABASE_URL: postgresql://integration_user:integration_password@localhost:5432/integration_cicd
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY_TEST }}
+          
+      - name: Test Example Usage
+        run: |
+          cd packages/cicd-integration
+          npm run test:examples
+        env:
+          DATABASE_URL: postgresql://integration_user:integration_password@localhost:5432/integration_cicd
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY_TEST }}
+
+  # Security scan
+  security:
+    runs-on: ubuntu-latest
+    name: Security Scan
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: pnpm/action-setup@v3
+        with:
+          version: ${{ env.PNPM_VERSION }}
+          
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+          
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+        
+      - name: Run Security Audit
+        run: pnpm audit --audit-level moderate
+        
+      - name: Run SAST Scan
+        uses: github/super-linter@v4
+        env:
+          DEFAULT_BRANCH: main
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VALIDATE_TYPESCRIPT_ES: true
+          VALIDATE_TYPESCRIPT_STANDARD: true
+          VALIDATE_JSON: true
+          VALIDATE_YAML: true
+
+  # Performance tests
+  performance:
+    runs-on: ubuntu-latest
+    name: Performance Tests
+    if: github.event_name == 'pull_request'
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: perf_password
+          POSTGRES_USER: perf_user
+          POSTGRES_DB: perf_cicd
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+          
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: pnpm/action-setup@v3
+        with:
+          version: ${{ env.PNPM_VERSION }}
+          
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+          
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+        
+      - name: Build All Packages
+        run: pnpm build:all
+        
+      - name: Run Performance Tests
+        run: |
+          cd packages/cicd-integration
+          npm run test:performance
+        env:
+          DATABASE_URL: postgresql://perf_user:perf_password@localhost:5432/perf_cicd
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY_TEST }}
+          
+      - name: Upload Performance Results
+        uses: actions/upload-artifact@v3
+        with:
+          name: performance-results
+          path: packages/cicd-integration/performance-results.json
+
+  # Build and package
+  build:
+    runs-on: ubuntu-latest
+    name: Build & Package
+    needs: [lint, test]
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: pnpm/action-setup@v3
+        with:
+          version: ${{ env.PNPM_VERSION }}
+          
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+          
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+        
+      - name: Build CI/CD Integration
+        run: pnpm --filter @voltagent/cicd-integration build
+        
+      - name: Run Publint
+        run: pnpm --filter @voltagent/cicd-integration publint
+        
+      - name: Check Types
+        run: pnpm --filter @voltagent/cicd-integration attw
+        
+      - name: Package for Distribution
+        run: |
+          cd packages/cicd-integration
+          npm pack
+          
+      - name: Upload Package
+        uses: actions/upload-artifact@v3
+        with:
+          name: cicd-integration-package
+          path: packages/cicd-integration/*.tgz
+
+  # Documentation check
+  docs:
+    runs-on: ubuntu-latest
+    name: Documentation Check
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          
+      - name: Check Documentation Links
+        run: |
+          npx markdown-link-check packages/cicd-integration/README.md
+          npx markdown-link-check packages/cicd-integration/docs/example-usage.md
+          
+      - name: Validate TypeScript Documentation
+        run: |
+          npx tsdoc-link-check --patterns "packages/cicd-integration/src/**/*.ts"
+
+  # End-to-end tests
+  e2e:
+    runs-on: ubuntu-latest
+    name: End-to-End Tests
+    if: github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'e2e-test')
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: e2e_password
+          POSTGRES_USER: e2e_user
+          POSTGRES_DB: e2e_cicd
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+          
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: pnpm/action-setup@v3
+        with:
+          version: ${{ env.PNPM_VERSION }}
+          
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+          
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+        
+      - name: Build All Packages
+        run: pnpm build:all
+        
+      - name: Run E2E Tests
+        run: |
+          cd packages/cicd-integration
+          npm run test:e2e
+        env:
+          DATABASE_URL: postgresql://e2e_user:e2e_password@localhost:5432/e2e_cicd
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY_TEST }}
+          
+      - name: Upload E2E Results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: e2e-results
+          path: packages/cicd-integration/e2e-results/
+
+  # Deployment readiness check
+  deployment-check:
+    runs-on: ubuntu-latest
+    name: Deployment Readiness
+    needs: [build, security, docs]
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Check Version Consistency
+        run: |
+          PACKAGE_VERSION=$(node -p "require('./packages/cicd-integration/package.json').version")
+          echo "Package version: $PACKAGE_VERSION"
+          
+          # Check if version follows semantic versioning
+          if [[ ! $PACKAGE_VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?$ ]]; then
+            echo "❌ Invalid version format: $PACKAGE_VERSION"
+            exit 1
+          fi
+          
+          echo "✅ Version format is valid"
+          
+      - name: Check Dependencies
+        run: |
+          cd packages/cicd-integration
+          npm audit --audit-level high
+          
+      - name: Validate Package Exports
+        run: |
+          cd packages/cicd-integration
+          node -e "
+            const pkg = require('./package.json');
+            const fs = require('fs');
+            
+            // Check if all exported files exist
+            Object.values(pkg.exports).forEach(exp => {
+              if (typeof exp === 'object') {
+                Object.values(exp).forEach(file => {
+                  if (!fs.existsSync(file)) {
+                    console.error('❌ Missing export file:', file);
+                    process.exit(1);
+                  }
+                });
+              }
+            });
+            
+            console.log('✅ All package exports are valid');
+          "
+
+  # Notify on completion
+  notify:
+    runs-on: ubuntu-latest
+    name: Notify Completion
+    needs: [lint, test, build, security, docs]
+    if: always() && github.event_name == 'pull_request'
+    steps:
+      - name: Notify Success
+        if: needs.lint.result == 'success' && needs.test.result == 'success' && needs.build.result == 'success'
+        run: |
+          echo "✅ CI/CD Integration pipeline completed successfully!"
+          echo "All checks passed for PR #${{ github.event.number }}"
+          
+      - name: Notify Failure
+        if: needs.lint.result == 'failure' || needs.test.result == 'failure' || needs.build.result == 'failure'
+        run: |
+          echo "❌ CI/CD Integration pipeline failed!"
+          echo "Check the failed jobs for details"
+          exit 1
+
