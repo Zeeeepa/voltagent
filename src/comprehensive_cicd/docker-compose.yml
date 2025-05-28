@@ -1,0 +1,266 @@
+version: '3.8'
+
+services:
+  # Comprehensive CI/CD API Server
+  cicd-api:
+    build:
+      context: .
+      target: development
+    ports:
+      - "3000:3000"
+      - "9090:9090"  # Metrics port
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - DATABASE_URL=postgresql://cicd_user:cicd_password@postgres:5432/comprehensive_cicd
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=comprehensive_cicd
+      - DB_USER=cicd_user
+      - DB_PASSWORD=cicd_password
+      - AGENTAPI_URL=http://agentapi:8000
+      - CLAUDE_CODE_API_KEY=${CLAUDE_CODE_API_KEY:-demo-key}
+      - WSL2_DISTRO=Ubuntu-22.04
+      - MAX_WSL2_INSTANCES=3
+      - VALIDATION_TIMEOUT=300000
+      - ENABLE_SECURITY_ANALYSIS=true
+      - ENABLE_PERFORMANCE_ANALYSIS=true
+      - LOG_LEVEL=debug
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - cicd_logs:/app/logs
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - cicd-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=comprehensive_cicd
+      - POSTGRES_USER=cicd_user
+      - POSTGRES_PASSWORD=cicd_password
+      - POSTGRES_INITDB_ARGS=--encoding=UTF-8 --lc-collate=C --lc-ctype=C
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+    networks:
+      - cicd-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cicd_user -d comprehensive_cicd"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis for caching and session management
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - cicd-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  # Mock AgentAPI service for development
+  agentapi-mock:
+    image: node:18-alpine
+    working_dir: /app
+    command: >
+      sh -c "
+        npm init -y &&
+        npm install express cors &&
+        cat > server.js << 'EOF'
+        const express = require('express');
+        const cors = require('cors');
+        const app = express();
+        
+        app.use(cors());
+        app.use(express.json());
+        
+        // Mock health endpoint
+        app.get('/health', (req, res) => {
+          res.json({
+            status: 'healthy',
+            version: '1.0.0-mock',
+            uptime: process.uptime(),
+            services: {
+              claudeCode: true,
+              database: true,
+              wsl2: true
+            }
+          });
+        });
+        
+        // Mock validation endpoint
+        app.post('/api/v1/claude-code/validate', (req, res) => {
+          setTimeout(() => {
+            res.json({
+              sessionId: 'mock-session-' + Date.now(),
+              status: 'success',
+              overallScore: 85.5,
+              grade: 'B+',
+              scores: {
+                codeQuality: 88,
+                functionality: 90,
+                testing: 75,
+                documentation: 80
+              },
+              strengths: [
+                'Well-structured code architecture',
+                'Good error handling',
+                'Clear variable naming'
+              ],
+              weaknesses: [
+                'Missing unit tests for edge cases',
+                'Some functions could be better documented'
+              ],
+              feedback: [
+                {
+                  type: 'suggestion',
+                  category: 'testing',
+                  title: 'Add unit tests',
+                  message: 'Consider adding unit tests for the validation logic',
+                  severity: 'medium',
+                  filePath: 'src/validation.ts',
+                  lineNumber: 42,
+                  suggestions: ['Add Jest test cases', 'Mock external dependencies']
+                }
+              ],
+              duration: 45000
+            });
+          }, 2000);
+        });
+        
+        // Mock analysis endpoint
+        app.post('/api/v1/claude-code/analyze', (req, res) => {
+          res.json({
+            metrics: {
+              linesOfCode: 1250,
+              cyclomaticComplexity: 15,
+              maintainabilityIndex: 75,
+              technicalDebt: 2.5
+            },
+            security: {
+              vulnerabilities: [],
+              riskScore: 10
+            },
+            performance: {
+              issues: [],
+              score: 85
+            },
+            testCoverage: {
+              percentage: 78,
+              uncoveredLines: [45, 67, 89],
+              missingTests: ['edge case handling']
+            }
+          });
+        });
+        
+        app.listen(8000, () => {
+          console.log('Mock AgentAPI server running on port 8000');
+        });
+        EOF
+        node server.js
+      "
+    ports:
+      - "8000:8000"
+    networks:
+      - cicd-network
+    restart: unless-stopped
+
+  # Nginx reverse proxy (optional)
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - nginx_logs:/var/log/nginx
+    depends_on:
+      - cicd-api
+    networks:
+      - cicd-network
+    restart: unless-stopped
+    profiles:
+      - production
+
+  # Prometheus for metrics collection (optional)
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    networks:
+      - cicd-network
+    restart: unless-stopped
+    profiles:
+      - monitoring
+
+  # Grafana for metrics visualization (optional)
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - cicd-network
+    restart: unless-stopped
+    profiles:
+      - monitoring
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  cicd_logs:
+    driver: local
+  nginx_logs:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+
+networks:
+  cicd-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
