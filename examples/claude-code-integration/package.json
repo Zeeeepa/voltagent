@@ -1,0 +1,35 @@
+{
+  "name": "claude-code-integration-example",
+  "version": "1.0.0",
+  "description": "Example demonstrating Claude Code integration with VoltAgent",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "validate-pr": "tsx src/validate-pr.ts",
+    "batch-validate": "tsx src/batch-validate.ts",
+    "health-monitor": "tsx src/health-monitor.ts"
+  },
+  "dependencies": {
+    "@voltagent/core": "workspace:*",
+    "@voltagent/claude-code": "workspace:*",
+    "@voltagent/anthropic-ai": "workspace:*",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.2.2"
+  },
+  "keywords": [
+    "voltagent",
+    "claude-code",
+    "ai-validation",
+    "code-analysis"
+  ],
+  "author": "VoltAgent Team",
+  "license": "MIT"
+}
+
