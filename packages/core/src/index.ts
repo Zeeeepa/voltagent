@@ -36,6 +36,8 @@ export { AgentRegistry } from "./server/registry";
 export * from "./utils/update";
 export * from "./voice";
 export * from "./telemetry/exporter";
+export * from "./orchestrator";
+export { Orchestrator } from "./orchestrator";
 
 let isTelemetryInitializedByVoltAgent = false;
 let registeredProvider: NodeTracerProvider | null = null;
