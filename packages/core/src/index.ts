@@ -13,6 +13,8 @@ export * from "./tool";
 export * from "./tool/reasoning/index";
 export * from "./memory";
 export * from "./agent/providers";
+export * from "./analysis";
+
 export type {
   AgentOptions,
   AgentResponse,
