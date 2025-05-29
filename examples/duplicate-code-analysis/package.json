@@ -1,0 +1,26 @@
+{
+  "name": "duplicate-code-analysis-example",
+  "version": "1.0.0",
+  "description": "Example demonstrating VoltAgent's duplicate code detection capabilities",
+  "main": "src/index.ts",
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "build": "tsc",
+    "dev": "tsx watch src/index.ts"
+  },
+  "keywords": [
+    "voltagent",
+    "duplicate-code",
+    "static-analysis",
+    "code-quality",
+    "refactoring"
+  ],
+  "dependencies": {
+    "@voltagent/core": "workspace:*"
+  },
+  "devDependencies": {
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0"
+  }
+}
+
