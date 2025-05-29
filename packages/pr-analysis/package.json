@@ -1,0 +1,49 @@
+{
+  "name": "@voltagent/pr-analysis",
+  "version": "0.1.0",
+  "description": "Comprehensive PR analysis modules for code quality, security, and compliance",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "compliance-analyzer": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "jest",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix",
+    "example": "node dist/examples/basic-usage.js"
+  },
+  "keywords": [
+    "pr-analysis",
+    "code-quality",
+    "compliance",
+    "static-analysis",
+    "security",
+    "linting",
+    "code-standards"
+  ],
+  "author": "VoltAgent",
+  "license": "MIT",
+  "dependencies": {
+    "@typescript-eslint/parser": "^6.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "eslint": "^8.0.0",
+    "typescript": "^5.0.0",
+    "glob": "^10.0.0",
+    "yaml": "^2.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/jest": "^29.0.0",
+    "jest": "^29.0.0",
+    "ts-jest": "^29.0.0"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ]
+}
