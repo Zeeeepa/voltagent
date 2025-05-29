@@ -1,0 +1,59 @@
+{
+  "module": "access_control_analysis",
+  "severity": "critical",
+  "findings": [
+    {
+      "type": "missing_authentication",
+      "file": "test-sample.js",
+      "line": 5,
+      "endpoint": "GET /admin/users",
+      "risk": "unauthorized_admin_access",
+      "suggestion": "Add authentication and admin role verification middleware",
+      "description": "Admin endpoint lacks proper authentication and authorization",
+      "severity": "critical"
+    },
+    {
+      "type": "insecure_storage",
+      "file": "test-sample.js",
+      "line": 16,
+      "risk": "credential_exposure",
+      "suggestion": "Move secrets to environment variables or secure configuration",
+      "description": "Hardcoded secrets or credentials found in source code",
+      "severity": "critical"
+    },
+    {
+      "type": "insecure_storage",
+      "file": "test-sample.js",
+      "line": 17,
+      "risk": "credential_exposure",
+      "suggestion": "Move secrets to environment variables or secure configuration",
+      "description": "Hardcoded secrets or credentials found in source code",
+      "severity": "critical"
+    },
+    {
+      "type": "missing_authentication",
+      "file": "test-sample.js",
+      "line": 10,
+      "endpoint": "POST /api/delete-user",
+      "risk": "unauthorized_access",
+      "suggestion": "Add authentication middleware before route handler",
+      "description": "API endpoint lacks authentication protection",
+      "severity": "high"
+    },
+    {
+      "type": "weak_authorization",
+      "file": "test-sample.js",
+      "line": 21,
+      "risk": "role_bypass",
+      "suggestion": "Use proper role validation with enum or constant values",
+      "description": "Direct string comparison for role validation is vulnerable to bypass",
+      "severity": "medium"
+    }
+  ],
+  "metadata": {
+    "analysisTime": 2,
+    "filesAnalyzed": 1,
+    "totalLines": 35,
+    "coverage": 100
+  }
+}
