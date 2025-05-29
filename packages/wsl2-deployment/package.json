@@ -1,0 +1,59 @@
+{
+  "name": "@voltagent/wsl2-deployment",
+  "version": "0.1.0",
+  "description": "WSL2 deployment engine for automated PR branch cloning, environment setup, validation testing, and deployment monitoring",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest",
+    "test:coverage": "vitest --coverage",
+    "lint": "biome check .",
+    "lint:fix": "biome check . --apply",
+    "clean": "rimraf dist"
+  },
+  "dependencies": {
+    "child_process": "^1.0.2",
+    "ssh2": "^1.11.0",
+    "node-ssh": "^13.1.0",
+    "dockerode": "^3.3.4",
+    "ws": "^8.13.0",
+    "chokidar": "^3.5.3",
+    "systeminformation": "^5.17.12",
+    "eventemitter3": "^5.0.1",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/uuid": "^9.0.8",
+    "rimraf": "^5.0.5",
+    "tsup": "^8.0.0",
+    "typescript": "^5.3.2",
+    "vitest": "^1.0.0"
+  },
+  "keywords": [
+    "wsl2",
+    "deployment",
+    "automation",
+    "ci-cd",
+    "voltagent"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Zeeeepa/voltagent.git",
+    "directory": "packages/wsl2-deployment"
+  }
+}
