@@ -1,0 +1,19 @@
+{
+  "wsl2": {
+    "distro": "Ubuntu-22.04",
+    "memory": "8GB",
+    "processors": 4,
+    "swap": "2GB"
+  },
+  "docker": {
+    "baseImage": "node:18-alpine",
+    "networkMode": "bridge",
+    "volumes": ["/workspace:/app"]
+  },
+  "validation": {
+    "timeout": 1800,
+    "retries": 3,
+    "parallelJobs": 2
+  }
+}
+

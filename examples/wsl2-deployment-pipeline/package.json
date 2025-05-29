@@ -1,0 +1,28 @@
+{
+  "name": "wsl2-deployment-pipeline-example",
+  "version": "1.0.0",
+  "description": "Example implementation of WSL2 PR Deployment and Validation Pipeline",
+  "main": "index.ts",
+  "scripts": {
+    "start": "tsx index.ts",
+    "dev": "tsx watch index.ts",
+    "build": "tsc",
+    "manual": "tsx index.ts --manual"
+  },
+  "dependencies": {
+    "@voltagent/wsl2-integration": "workspace:*",
+    "@voltagent/github-integration": "workspace:*"
+  },
+  "devDependencies": {
+    "tsx": "^4.7.0",
+    "typescript": "^5.0.4"
+  },
+  "keywords": [
+    "wsl2",
+    "deployment",
+    "github",
+    "automation",
+    "ci-cd"
+  ]
+}
+
