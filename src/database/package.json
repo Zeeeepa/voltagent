@@ -1,0 +1,42 @@
+{
+  "name": "@taskmaster/database",
+  "version": "1.0.0",
+  "description": "Task Master Database & Event Storage Infrastructure",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "jest",
+    "migrate": "node -e \"require('./connection').getDatabaseManager().runMigrations()\"",
+    "health": "node -e \"require('./connection').getDatabaseManager().healthCheck().then(console.log)\""
+  },
+  "dependencies": {
+    "pg": "^8.11.0",
+    "redis": "^4.6.7",
+    "@elastic/elasticsearch": "^8.11.0",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.10.9",
+    "@types/uuid": "^9.0.7",
+    "typescript": "^5.3.2",
+    "jest": "^29.7.0",
+    "@types/jest": "^29.5.8"
+  },
+  "peerDependencies": {
+    "typescript": ">=4.0.0"
+  },
+  "keywords": [
+    "database",
+    "event-storage",
+    "analytics",
+    "task-management",
+    "postgresql",
+    "redis",
+    "elasticsearch"
+  ],
+  "author": "Task Master Team",
+  "license": "MIT"
+}
+
