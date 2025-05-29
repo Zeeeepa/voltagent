@@ -255,6 +255,7 @@ export class VoltAgent {
 
 export default VoltAgent;
 
+export * from './database';
+
 if (typeof require !== "undefined" && typeof module !== "undefined" && require.main === module) {
   new VoltAgent({ agents: {}, autoStart: true, checkDependencies: true });
-}
