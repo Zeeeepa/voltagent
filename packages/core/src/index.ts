@@ -37,6 +37,9 @@ export * from "./utils/update";
 export * from "./voice";
 export * from "./telemetry/exporter";
 
+// Codegen SDK Integration
+export * from "./codegen";
+
 let isTelemetryInitializedByVoltAgent = false;
 let registeredProvider: NodeTracerProvider | null = null;
 
