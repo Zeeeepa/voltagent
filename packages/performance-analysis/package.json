@@ -1,0 +1,54 @@
+{
+  "name": "@voltagent/performance-analysis",
+  "version": "0.1.0",
+  "description": "Performance hotspot detection and analysis module for VoltAgent",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest",
+    "test:coverage": "vitest --coverage",
+    "lint": "biome check .",
+    "lint:fix": "biome check . --apply",
+    "publint": "publint",
+    "attw": "attw --pack .",
+    "clean": "rimraf dist"
+  },
+  "keywords": [
+    "voltagent",
+    "performance",
+    "analysis",
+    "profiling",
+    "hotspot",
+    "monitoring"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@voltagent/core": "workspace:*",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "rimraf": "^5.0.5",
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.2",
+    "vitest": "^1.0.0"
+  },
+  "peerDependencies": {
+    "@voltagent/core": "workspace:*"
+  }
+}
+
