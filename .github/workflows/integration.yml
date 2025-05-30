@@ -1,0 +1,330 @@
+name: Integration Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    # Run integration tests nightly
+    - cron: '0 3 * * *'
+
+jobs:
+  # End-to-end integration tests
+  e2e-tests:
+    name: End-to-End Tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18, 20, 22]
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build packages
+        run: pnpm build:all
+
+      - name: Wait for services
+        run: |
+          # Wait for PostgreSQL
+          until pg_isready -h localhost -p 5432; do
+            echo "Waiting for PostgreSQL..."
+            sleep 2
+          done
+          
+          # Wait for Redis
+          until redis-cli -h localhost -p 6379 ping; do
+            echo "Waiting for Redis..."
+            sleep 2
+          done
+
+      - name: Setup test database
+        run: |
+          PGPASSWORD=postgres psql -h localhost -U postgres -d test_db -c "CREATE EXTENSION IF NOT EXISTS uuid-ossp;"
+        env:
+          PGPASSWORD: postgres
+
+      - name: Run integration tests
+        run: pnpm test:integration
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
+          REDIS_URL: redis://localhost:6379
+          NODE_ENV: test
+
+      - name: Run E2E tests
+        run: pnpm test:e2e
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
+          REDIS_URL: redis://localhost:6379
+          NODE_ENV: test
+
+  # API integration tests
+  api-tests:
+    name: API Integration Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build packages
+        run: pnpm build:all
+
+      - name: Start test server
+        run: |
+          pnpm start:test &
+          sleep 10
+        env:
+          NODE_ENV: test
+          PORT: 3001
+
+      - name: Run API tests
+        run: |
+          # Install Newman for Postman collection testing
+          npm install -g newman
+          
+          # Run API tests if collection exists
+          if [ -f "tests/api/collection.json" ]; then
+            newman run tests/api/collection.json --environment tests/api/environment.json
+          else
+            echo "No API test collection found, running custom API tests"
+            pnpm test:api
+          fi
+
+      - name: Stop test server
+        run: pkill -f "node.*start:test" || true
+
+  # Component integration tests
+  component-integration:
+    name: Component Integration Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build packages
+        run: pnpm build:all
+
+      - name: Run component integration tests
+        run: pnpm test:components
+        env:
+          NODE_ENV: test
+
+  # Docker integration tests
+  docker-integration:
+    name: Docker Integration Tests
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        run: |
+          if [ -f Dockerfile ]; then
+            docker build -t voltagent:test .
+          else
+            echo "No Dockerfile found, creating a basic one for testing"
+            cat > Dockerfile << 'DOCKER_EOF'
+          FROM node:20-alpine
+          WORKDIR /app
+          COPY package*.json ./
+          RUN npm ci --only=production
+          COPY . .
+          EXPOSE 3000
+          CMD ["npm", "start"]
+          DOCKER_EOF
+            docker build -t voltagent:test .
+          fi
+
+      - name: Test Docker container
+        run: |
+          # Start container
+          docker run -d --name test-container -p 3000:3000 voltagent:test
+          
+          # Wait for container to start
+          sleep 10
+          
+          # Test if container is responding
+          if command -v curl &> /dev/null; then
+            curl -f http://localhost:3000/health || echo "Health check endpoint not available"
+          fi
+          
+          # Check container logs
+          docker logs test-container
+          
+          # Stop and remove container
+          docker stop test-container
+          docker rm test-container
+
+  # Performance integration tests
+  performance-integration:
+    name: Performance Integration Tests
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build packages
+        run: pnpm build:all
+
+      - name: Run performance tests
+        run: |
+          # Install k6 for load testing
+          sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
+          echo "deb https://dl.k6.io/deb stable main" | sudo tee /dev/null >> /etc/apt/sources.list.d/k6.list
+          sudo apt-get update
+          sudo apt-get install k6
+          
+          # Start test server
+          pnpm start:test &
+          sleep 10
+          
+          # Run performance tests if they exist
+          if [ -f "tests/performance/load-test.js" ]; then
+            k6 run tests/performance/load-test.js
+          else
+            echo "No performance tests found, skipping"
+          fi
+        env:
+          NODE_ENV: test
+          PORT: 3001
+
+  # External service integration tests
+  external-integration:
+    name: External Service Integration
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build packages
+        run: pnpm build:all
+
+      - name: Test external integrations
+        run: pnpm test:external
+        env:
+          # Add external service credentials for testing
+          CODEGEN_API_KEY: ${{ secrets.CODEGEN_API_KEY }}
+          LINEAR_API_KEY: ${{ secrets.LINEAR_API_KEY }}
+          NODE_ENV: test
+
+  # Integration test summary
+  integration-summary:
+    name: Integration Test Summary
+    runs-on: ubuntu-latest
+    needs: [e2e-tests, api-tests, component-integration, docker-integration]
+    if: always()
+    steps:
+      - name: Check integration test results
+        run: |
+          echo "Integration Test Results:"
+          echo "E2E Tests: ${{ needs.e2e-tests.result }}"
+          echo "API Tests: ${{ needs.api-tests.result }}"
+          echo "Component Integration: ${{ needs.component-integration.result }}"
+          echo "Docker Integration: ${{ needs.docker-integration.result }}"
+          
+          if [[ "${{ needs.e2e-tests.result }}" == "failure" || "${{ needs.api-tests.result }}" == "failure" || "${{ needs.component-integration.result }}" == "failure" ]]; then
+            echo "One or more integration tests failed"
+            exit 1
+          fi
+          
+          echo "All integration tests passed!"

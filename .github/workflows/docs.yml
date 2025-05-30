@@ -1,0 +1,302 @@
+name: Documentation
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - '**/*.md'
+      - 'docs/**'
+      - 'packages/**/README.md'
+
+jobs:
+  # Documentation validation
+  docs-validation:
+    name: Documentation Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install markdown linter
+        run: npm install -g markdownlint-cli
+
+      - name: Lint markdown files
+        run: |
+          # Create markdownlint config if it doesn't exist
+          if [ ! -f .markdownlint.json ]; then
+            cat > .markdownlint.json << 'MDLINT_EOF'
+          {
+            "MD013": false,
+            "MD033": false,
+            "MD041": false
+          }
+          MDLINT_EOF
+          fi
+          
+          markdownlint "**/*.md" --ignore node_modules
+
+      - name: Check for broken links
+        run: |
+          npm install -g markdown-link-check
+          
+          # Check all markdown files for broken links
+          find . -name "*.md" -not -path "./node_modules/*" | xargs -I {} markdown-link-check {}
+
+      - name: Validate documentation structure
+        run: |
+          # Check if main documentation files exist
+          required_docs=("README.md" "CONTRIBUTING.md" "CHANGELOG.md")
+          
+          for doc in "${required_docs[@]}"; do
+            if [ ! -f "$doc" ]; then
+              echo "❌ Missing required documentation: $doc"
+              exit 1
+            else
+              echo "✅ Found: $doc"
+            fi
+          done
+
+  # Generate API documentation
+  api-docs:
+    name: Generate API Documentation
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build packages
+        run: pnpm build:all
+
+      - name: Generate TypeDoc documentation
+        run: |
+          # Install TypeDoc if not already installed
+          if ! command -v typedoc &> /dev/null; then
+            npm install -g typedoc
+          fi
+          
+          # Generate documentation for each package
+          for package_dir in packages/*/; do
+            if [ -f "${package_dir}tsconfig.json" ]; then
+              echo "Generating docs for ${package_dir}"
+              cd "${package_dir}"
+              typedoc --out ../../docs/api/$(basename "$package_dir") src/index.ts
+              cd ../..
+            fi
+          done
+
+      - name: Upload documentation artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: api-documentation
+          path: docs/api/
+
+  # Documentation deployment (for main branch)
+  docs-deploy:
+    name: Deploy Documentation
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: [docs-validation, api-docs]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Download API documentation
+        uses: actions/download-artifact@v3
+        with:
+          name: api-documentation
+          path: docs/api/
+
+      - name: Build documentation site
+        run: |
+          # If using a documentation framework like VitePress, Docusaurus, etc.
+          if [ -f "docs/package.json" ]; then
+            cd docs
+            npm install
+            npm run build
+            cd ..
+          else
+            echo "No documentation build process found"
+          fi
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        if: success()
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/dist
+          cname: voltagent-docs.example.com
+
+  # Documentation coverage check
+  docs-coverage:
+    name: Documentation Coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Check documentation coverage
+        run: |
+          # Check if all exported functions/classes have documentation
+          echo "Checking documentation coverage..."
+          
+          # This is a simple check - in practice, you might use tools like
+          # documentation.js or custom scripts to check JSDoc coverage
+          
+          missing_docs=0
+          
+          # Check TypeScript files for missing JSDoc comments
+          for file in $(find packages -name "*.ts" -not -name "*.test.ts" -not -name "*.spec.ts"); do
+            if grep -q "export " "$file"; then
+              # Check if exported items have JSDoc comments
+              if ! grep -B5 "export " "$file" | grep -q "/\*\*"; then
+                echo "⚠️ Missing documentation in: $file"
+                missing_docs=$((missing_docs + 1))
+              fi
+            fi
+          done
+          
+          if [ $missing_docs -gt 0 ]; then
+            echo "❌ Found $missing_docs files with missing documentation"
+            echo "Please add JSDoc comments to exported functions and classes"
+          else
+            echo "✅ All files have adequate documentation"
+          fi
+
+  # Spell check
+  spell-check:
+    name: Spell Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install cspell
+        run: npm install -g cspell
+
+      - name: Run spell check
+        run: |
+          # Create cspell config if it doesn't exist
+          if [ ! -f cspell.json ]; then
+            cat > cspell.json << 'CSPELL_EOF'
+          {
+            "version": "0.2",
+            "language": "en",
+            "words": [
+              "voltagent",
+              "pnpm",
+              "TypeScript",
+              "JavaScript",
+              "JSDoc",
+              "API",
+              "CLI",
+              "npm",
+              "repo",
+              "config",
+              "async",
+              "await",
+              "const",
+              "enum",
+              "interface",
+              "namespace"
+            ],
+            "ignorePaths": [
+              "node_modules/**",
+              "dist/**",
+              "build/**",
+              "*.min.js",
+              "pnpm-lock.yaml"
+            ]
+          }
+          CSPELL_EOF
+          fi
+          
+          # Run spell check on documentation files
+          cspell "**/*.md" "**/*.txt" --no-progress
+
+  # Documentation metrics
+  docs-metrics:
+    name: Documentation Metrics
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Calculate documentation metrics
+        run: |
+          echo "📊 Documentation Metrics"
+          echo "========================"
+          
+          # Count markdown files
+          md_files=$(find . -name "*.md" -not -path "./node_modules/*" | wc -l)
+          echo "📄 Markdown files: $md_files"
+          
+          # Count total lines in documentation
+          total_lines=$(find . -name "*.md" -not -path "./node_modules/*" -exec wc -l {} + | tail -1 | awk '{print $1}')
+          echo "📝 Total documentation lines: $total_lines"
+          
+          # Count README files in packages
+          readme_files=$(find packages -name "README.md" | wc -l)
+          package_dirs=$(find packages -maxdepth 1 -type d | tail -n +2 | wc -l)
+          echo "📦 Package READMEs: $readme_files/$package_dirs"
+          
+          # Calculate documentation ratio
+          if [ $package_dirs -gt 0 ]; then
+            ratio=$((readme_files * 100 / package_dirs))
+            echo "📈 Documentation coverage: $ratio%"
+            
+            if [ $ratio -lt 80 ]; then
+              echo "⚠️ Documentation coverage is below 80%"
+            else
+              echo "✅ Good documentation coverage"
+            fi
+          fi
