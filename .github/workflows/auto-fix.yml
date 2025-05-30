@@ -1,0 +1,207 @@
+name: Auto-Fix Issues
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+  workflow_run:
+    workflows: ["Comprehensive CI Pipeline"]
+    types: [completed]
+    branches: [main, develop]
+
+permissions:
+  contents: write
+  pull-requests: write
+  checks: read
+
+jobs:
+  auto-fix:
+    name: Auto-Fix Common Issues
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'failure' || github.event_name == 'pull_request'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Auto-fix formatting issues
+        run: |
+          # Run Prettier to fix formatting
+          pnpm format || true
+          
+          # Run ESLint with auto-fix
+          pnpm lint:fix || true
+
+      - name: Auto-fix import sorting
+        run: |
+          # Fix import sorting if available
+          if command -v isort &> /dev/null; then
+            find . -name "*.py" -exec isort {} \;
+          fi
+
+      - name: Auto-fix package.json issues
+        run: |
+          # Fix syncpack issues
+          pnpm sp fix || true
+
+      - name: Check for changes
+        id: changes
+        run: |
+          if [[ -n $(git status --porcelain) ]]; then
+            echo "changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "changes=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit auto-fixes
+        if: steps.changes.outputs.changes == 'true'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          git commit -m "🤖 Auto-fix: formatting, linting, and import sorting"
+
+      - name: Push changes
+        if: steps.changes.outputs.changes == 'true'
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.head_ref }}
+
+      - name: Comment on PR
+        if: steps.changes.outputs.changes == 'true' && github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '🤖 **Auto-fix applied!**\n\nI automatically fixed the following issues:\n- Code formatting (Prettier)\n- Linting issues (ESLint)\n- Import sorting\n- Package.json synchronization\n\nPlease review the changes and re-run the CI if needed.'
+            })
+
+  create-issue-for-complex-failures:
+    name: Create Issues for Complex Failures
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'failure'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get workflow run details
+        id: workflow-details
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const run = await github.rest.actions.getWorkflowRun({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: context.payload.workflow_run.id
+            });
+            
+            const jobs = await github.rest.actions.listJobsForWorkflowRun({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: context.payload.workflow_run.id
+            });
+            
+            const failedJobs = jobs.data.jobs.filter(job => job.conclusion === 'failure');
+            
+            return {
+              run_url: run.data.html_url,
+              failed_jobs: failedJobs.map(job => ({
+                name: job.name,
+                url: job.html_url,
+                steps: job.steps.filter(step => step.conclusion === 'failure')
+              }))
+            };
+
+      - name: Create issue for complex failures
+        if: steps.workflow-details.outputs.result != '{"failed_jobs":[]}'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const details = JSON.parse('${{ steps.workflow-details.outputs.result }}');
+            
+            let issueBody = `## 🚨 CI Pipeline Failure\n\n`;
+            issueBody += `**Workflow Run:** [${context.payload.workflow_run.display_title}](${details.run_url})\n`;
+            issueBody += `**Branch:** ${context.payload.workflow_run.head_branch}\n`;
+            issueBody += `**Commit:** ${context.payload.workflow_run.head_sha.substring(0, 7)}\n\n`;
+            
+            issueBody += `### Failed Jobs:\n\n`;
+            details.failed_jobs.forEach(job => {
+              issueBody += `#### ${job.name}\n`;
+              issueBody += `- **Job URL:** [View Details](${job.url})\n`;
+              if (job.steps.length > 0) {
+                issueBody += `- **Failed Steps:**\n`;
+                job.steps.forEach(step => {
+                  issueBody += `  - ${step.name}\n`;
+                });
+              }
+              issueBody += `\n`;
+            });
+            
+            issueBody += `### Next Steps\n`;
+            issueBody += `- [ ] Review the failed jobs and error logs\n`;
+            issueBody += `- [ ] Fix the underlying issues\n`;
+            issueBody += `- [ ] Re-run the workflow\n`;
+            issueBody += `- [ ] Close this issue once resolved\n\n`;
+            issueBody += `*This issue was automatically created by the Auto-Fix workflow.*`;
+            
+            // Check if similar issue already exists
+            const existingIssues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'ci-failure,auto-created'
+            });
+            
+            const similarIssue = existingIssues.data.find(issue => 
+              issue.title.includes(context.payload.workflow_run.head_sha.substring(0, 7))
+            );
+            
+            if (!similarIssue) {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `CI Failure: ${context.payload.workflow_run.display_title} (${context.payload.workflow_run.head_sha.substring(0, 7)})`,
+                body: issueBody,
+                labels: ['ci-failure', 'auto-created', 'bug']
+              });
+            }
+
+  notify-on-critical-failure:
+    name: Notify on Critical Failures
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'failure' && contains(github.event.workflow_run.name, 'security')
+    steps:
+      - name: Send Slack notification
+        if: env.SLACK_WEBHOOK_URL != ''
+        uses: 8398a7/action-slack@v3
+        with:
+          status: failure
+          text: |
+            🚨 **Critical Security Failure**
+            Repository: ${{ github.repository }}
+            Workflow: ${{ github.event.workflow_run.name }}
+            Branch: ${{ github.event.workflow_run.head_branch }}
+            Commit: ${{ github.event.workflow_run.head_sha }}
+            
+            Please investigate immediately!
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
