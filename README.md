@@ -1,236 +1,291 @@
-# Cloudflare Postgres Setup for Codegen
+# Codegen SDK + graph-sitter Integration
 
-This tool automates the setup of your local PostgreSQL database to be accessible by Codegen through Cloudflare Workers, providing a secure bridge between your local database and Codegen's AI agents.
+This repository demonstrates comprehensive integration between the Codegen SDK and graph-sitter for advanced codebase analysis and AI-powered improvements.
 
-## 🚀 Quick Start
+## 🚀 Features
 
-### Prerequisites
+- **Comprehensive Codebase Analysis**: Use graph-sitter to analyze code structure, dependencies, and relationships
+- **AI-Powered Insights**: Leverage Codegen SDK for intelligent code analysis and suggestions
+- **Function Context Analysis**: Get detailed context for any function including call sites, dependencies, and usages
+- **Automated Improvement Suggestions**: Generate actionable improvement recommendations
+- **Custom AI Provider**: Configure graph-sitter to use Codegen SDK as the AI backend
+- **Interactive Analysis**: Run interactive sessions for exploratory code analysis
 
-1. **PostgreSQL 17** installed at `C:\Program Files\PostgreSQL\17` (Windows)
-2. **Python 3.7+** installed
-3. **Cloudflare account** with API access
-4. **Domain configured** in Cloudflare (for custom worker URL)
-
-### Environment Variables
-
-Set these environment variables or the script will use the provided defaults:
+## 📦 Installation
 
 ```bash
-CLOUDFLARE_API_TOKEN=eae82cf159577a8838cc83612104c09c5a0d6
-CLOUDFLARE_ACCOUNT_ID=2b2a1d3effa7f7fe4fe2a8c4e48681e3
-CLOUDFLARE_WORKER_NAME=neon-db
-CLOUDFLARE_WORKER_URL=https://neon-db.pixeliumperfecto.workers.dev
+# Install required packages
+pip install codegen graph-sitter
 
-# Optional: PostgreSQL admin credentials (if not using defaults)
-POSTGRES_ADMIN_USER=postgres
-POSTGRES_ADMIN_PASSWORD=your_postgres_password
+# Or using uv
+uv pip install codegen graph-sitter
 ```
 
-### Installation & Setup
+## 🔧 Setup
 
-#### Option 1: Windows Batch Script (Recommended)
-```cmd
-# Clone or download the files
-# Run the batch script
-setup_postgres.bat
+1. **Get Codegen Credentials**:
+   - Sign up at [codegen.com](https://codegen.com)
+   - Get your organization ID and API token
+
+2. **Set Environment Variables**:
+   ```bash
+   export CODEGEN_ORG_ID="your-org-id"
+   export CODEGEN_TOKEN="your-api-token"
+   ```
+
+3. **Alternative: Use OpenAI API**:
+   If you prefer to use OpenAI API instead of Codegen credentials:
+   ```bash
+   export OPENAI_API_KEY="your-openai-key"
+   ```
+
+## 🎯 Quick Start
+
+### Basic Usage
+
+```python
+from codegen_graph_sitter_integration import CodegenGraphSitterIntegration
+
+# Initialize the integration
+integration = CodegenGraphSitterIntegration(
+    org_id="your-org-id",
+    token="your-token",
+    repo_path="fastapi/fastapi"  # Any GitHub repo
+)
+
+# Analyze codebase structure
+analysis = integration.analyze_codebase_structure()
+
+print(f"Most called function: {analysis.most_called_function['name']}")
+print(f"Unused functions: {len(analysis.unused_functions)}")
+print(f"Recursive functions: {len(analysis.recursive_functions)}")
 ```
 
-#### Option 2: Manual Python Setup
+### Function Context Analysis
+
+```python
+# Get detailed context for a specific function
+function_name = "FastAPI"
+context = integration.get_function_context(function_name)
+
+print(f"Function: {function_name}")
+print(f"Called from {len(context['call_sites'])} places")
+print(f"Has {len(context['dependencies'])} dependencies")
+print(f"Lines of code: {context['implementation']['line_count']}")
+```
+
+### AI-Powered Analysis
+
+```python
+# Get AI improvement suggestions
+suggestions = integration.suggest_improvements()
+print("Improvement Suggestions:")
+print(suggestions)
+
+# Custom AI analysis with context
+custom_analysis = integration.analyze_with_codegen_ai(
+    "Analyze this codebase for security vulnerabilities",
+    context_data={"functions": len(integration.codebase.functions)}
+)
+```
+
+### Interactive Mode
+
+```python
+# Run interactive analysis session
+integration.interactive_analysis()
+```
+
+## 🔬 Advanced Usage
+
+### Custom AI Provider
+
+Configure graph-sitter to use Codegen SDK as the AI backend:
+
+```python
+from examples.advanced_integration import AdvancedCodegenGraphSitter
+
+# Initialize with custom AI provider
+advanced = AdvancedCodegenGraphSitter(
+    org_id="your-org-id",
+    token="your-token",
+    repo_path="fastapi/fastapi"
+)
+
+# Use codebase.ai() with Codegen backend
+function = advanced.codebase.get_function("process_data")
+result = advanced.codebase.ai(
+    "Improve this function's implementation",
+    target=function,
+    context={
+        "call_sites": function.call_sites,
+        "dependencies": function.dependencies,
+        "parent": function.parent
+    }
+)
+```
+
+### Batch Analysis
+
+```python
+# Analyze multiple functions
+results = advanced.batch_analyze_functions("security")
+for func_name, analysis in results.items():
+    print(f"{func_name}: {analysis}")
+```
+
+### Code Refactoring
+
+```python
+# AI-powered refactoring
+refactored_code = advanced.refactor_function_with_ai(
+    "large_function",
+    "break into smaller, more focused functions"
+)
+```
+
+## 📊 Analysis Types
+
+The integration supports various types of analysis:
+
+- **Structural Analysis**: Function relationships, call graphs, dependency analysis
+- **Complexity Metrics**: Lines of code, dependencies per function, call site analysis
+- **Dead Code Detection**: Identify unused functions and potential cleanup opportunities
+- **Performance Analysis**: Find bottlenecks and optimization opportunities
+- **Security Review**: Identify potential security vulnerabilities
+- **Documentation Generation**: Auto-generate comprehensive documentation
+
+## 🛠️ API Reference
+
+### CodegenGraphSitterIntegration
+
+Main integration class that combines Codegen SDK with graph-sitter.
+
+#### Methods
+
+- `analyze_codebase_structure()` → `CodebaseAnalysis`: Comprehensive structural analysis
+- `get_function_context(function_name)` → `Dict`: Detailed function context
+- `analyze_with_codegen_ai(prompt, context_data)` → `str`: AI analysis with context
+- `suggest_improvements()` → `str`: AI-generated improvement suggestions
+- `create_improvement_pr(description)` → `str`: Create PR with improvements
+- `interactive_analysis()`: Run interactive analysis session
+
+### AdvancedCodegenGraphSitter
+
+Advanced integration with custom AI provider configuration.
+
+#### Methods
+
+- `analyze_function_with_ai(function_name, analysis_type)` → `str`: AI function analysis
+- `refactor_function_with_ai(function_name, goal)` → `str`: AI-powered refactoring
+- `generate_documentation_with_ai(target_type, target_name)` → `str`: Auto-documentation
+- `batch_analyze_functions(analysis_type)` → `Dict`: Batch function analysis
+- `create_improvement_plan()` → `str`: Comprehensive improvement plan
+
+## 📁 Examples
+
+### Basic Examples
+
+Run the basic usage examples:
+
 ```bash
-# Install dependencies
-pip install -r requirements.txt
-
-# Run the setup script
-python cloudflare_postgres_setup.py
+python examples/basic_usage.py
 ```
 
-## 🔧 What This Tool Does
+This includes:
+- Basic codebase analysis
+- Function context analysis
+- AI-powered analysis
+- Improvement suggestions
+- Custom security analysis
 
-### 1. Database Setup
-- ✅ Checks if PostgreSQL is running locally
-- ✅ Creates a dedicated database: `codegen_db`
-- ✅ Creates a read-only user: `codegen_user`
-- ✅ Sets up proper permissions (SELECT only for security)
-- ✅ Generates secure random password
+### Advanced Examples
 
-### 2. Cloudflare Worker Deployment
-- ✅ Checks if worker already exists
-- ✅ Creates new worker if needed
-- ✅ Deploys proxy worker with health endpoints
-- ✅ Tests worker accessibility
+Run advanced integration examples:
 
-### 3. Configuration Management
-- ✅ Saves all credentials to `.env` file
-- ✅ Provides connection strings for Codegen
-- ✅ Shows comprehensive status report
-
-## 📊 Output Example
-
-```
-============================================================
-🐘 Cloudflare Postgres Exposure Setup for Codegen 🚀
-============================================================
-
-🔍 Step 1: Checking PostgreSQL server...
-✅ PostgreSQL server is running
-
-🔧 Step 2: Setting up database and user...
-📦 Creating database: codegen_db
-👤 Creating user: codegen_user
-✅ Database and user setup completed
-
-☁️ Step 3: Checking Cloudflare Worker...
-📝 Cloudflare Worker 'neon-db' does not exist
-🚀 Creating Cloudflare Worker...
-✅ Cloudflare Worker 'neon-db' created successfully
-
-🧪 Step 4: Testing worker deployment...
-🧪 Testing worker at: https://neon-db.pixeliumperfecto.workers.dev
-✅ Worker is accessible and healthy
-
-💾 Step 5: Saving configuration...
-✅ Environment variables saved to .env
-
-============================================================
-📊 SETUP STATUS REPORT
-============================================================
-
-🐘 DATABASE STATUS:
-   Host: localhost
-   Port: 5432
-   Database: codegen_db
-   User: codegen_user
-   Password: a1b2c3d4e5f6g7h8
-   SSL Mode: prefer
-   Status: ✅ CONNECTED
-
-☁️ CLOUDFLARE STATUS:
-   Worker Name: neon-db
-   Worker URL: https://neon-db.pixeliumperfecto.workers.dev
-   Account ID: 2b2a1d3effa7f7fe4fe2a8c4e48681e3
-   Status: ✅ WORKER ACCESSIBLE
-
-🤖 CODEGEN INTEGRATION:
-   Copy these values to Codegen Postgres settings:
-   Host: localhost
-   Port: 5432
-   Database: codegen_db
-   Username: codegen_user
-   Password: a1b2c3d4e5f6g7h8
-   SSL Mode: prefer
-
-📁 FILES CREATED:
-   .env file: C:\path\to\your\project\.env
-
-🔗 USEFUL URLS:
-   Worker Health: https://neon-db.pixeliumperfecto.workers.dev/health
-   Worker DB Info: https://neon-db.pixeliumperfecto.workers.dev/db-info
-
-============================================================
-
-🎉 Setup completed successfully!
-💡 You can now use these credentials in Codegen's Postgres integration
-```
-
-## 🔐 Security Features
-
-- **Read-Only Access**: Database user only has SELECT permissions
-- **Secure Passwords**: Auto-generated random passwords
-- **SSL Preferred**: Connections use SSL when available
-- **Environment Variables**: Sensitive data stored in `.env` file
-- **Worker Proxy**: Cloudflare Worker acts as secure proxy
-
-## 🔗 Codegen Integration
-
-After running the setup, use these credentials in Codegen's Postgres settings:
-
-1. Go to Codegen Settings → Integrations → Postgres
-2. Add new credential with these values:
-   - **Host**: `localhost`
-   - **Port**: `5432`
-   - **Database**: `codegen_db`
-   - **Username**: `codegen_user`
-   - **Password**: (from output or `.env` file)
-   - **SSL Mode**: `prefer`
-
-## 🛠️ Troubleshooting
-
-### PostgreSQL Not Running
 ```bash
-# Start PostgreSQL service (Windows)
-net start postgresql-x64-17
-
-# Or start via Services.msc
+python examples/advanced_integration.py
 ```
 
-### Connection Issues
-- Verify PostgreSQL is accepting connections on port 5432
-- Check Windows Firewall settings
-- Ensure `pg_hba.conf` allows local connections
+This demonstrates:
+- Custom AI provider configuration
+- Batch analysis workflows
+- Documentation generation
+- Refactoring with AI
+- Comprehensive improvement planning
 
-### Authentication Issues
-The script tries multiple authentication methods automatically:
-1. Environment variable `POSTGRES_ADMIN_PASSWORD`
-2. Common default passwords (`postgres`, `admin`, empty)
-3. Windows username authentication
-4. Interactive prompt for credentials
+## 🔍 Use Cases
 
-**If authentication fails:**
-- Set environment variables before running:
-  ```cmd
-  set POSTGRES_ADMIN_USER=postgres
-  set POSTGRES_ADMIN_PASSWORD=your_actual_password
-  setup_postgres.bat
-  ```
-- Or run the script and enter credentials when prompted
-- Check your PostgreSQL installation's default user/password
+### 1. Code Quality Assessment
 
-### Cloudflare Worker Issues
-- Verify API token has Workers:Edit permissions
-- Check account ID is correct
-- Ensure domain is properly configured in Cloudflare
+```python
+# Analyze code quality across the entire codebase
+integration = CodegenGraphSitterIntegration(org_id, token, "your-repo")
+analysis = integration.analyze_codebase_structure()
 
-### Permission Errors
-- Run as Administrator if needed
-- Check PostgreSQL user permissions
-- Verify Python has write access to current directory
+# Identify areas needing attention
+if analysis.complexity_metrics['unused_function_ratio'] > 0.1:
+    print("High number of unused functions detected")
 
-## 📁 Generated Files
+if len(analysis.recursive_functions) > 0:
+    print(f"Recursive functions found: {analysis.recursive_functions}")
+```
 
-- **`.env`**: Environment variables and database credentials
-- **`cloudflare_postgres_setup.py`**: Main setup script
-- **`requirements.txt`**: Python dependencies
-- **`setup_postgres.bat`**: Windows batch script for easy setup
+### 2. Performance Optimization
 
-## 🔄 Re-running Setup
+```python
+# Find performance bottlenecks
+most_called = analysis.most_called_function
+performance_analysis = integration.analyze_with_codegen_ai(
+    f"Analyze the performance of {most_called['name']} function and suggest optimizations",
+    context_data=most_called
+)
+```
 
-The script is idempotent - you can run it multiple times safely:
-- Existing database and user won't be recreated
-- Existing Cloudflare Worker will be detected
-- Configuration will be updated with current values
+### 3. Security Review
 
-## 🌐 Worker Endpoints
+```python
+# Security-focused analysis
+security_review = integration.analyze_with_codegen_ai(
+    "Review this codebase for security vulnerabilities, focusing on input validation and authentication",
+    context_data={"total_functions": len(integration.codebase.functions)}
+)
+```
 
-Your Cloudflare Worker provides these endpoints:
+### 4. Documentation Generation
 
-- **`/health`**: Health check and status
-- **`/db-info`**: Database connection information
-- **`/`**: General worker information
+```python
+# Generate comprehensive documentation
+advanced = AdvancedCodegenGraphSitter(org_id, token, repo_path)
+docs = advanced.generate_documentation_with_ai("class", "MyClass")
+```
 
-## 📞 Support
+## 🤝 Contributing
 
-If you encounter issues:
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
 
-1. Check the detailed output for specific error messages
-2. Verify all prerequisites are met
-3. Ensure environment variables are set correctly
-4. Check PostgreSQL and Cloudflare service status
+## 📄 License
 
-## 🔒 Security Notes
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-- This setup is designed for **development use**
-- For production, consider additional security measures:
-  - IP whitelisting
-  - VPN access
-  - More restrictive database permissions
-  - Regular credential rotation
+## 🆘 Support
+
+- **Documentation**: [Codegen Docs](https://docs.codegen.com)
+- **Graph-sitter Docs**: [graph-sitter.com](https://graph-sitter.com)
+- **Issues**: Create an issue in this repository
+- **Community**: Join our Discord for discussions
+
+## 🔗 Related Projects
+
+- [Codegen SDK](https://github.com/codegen-sh/codegen): Python SDK for Codegen
+- [graph-sitter](https://github.com/graph-sitter/graph-sitter): Code analysis toolkit
+- [FastAPI](https://github.com/tiangolo/fastapi): Example repository for analysis
+
+---
+
+**Happy coding! 🚀**
+
