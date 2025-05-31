@@ -1,236 +1,298 @@
-# Cloudflare Postgres Setup for Codegen
+# Self-Evolving CI/CD Software Development System
 
-This tool automates the setup of your local PostgreSQL database to be accessible by Codegen through Cloudflare Workers, providing a secure bridge between your local database and Codegen's AI agents.
+A comprehensive, AI-powered system that automatically analyzes, improves, and evolves codebases using advanced static analysis, machine learning, and automated code generation.
 
-## 🚀 Quick Start
+## 🚀 Overview
+
+This system combines multiple cutting-edge technologies to create a self-evolving CI/CD pipeline:
+
+- **Graph-Sitter**: Deep codebase analysis and understanding
+- **Codegen SDK**: Automated code generation and improvement
+- **AutoGenLib**: Enhanced code generation capabilities
+- **Linear Integration**: Project management and task tracking
+- **GitHub Integration**: Version control and PR management
+- **Comprehensive Analytics**: Code quality metrics and insights
+
+## 🏗️ Architecture
+
+The system is built with a modular, layered architecture:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Presentation Layer                       │
+│  Linear & GitHub Dashboard | Chat Interface | Settings     │
+├─────────────────────────────────────────────────────────────┤
+│                    Integration Layer                        │
+│  Contexten Extensions | GitHub API | Linear API | Webhooks │
+├─────────────────────────────────────────────────────────────┤
+│                    Intelligence Layer                       │
+│  Chat Agent | Code Agent | Analysis Engine | Decision AI   │
+├─────────────────────────────────────────────────────────────┤
+│                      Data Layer                            │
+│  Tasks DB | Codebase DB | Prompts DB | Analytics DB       │
+├─────────────────────────────────────────────────────────────┤
+│                    Execution Layer                         │
+│  Codegen SDK | Graph-Sitter | AutoGenLib | PR Generator   │
+└─────────────────────────────────────────────────────────────┘
+```
+
+## 📊 Database Schema
+
+The system uses four main database schemas:
+
+### 1. Tasks Management (`/database/schemas/tasks/`)
+- Task tracking and decomposition
+- Dependency management
+- Complexity analysis
+- Progress monitoring
+
+### 2. Codebase Management (`/database/schemas/codebase/`)
+- Repository tracking
+- File and function analysis
+- Import dependency mapping
+- Analysis session management
+
+### 3. Prompts Management (`/database/schemas/prompts/`)
+- AI prompt templates and variables
+- Execution history and metrics
+- Performance optimization
+- Feedback collection
+
+### 4. Analytics (`/database/schemas/analytics/`)
+- Comprehensive code metrics
+- Dependency graph analysis
+- Issue detection and tracking
+- Performance and security analysis
+
+## 🔧 Key Features
+
+### Comprehensive Code Analysis
+- **Cyclomatic Complexity**: Measure code complexity
+- **Halstead Volume**: Analyze operator/operand complexity
+- **Maintainability Index**: Overall code maintainability
+- **Dead Code Detection**: Find unused functions and variables
+- **Dependency Analysis**: Map code relationships and circular dependencies
+- **Architecture Patterns**: Identify and validate design patterns
+
+### Automated Improvements
+- **Dead Code Removal**: Automatically remove unused code
+- **Complexity Reduction**: Refactor high-complexity functions
+- **Dependency Fixes**: Resolve circular dependencies
+- **Code Optimization**: Performance and security improvements
+- **Test Generation**: Automated test creation
+- **Documentation**: Generate comprehensive documentation
+
+### Self-Evolution Capabilities
+- **Pattern Learning**: Learn from successful improvements
+- **Adaptive Analysis**: Adjust analysis based on project type
+- **Threshold Optimization**: Self-tune complexity thresholds
+- **Feedback Integration**: Improve based on PR acceptance rates
+
+## 🚀 Getting Started
 
 ### Prerequisites
+- Python 3.8+
+- PostgreSQL 12+
+- Node.js 16+ (for dashboard)
+- Docker (optional)
 
-1. **PostgreSQL 17** installed at `C:\Program Files\PostgreSQL\17` (Windows)
-2. **Python 3.7+** installed
-3. **Cloudflare account** with API access
-4. **Domain configured** in Cloudflare (for custom worker URL)
+### Installation
 
-### Environment Variables
-
-Set these environment variables or the script will use the provided defaults:
-
+1. **Clone the repository**
 ```bash
-CLOUDFLARE_API_TOKEN=eae82cf159577a8838cc83612104c09c5a0d6
-CLOUDFLARE_ACCOUNT_ID=2b2a1d3effa7f7fe4fe2a8c4e48681e3
-CLOUDFLARE_WORKER_NAME=neon-db
-CLOUDFLARE_WORKER_URL=https://neon-db.pixeliumperfecto.workers.dev
-
-# Optional: PostgreSQL admin credentials (if not using defaults)
-POSTGRES_ADMIN_USER=postgres
-POSTGRES_ADMIN_PASSWORD=your_postgres_password
+git clone <repository-url>
+cd self-evolving-cicd
 ```
 
-### Installation & Setup
-
-#### Option 1: Windows Batch Script (Recommended)
-```cmd
-# Clone or download the files
-# Run the batch script
-setup_postgres.bat
-```
-
-#### Option 2: Manual Python Setup
+2. **Install Python dependencies**
 ```bash
-# Install dependencies
 pip install -r requirements.txt
-
-# Run the setup script
-python cloudflare_postgres_setup.py
 ```
 
-## 🔧 What This Tool Does
-
-### 1. Database Setup
-- ✅ Checks if PostgreSQL is running locally
-- ✅ Creates a dedicated database: `codegen_db`
-- ✅ Creates a read-only user: `codegen_user`
-- ✅ Sets up proper permissions (SELECT only for security)
-- ✅ Generates secure random password
-
-### 2. Cloudflare Worker Deployment
-- ✅ Checks if worker already exists
-- ✅ Creates new worker if needed
-- ✅ Deploys proxy worker with health endpoints
-- ✅ Tests worker accessibility
-
-### 3. Configuration Management
-- ✅ Saves all credentials to `.env` file
-- ✅ Provides connection strings for Codegen
-- ✅ Shows comprehensive status report
-
-## 📊 Output Example
-
-```
-============================================================
-🐘 Cloudflare Postgres Exposure Setup for Codegen 🚀
-============================================================
-
-🔍 Step 1: Checking PostgreSQL server...
-✅ PostgreSQL server is running
-
-🔧 Step 2: Setting up database and user...
-📦 Creating database: codegen_db
-👤 Creating user: codegen_user
-✅ Database and user setup completed
-
-☁️ Step 3: Checking Cloudflare Worker...
-📝 Cloudflare Worker 'neon-db' does not exist
-🚀 Creating Cloudflare Worker...
-✅ Cloudflare Worker 'neon-db' created successfully
-
-🧪 Step 4: Testing worker deployment...
-🧪 Testing worker at: https://neon-db.pixeliumperfecto.workers.dev
-✅ Worker is accessible and healthy
-
-💾 Step 5: Saving configuration...
-✅ Environment variables saved to .env
-
-============================================================
-📊 SETUP STATUS REPORT
-============================================================
-
-🐘 DATABASE STATUS:
-   Host: localhost
-   Port: 5432
-   Database: codegen_db
-   User: codegen_user
-   Password: a1b2c3d4e5f6g7h8
-   SSL Mode: prefer
-   Status: ✅ CONNECTED
-
-☁️ CLOUDFLARE STATUS:
-   Worker Name: neon-db
-   Worker URL: https://neon-db.pixeliumperfecto.workers.dev
-   Account ID: 2b2a1d3effa7f7fe4fe2a8c4e48681e3
-   Status: ✅ WORKER ACCESSIBLE
-
-🤖 CODEGEN INTEGRATION:
-   Copy these values to Codegen Postgres settings:
-   Host: localhost
-   Port: 5432
-   Database: codegen_db
-   Username: codegen_user
-   Password: a1b2c3d4e5f6g7h8
-   SSL Mode: prefer
-
-📁 FILES CREATED:
-   .env file: C:\path\to\your\project\.env
-
-🔗 USEFUL URLS:
-   Worker Health: https://neon-db.pixeliumperfecto.workers.dev/health
-   Worker DB Info: https://neon-db.pixeliumperfecto.workers.dev/db-info
-
-============================================================
-
-🎉 Setup completed successfully!
-💡 You can now use these credentials in Codegen's Postgres integration
-```
-
-## 🔐 Security Features
-
-- **Read-Only Access**: Database user only has SELECT permissions
-- **Secure Passwords**: Auto-generated random passwords
-- **SSL Preferred**: Connections use SSL when available
-- **Environment Variables**: Sensitive data stored in `.env` file
-- **Worker Proxy**: Cloudflare Worker acts as secure proxy
-
-## 🔗 Codegen Integration
-
-After running the setup, use these credentials in Codegen's Postgres settings:
-
-1. Go to Codegen Settings → Integrations → Postgres
-2. Add new credential with these values:
-   - **Host**: `localhost`
-   - **Port**: `5432`
-   - **Database**: `codegen_db`
-   - **Username**: `codegen_user`
-   - **Password**: (from output or `.env` file)
-   - **SSL Mode**: `prefer`
-
-## 🛠️ Troubleshooting
-
-### PostgreSQL Not Running
+3. **Set up the database**
 ```bash
-# Start PostgreSQL service (Windows)
-net start postgresql-x64-17
+# Create database
+createdb selfevolving_cicd
 
-# Or start via Services.msc
+# Run migrations
+psql selfevolving_cicd < database/schemas/tasks/models.sql
+psql selfevolving_cicd < database/schemas/codebase/models.sql
+psql selfevolving_cicd < database/schemas/prompts/models.sql
+psql selfevolving_cicd < database/schemas/analytics/models.sql
 ```
 
-### Connection Issues
-- Verify PostgreSQL is accepting connections on port 5432
-- Check Windows Firewall settings
-- Ensure `pg_hba.conf` allows local connections
+4. **Configure environment variables**
+```bash
+export CODEGEN_ORG_ID="your-org-id"
+export CODEGEN_TOKEN="your-token"
+export DATABASE_URL="postgresql://user:pass@localhost/selfevolving_cicd"
+export GITHUB_TOKEN="your-github-token"
+export LINEAR_TOKEN="your-linear-token"
+export ANTHROPIC_API_KEY="your-anthropic-key"
+```
 
-### Authentication Issues
-The script tries multiple authentication methods automatically:
-1. Environment variable `POSTGRES_ADMIN_PASSWORD`
-2. Common default passwords (`postgres`, `admin`, empty)
-3. Windows username authentication
-4. Interactive prompt for credentials
+### Basic Usage
 
-**If authentication fails:**
-- Set environment variables before running:
-  ```cmd
-  set POSTGRES_ADMIN_USER=postgres
-  set POSTGRES_ADMIN_PASSWORD=your_actual_password
-  setup_postgres.bat
-  ```
-- Or run the script and enter credentials when prompted
-- Check your PostgreSQL installation's default user/password
+```python
+from examples.self_evolving_system import SelfEvolvingCICDSystem, AnalysisConfig
 
-### Cloudflare Worker Issues
-- Verify API token has Workers:Edit permissions
-- Check account ID is correct
-- Ensure domain is properly configured in Cloudflare
+# Configure the system
+config = AnalysisConfig(
+    org_id="your-org-id",
+    token="your-codegen-token",
+    db_connection_string="postgresql://user:pass@localhost/selfevolving_cicd",
+    github_token="your-github-token",
+    linear_token="your-linear-token",
+    anthropic_api_key="your-anthropic-key"
+)
 
-### Permission Errors
-- Run as Administrator if needed
-- Check PostgreSQL user permissions
-- Verify Python has write access to current directory
+# Initialize and run analysis
+system = SelfEvolvingCICDSystem(config)
+await system.initialize()
 
-## 📁 Generated Files
+# Analyze and improve a codebase
+result = await system.analyze_and_improve_codebase("owner/repository")
+print(f"Analysis completed with {len(result['improvements'])} improvements")
+```
 
-- **`.env`**: Environment variables and database credentials
-- **`cloudflare_postgres_setup.py`**: Main setup script
-- **`requirements.txt`**: Python dependencies
-- **`setup_postgres.bat`**: Windows batch script for easy setup
+## 📈 Code Analysis Example
 
-## 🔄 Re-running Setup
+The system provides comprehensive analysis using Graph-Sitter:
 
-The script is idempotent - you can run it multiple times safely:
-- Existing database and user won't be recreated
-- Existing Cloudflare Worker will be detected
-- Configuration will be updated with current values
+```python
+from graph_sitter import Codebase
 
-## 🌐 Worker Endpoints
+# Load codebase
+codebase = Codebase.from_repo('fastapi/fastapi')
 
-Your Cloudflare Worker provides these endpoints:
+# Find the most called function
+most_called = max(codebase.functions, key=lambda f: len(f.call_sites))
+print(f"Most called function: {most_called.name}")
+print(f"Called {len(most_called.call_sites)} times")
 
-- **`/health`**: Health check and status
-- **`/db-info`**: Database connection information
-- **`/`**: General worker information
+# Find dead code
+unused = [f for f in codebase.functions if len(f.call_sites) == 0]
+print(f"Found {len(unused)} unused functions")
 
-## 📞 Support
+# Find recursive functions
+recursive = [f for f in codebase.functions 
+            if any(call.name == f.name for call in f.function_calls)]
+print(f"Found {len(recursive)} recursive functions")
 
-If you encounter issues:
+# Get function context
+function = codebase.get_function("process_data")
+context = {
+    "call_sites": function.call_sites,
+    "dependencies": function.dependencies,
+    "parent": function.parent,
+    "docstring": function.docstring,
+}
 
-1. Check the detailed output for specific error messages
-2. Verify all prerequisites are met
-3. Ensure environment variables are set correctly
-4. Check PostgreSQL and Cloudflare service status
+# Use Codegen SDK for improvements
+from codegen import Agent
+agent = Agent(org_id="...", token="...")
+task = agent.run(prompt="Analyze and improve this codebase for better maintainability")
+```
 
-## 🔒 Security Notes
+## 🔄 Self-Evolution Process
 
-- This setup is designed for **development use**
-- For production, consider additional security measures:
-  - IP whitelisting
-  - VPN access
-  - More restrictive database permissions
-  - Regular credential rotation
+The system continuously improves through:
+
+1. **Analysis**: Deep codebase analysis using Graph-Sitter
+2. **Issue Detection**: Identify code quality issues and technical debt
+3. **Improvement Generation**: Create targeted improvement tasks
+4. **Execution**: Implement improvements using Codegen SDK
+5. **Validation**: Test and validate changes
+6. **Learning**: Learn from outcomes to improve future analysis
+
+## 📊 Metrics and Analytics
+
+The system tracks comprehensive metrics:
+
+- **Code Quality**: Complexity, maintainability, technical debt
+- **Performance**: Execution time, resource usage
+- **Security**: Vulnerability detection and fixes
+- **Architecture**: Design pattern compliance
+- **Test Coverage**: Automated test generation and coverage
+- **Documentation**: API documentation completeness
+
+## 🔧 SQL Operations
+
+The system includes comprehensive SQL operations for each schema:
+
+### Tasks Operations
+- `add-task.sql`: Create new tasks
+- `add-subtask.sql`: Add subtasks to existing tasks
+- `analyze-task-complexity.sql`: Calculate task complexity
+- `find-next-task.sql`: Find optimal next task to work on
+
+### Codebase Operations
+- `add-codebase.sql`: Register new codebases
+- `update-codebase.sql`: Update codebase information
+- `remove-codebase.sql`: Remove codebases
+
+### Analytics Operations
+- `analyze-codebase.sql`: Comprehensive codebase analysis
+- `list-analysis-results.sql`: Query analysis results
+
+### Prompts Operations
+- `add-prompt.sql`: Create new AI prompts
+- `expand-prompt-full.sql`: Get complete prompt context
+
+## 🚀 Advanced Features
+
+### Dashboard Integration
+- **Project Selection**: Browse and select from 150+ GitHub projects
+- **Real-time Updates**: Live PR and branch status
+- **Requirements Management**: Edit REQUIREMENTS.md files
+- **Webhook Integration**: Automatic updates from GitHub events
+
+### AI-Powered Chat
+- **Conversational Interface**: Natural language codebase interaction
+- **Context-Aware**: Uses full codebase context for responses
+- **Improvement Suggestions**: AI-generated improvement recommendations
+
+### Automated PR Generation
+- **Smart Improvements**: Targeted code improvements
+- **Comprehensive Testing**: Automated test validation
+- **Detailed Descriptions**: Clear PR descriptions with impact analysis
+
+## 🔒 Security and Safety
+
+- **Automated Testing**: All changes validated with test suites
+- **Human Review**: Configurable approval workflows
+- **Rollback Mechanisms**: Quick reversion of problematic changes
+- **Access Controls**: Role-based permissions
+- **Audit Logging**: Complete audit trail
+
+## 📚 Documentation
+
+- [Architecture Documentation](docs/SELF_EVOLVING_CICD_ARCHITECTURE.md)
+- [Database Schema](database/schemas/)
+- [API Reference](docs/api/)
+- [Examples](examples/)
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests
+5. Submit a pull request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 🙏 Acknowledgments
+
+- **Graph-Sitter**: For powerful code analysis capabilities
+- **Codegen**: For automated code generation and improvement
+- **AutoGenLib**: For enhanced code generation features
+- **Linear**: For project management integration
+- **GitHub**: For version control and collaboration
+
+---
+
+Built with ❤️ for the future of automated software development
+
