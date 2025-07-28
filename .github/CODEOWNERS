@@ -1,0 +1,14 @@
+# Global code owners
+* @Zeeeepa
+
+# GitHub workflows and scripts
+.github/ @Zeeeepa
+
+# Core source code
+src/ @Zeeeepa
+
+# Configuration files
+*.json @Zeeeepa
+*.js @Zeeeepa
+*.ts @Zeeeepa
+

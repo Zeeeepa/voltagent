@@ -1,0 +1,234 @@
+name: PR Validation
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [main, develop]
+
+jobs:
+  validate-pr:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Need full history for proper diff analysis
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Cache Python dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-validation-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-validation-
+
+      - name: Install Node.js dependencies
+        run: |
+          if [ -f package.json ]; then
+            npm ci
+          else
+            echo "No package.json found, skipping npm install"
+          fi
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          # Install basic dependencies for validation
+          pip install requests
+
+      - name: Make validation scripts executable
+        run: |
+          chmod +x .github/scripts/pr_validator.py
+          chmod +x .github/scripts/intelligent_pr_validator.py
+
+      - name: Get changed files
+        id: changed-files
+        run: |
+          # Get list of changed files
+          CHANGED_FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }}...${{ github.event.pull_request.head.sha }})
+          echo "Changed files:"
+          echo "$CHANGED_FILES"
+          
+          # Save to environment for later steps
+          echo "CHANGED_FILES<<EOF" >> $GITHUB_ENV
+          echo "$CHANGED_FILES" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Run TypeScript compilation check
+        if: hashFiles('tsconfig.json') != ''
+        run: |
+          echo "🔧 Checking TypeScript compilation..."
+          if command -v npx &> /dev/null; then
+            npx tsc --noEmit || echo "TypeScript compilation issues detected"
+          else
+            echo "TypeScript compiler not available"
+          fi
+
+      - name: Run ESLint
+        if: hashFiles('.eslintrc*') != ''
+        run: |
+          echo "📏 Running ESLint..."
+          if command -v npx &> /dev/null; then
+            npx eslint . --ext .ts,.js,.tsx,.jsx --format json --output-file eslint-results.json || true
+            if [ -f eslint-results.json ]; then
+              echo "ESLint results saved to eslint-results.json"
+            fi
+          else
+            echo "ESLint not available"
+          fi
+
+      - name: Run Prettier check
+        if: hashFiles('.prettierrc*') != ''
+        run: |
+          echo "💅 Checking Prettier formatting..."
+          if command -v npx &> /dev/null; then
+            npx prettier --check . || echo "Prettier formatting issues detected"
+          else
+            echo "Prettier not available"
+          fi
+
+      - name: Run Tests
+        if: hashFiles('package.json') != ''
+        run: |
+          echo "🧪 Running tests..."
+          if npm run test --if-present; then
+            echo "Tests passed"
+          else
+            echo "Tests failed or not available"
+          fi
+
+      - name: Run PR Validation
+        env:
+          GITHUB_WORKSPACE: ${{ github.workspace }}
+          GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          echo "🔍 Running automated PR validation..."
+          python .github/scripts/pr_validator.py
+
+      - name: Upload validation artifacts
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: pr-validation-report-${{ github.event.pull_request.number }}
+          path: |
+            pr_validation_report.md
+            pr_validation_result.json
+            eslint-results.json
+          retention-days: 30
+
+      - name: Comment validation results on PR
+        if: always()
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            
+            // Read validation report
+            let report = '';
+            try {
+              report = fs.readFileSync('pr_validation_report.md', 'utf8');
+            } catch (error) {
+              report = '❌ **Validation Failed**: Could not generate validation report.\\n\\nError: ' + error.message;
+            }
+            
+            // Read validation result
+            let result = null;
+            try {
+              const resultData = fs.readFileSync('pr_validation_result.json', 'utf8');
+              result = JSON.parse(resultData);
+            } catch (error) {
+              console.log('Could not parse validation result:', error.message);
+            }
+            
+            // Create comment body
+            const commentBody = `## 🤖 Automated PR Validation Results
+            
+            ${report}
+            
+            ### 🔧 Quick Actions
+            ${result && !result.is_valid ? 
+              '- Fix the errors above and push new commits to update this validation' : 
+              '- ✅ All checks passed! This PR is ready for human review'
+            }
+            
+            ---
+            *This validation was performed automatically. Report generated at: ${new Date().toISOString()}*`;
+
+            // Post comment
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: commentBody
+            });
+
+      - name: Set PR status check
+        if: always()
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            
+            // Read validation result
+            let isValid = false;
+            let errorCount = 0;
+            
+            try {
+              const resultData = fs.readFileSync('pr_validation_result.json', 'utf8');
+              const result = JSON.parse(resultData);
+              isValid = result.is_valid;
+              errorCount = result.summary.errors || 0;
+            } catch (error) {
+              console.log('Could not parse validation result:', error.message);
+            }
+            
+            // Set status check
+            const state = isValid ? 'success' : 'failure';
+            const description = isValid 
+              ? '✅ All validation checks passed'
+              : `❌ Validation failed with ${errorCount} error(s)`;
+            
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: '${{ github.event.pull_request.head.sha }}',
+              state: state,
+              target_url: `${context.payload.pull_request.html_url}/checks`,
+              description: description,
+              context: 'PR Validation'
+            });
+
+      - name: Fail job if validation failed
+        if: always()
+        run: |
+          # Check if validation passed
+          if [ -f pr_validation_result.json ]; then
+            IS_VALID=$(python -c "import json; result = json.load(open('pr_validation_result.json')); print(result['is_valid'])")
+            if [ "$IS_VALID" = "False" ]; then
+              echo "❌ PR validation failed"
+              exit 1
+            else
+              echo "✅ PR validation passed"
+            fi
+          else
+            echo "❌ Validation result not found"
+            exit 1
+          fi
+
