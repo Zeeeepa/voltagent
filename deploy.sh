@@ -312,57 +312,6 @@ EOF
     log_success "Startup script 'start-all.sh' created."
 }
 
-# --- Fix GitHub Private Key Format ---
-fix_github_private_key() {
-    log_info "Fixing GitHub private key format in environment files..."
-    
-    # The private key needs proper line breaks for RSA format
-    FIXED_PRIVATE_KEY="-----BEGIN RSA PRIVATE KEY-----
-MIIEpAIBAAKCAQEAtUlGIe5pVo8j0rUV7E8+SdXreSNqcbCBotJnQ4WR4WzxjCLm
-z8etfUi7e0446AqXPxgec+RgYNpv9S5pJWbuqYFYmKM0GSGiPSrthx4m4RGKWTg3
-fhRXvvKCUuV8EZXH9bGHOAsqw8/VLVIfiZOSoKC0A9UzwV9NVK38EcPBWRevefaz
-tggWEsqqpOOA2fZZCqWHzfHgieyQzHhXSGTq9I3Z6UgL2rXuNLaqBE/u5wAEaVOy
-/EB7XspyyFUHQbzmIZdwMx1EkDvVQBHQfUigC6MQc4QbPE7Q8W950ZiG05PUn/ot
-WsUAIYfhIFxOe1rdX6TKRiFF8HeJu9oDwuv2oQIDAQABAoIBAQCrreis2YsIXiYe
-tT89uw3R/rQw1ElJwU4DVB5W43dzdCiL/cF3pDG4I9jovPtHREBXkA/G0NA06Kh+
-GKWatg/uln/AjU4ZPrDWHIE1JGjNXD8YnxRuYfV271JcDtegD6h+FNFpUan+JiRL
-9ynGr+p8E7RmrNGGnyost1evuyKvqxPYW23QaIWxW6VIVAsmdQ6dPYunO5wS/i7n
-x7A66dTwGrrIS1oxz01tfwJXyYNooHGDKxYb9HQnNEdVqHVzUTsPT77WXrBA3QBb
-AcK6DrI5GzIR0WxnaIoSxZ9wXVaSFK1LJg9zY/NqsigdbEuL/xcWW4O4w1c2ZIC
-lX9yqIABAoGBAPGsBi7KfNwfsT30gG46Z6FEMHy6KNbruFyLhmArumP3SThvRbf1
-fw6KW/ebM0gFQJihPuepQ5O4MavlXjuuvO+JbhhqshGKti8SRQQK/8ATb+MNFwS
-BEAxyB4zfNagj4kjRv4tZh8J68QUJNvSU+Lg9ZbYR9yUnC8x2ENs9LrBAoGBAMAI
-vsxpTozurAqJNnHg9YTy0pbnZ+CS8TW/PC2dQGfdMfmRvhPB24bQVCQTwVySK8ZI
-8yyL07hyrLKW3kOzIwSJBIBsBV28HpOdDVDNqJ9tnM9dbj6RW3DNiz+ZQfQPpv0H
-GOU35/axVnYYsmR0fUQ6Wq699tyF3jI7LRpBV5PhAoGAJGsb82koL7PG7eMuh23d
-t/uioukaxmh3O9r6wPtV90KIkiySgQpW2M+a9vS5yJ+RCu71w0VA8ksIrGhBShwP
-qDN7U7HEHrIUOt0E1jUprB/Ll5X1PfqpEVNvKL3xjhZcCvp59Eu7G+pO0RmIBGhJ
-o+Lqn3SwP5lVf/cu89ozdwECgYEAo1DMs5t7qm/w8KTxILhpFcBNSPlUZrGRYlxZ
-GZH7DFoZ/l3sgXEE+gqDBIuojsnhYKj55pCkZuFf7iJQtNLMnTbKFU3I4obymief
-A3FkTvIxwkl7UMreMXkdS+FTLfWB1v8KNSbup+b52UX3sWdAgZ3/MU1tfO58ocuh
-+ApKKQECgYBh9nZt71xoQwZNvF1f6oz5Frovt3iyz0+9VspxQl3jfSt3r+u6RKji0
-UeVr+E8TKwRv+s0L8cldMfGOOs1bGQWpYUlkjI6402SVytXFEygEr5ARARCIanX5
-D2WDdIlCKdkmycpaXbEc9IBmmeILhTi+CET+zsqEnTGbNd0HC5SJZQ==
------END RSA PRIVATE KEY-----"
-
-    # Update both environment files with properly formatted private key
-    if [ -f "apps/web/.env" ]; then
-        # Create a temporary file with the corrected private key
-        sed '/^GITHUB_APP_PRIVATE_KEY=/,/^-----END RSA PRIVATE KEY-----"$/c\
-GITHUB_APP_PRIVATE_KEY="'"$FIXED_PRIVATE_KEY"'"' apps/web/.env > apps/web/.env.tmp
-        mv apps/web/.env.tmp apps/web/.env
-    fi
-
-    if [ -f "apps/open-swe/.env" ]; then
-        # Create a temporary file with the corrected private key
-        sed '/^GITHUB_APP_PRIVATE_KEY=/,/^-----END RSA PRIVATE KEY-----"$/c\
-GITHUB_APP_PRIVATE_KEY="'"$FIXED_PRIVATE_KEY"'"' apps/open-swe/.env > apps/open-swe/.env.tmp
-        mv apps/open-swe/.env.tmp apps/open-swe/.env
-    fi
-
-    log_success "GitHub private key format fixed."
-}
-
 # --- Display Final Instructions ---
 display_instructions() {
     echo ""
@@ -396,7 +345,6 @@ main() {
     install_dependencies
     build_project
     create_environment_files
-    fix_github_private_key
     create_startup_scripts
     display_instructions
 
