@@ -1,6 +1,10 @@
 import Head from "@docusaurus/Head";
 import Link from "@docusaurus/Link";
-import { ArrowLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowLeftIcon,
+  ArrowTopRightOnSquareIcon,
+  ChevronRightIcon,
+} from "@heroicons/react/24/outline";
 import { MDXProvider } from "@mdx-js/react";
 import Layout from "@theme/Layout";
 import MDXComponents from "@theme/MDXComponents";
@@ -167,10 +171,10 @@ export default function ExampleProjectPage({
         <meta name="twitter:title" content={`${example.title} - VoltAgent Example`} />
         <meta name="twitter:description" content={seoDescription} />
       </Head>
-      <main className="flex-1">
+      <main className="flex-1 bg-[#0a0a0a] bg-transparent">
         <DotPattern dotColor="#94a3b8" dotSize={1.2} spacing={20} />
 
-        <section className="relative py-20">
+        <section className="relative py-20 bg-[#0a0a0a] bg-transparent">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-8">
             {/* Back Button */}
             <motion.div
@@ -198,13 +202,13 @@ export default function ExampleProjectPage({
               <div className="absolute -top-24 -right-16 h-56 w-56 rounded-full bg-emerald-500/30 blur-3xl" />
               <div className="absolute -bottom-12 -left-10 h-48 w-48 rounded-full bg-emerald-400/20 blur-[100px]" />
 
-              {/* GitHub Button - Top Right */}
+              {/* GitHub Button - Top Right - Hidden on mobile */}
               {repositoryUrl ? (
                 <a
                   href={repositoryUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="absolute top-6 right-6 z-20 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-400 shadow-lg shadow-emerald-500/30 transition hover:bg-emerald-300 hover:scale-105 no-underline"
+                  className="hidden sm:inline-flex absolute top-6 right-6 z-20 items-center gap-2 px-4 py-2 rounded-xl bg-emerald-400 shadow-lg shadow-emerald-500/30 transition hover:bg-emerald-300 hover:scale-105 no-underline"
                   title="View Source Code"
                 >
                   <svg className="w-5 h-5 text-black" fill="currentColor" viewBox="0 0 24 24">
@@ -249,7 +253,7 @@ export default function ExampleProjectPage({
                         href={repositoryUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center justify-center rounded-xl bg-emerald-400 px-5 py-2 text-sm font-semibold text-black shadow-lg shadow-emerald-500/30 transition hover:bg-emerald-300 hover:text-black no-underline"
+                        className="sm:hidden inline-flex items-center justify-center rounded-xl bg-emerald-400 px-5 py-2 text-sm font-semibold text-black shadow-lg shadow-emerald-500/30 transition hover:bg-emerald-300 hover:text-black no-underline"
                       >
                         Source Code
                       </a>
@@ -258,9 +262,10 @@ export default function ExampleProjectPage({
                       href="https://github.com/VoltAgent/voltagent/tree/main/examples"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center justify-center rounded-xl border border-solid border-emerald-400/40 px-5 py-2 text-sm font-semibold text-emerald-200 transition hover:bg-emerald-400/10 no-underline"
+                      className="inline-flex items-center justify-center gap-2 rounded-xl border border-solid border-emerald-400/40 px-5 py-2 text-sm font-semibold text-emerald-200 transition hover:bg-emerald-400/10 no-underline"
                     >
                       Other Mini Examples
+                      <ArrowTopRightOnSquareIcon className="w-4 h-4" />
                     </a>
                   </div>
                 </div>
@@ -275,7 +280,7 @@ export default function ExampleProjectPage({
               className="flex justify-center"
             >
               <div className="flex w-full max-w-6xl gap-10">
-                <div className="flex-1 min-w-0 space-y-6 text-gray-300 [&_strong]:text-white [&_a]:text-[#00d992] [&_a:hover]:text-[#00c182] [&_code]:text-[#00d992] [&_blockquote]:border-l-4 [&_blockquote]:border-[#00d992] [&_blockquote]:pl-4 [&_blockquote]:py-2 [&_blockquote]:italic [&_h2]:text-emerald-400 [&_h3]:text-emerald-400 [&_h4]:text-emerald-400 [&_h5]:text-emerald-400 [&_h6]:text-emerald-400 [&_details]:my-6 [&_details>summary::-webkit-details-marker]:hidden [&_pre]:overflow-x-auto [&_pre]:max-w-full">
+                <div className="flex-1 min-w-0 space-y-6 text-[#b4b4b4] [&_strong]:text-white [&_a]:text-[#00d992] [&_a:hover]:text-[#00c182] [&_code]:text-[#00d992] [&_blockquote]:border-l-4 [&_blockquote]:border-[#00d992] [&_blockquote]:pl-4 [&_blockquote]:py-2 [&_blockquote]:italic [&_h2]:text-emerald-400 [&_h3]:text-emerald-400 [&_h4]:text-emerald-400 [&_h5]:text-emerald-400 [&_h6]:text-emerald-400 [&_details]:my-6 [&_details>summary::-webkit-details-marker]:hidden [&_pre]:overflow-x-auto [&_pre]:max-w-full">
                   <MDXProvider components={mdxComponents}>
                     {React.createElement(content)}
                   </MDXProvider>

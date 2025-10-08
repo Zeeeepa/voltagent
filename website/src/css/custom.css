@@ -200,7 +200,6 @@ html[data-theme="dark"] .theme-doc-markdown p {
 .theme-doc-markdown pre {
   margin: 1.5rem 0;
   border-radius: 6px;
-  border: 1px solid rgba(48, 54, 61, 0.6);
   box-shadow: none;
   background-color: #010409 !important;
 }
@@ -313,12 +312,16 @@ pre code,
 .theme-code-block {
   border-radius: 8px;
   overflow: hidden;
+  border: 1px solid #30363d99
 }
 
 .theme-code-block pre {
   border-radius: 8px;
   margin: 0;
 }
+
+
+
 
 /* Keep copy button always visible */
 .theme-code-block button[class*="copyButton"],
@@ -5368,4 +5371,51 @@ nav.table-of-contents .table-of-contents__link--active,
 /* Sandpack */
 .sp-pristine {
   background-color: #000 !important;
+}
+
+/* Examples page heading colors and font weight */
+body:has([class*="ExampleProjectPage"]) main h1,
+body:has([class*="ExampleProjectPage"]) main h2,
+body:has([class*="ExampleProjectPage"]) main h3,
+body:has([class*="ExampleProjectPage"]) main h4,
+body:has([class*="ExampleProjectPage"]) main h5,
+body:has([class*="ExampleProjectPage"]) main h6 {
+  color: #f2f2f2 !important;
+  font-weight: 500 !important;
+}
+
+/* Docs and Blog page heading font weight */
+article.theme-doc-markdown h1,
+article.theme-doc-markdown h2,
+article.theme-doc-markdown h3,
+article.theme-doc-markdown h4,
+article.theme-doc-markdown h5,
+article.theme-doc-markdown h6,
+.theme-blog-post-page h1,
+.theme-blog-post-page h2,
+.theme-blog-post-page h3,
+.theme-blog-post-page h4,
+.theme-blog-post-page h5,
+.theme-blog-post-page h6 {
+  font-weight: 500 !important;
+}
+
+/* Examples page background color */
+body:has([class*="ExampleProjectPage"]) {
+  background-color: #0a0a0a !important;
+}
+
+body:has([class*="ExampleProjectPage"]) main {
+  background-color: #0a0a0a !important;
+}
+
+body:has([class*="ExampleProjectPage"]) section {
+  background-color: #0a0a0a !important;
+}
+
+/* Examples page text color */
+body:has([class*="ExampleProjectPage"]) main,
+body:has([class*="ExampleProjectPage"]) main p,
+body:has([class*="ExampleProjectPage"]) main div {
+  color: #d1d5db !important;
 }
