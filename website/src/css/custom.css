@@ -125,7 +125,7 @@ html[data-theme="dark"] {
 }
 
 
-/* Blog ve Docs için tüm heading'ler 500 */
+/* All headings font-weight 500 for Blog and Docs */
 .blog-content h1,
 .blog-content h2,
 .blog-content h3,
@@ -4424,10 +4424,10 @@ code .token.coord {
   background-color: transparent !important;
 }
 
-/* Root level section başlıkları (GETTING STARTED, AGENTS, vb.) */
+/* Root level section headers (GETTING STARTED, AGENTS, etc.) */
 .menu__list-item-collapsible .menu__link {
   font-weight: 600 !important;
-  color: #ffffff !important; /* Default beyaz, emerald sadece root level için override edilecek */
+  color: #ffffff !important; /* Default white, emerald will only override for root level */
   font-size: 0.75rem !important;
   text-transform: uppercase !important;
   letter-spacing: 0.05em !important;
@@ -4442,7 +4442,7 @@ code .token.coord {
   cursor: pointer !important;
 }
 
-/* Root level'ı beyaz yap */
+/* Make root level white */
 .theme-doc-sidebar-item-category-level-1 .menu__list-item-collapsible .menu__link {
   color: #ffffff !important;
 }
@@ -4468,7 +4468,7 @@ code .token.coord {
   color: #ffffff !important;
 }
 
-/* Sadece root level section başlıkları beyaz (GETTING STARTED, AGENTS, vb.) */
+/* Only root level section headers white (GETTING STARTED, AGENTS, etc.) */
 .theme-doc-sidebar-item-category-level-1 > .menu__list-item-collapsible .menu__link,
 [data-theme="dark"]
   .theme-doc-sidebar-item-category-level-1
@@ -4528,7 +4528,7 @@ code .token.coord {
   color: #ffffff !important;
 }
 
-/* Submenu Items - Level 2 (nested dropdown içindekiler) */
+/* Submenu Items - Level 2 (items inside nested dropdown) */
 .menu__list .menu__list .menu__list {
   padding-left: 0 !important;
   margin-left: 1rem !important;
@@ -4540,12 +4540,12 @@ code .token.coord {
   position: relative !important;
 }
 
-/* Submenu Items - Level 3+ (çok derin nested) */
+/* Submenu Items - Level 3+ (deeply nested) */
 .menu__list .menu__list .menu__list .menu__list .menu__link {
   padding-left: 3.5rem !important;
 }
 
-/* Level 2 nested dropdown headers (Serverless Platforms gibi) - beyaz olmalı */
+/* Level 2 nested dropdown headers (like Serverless Platforms) - should be white */
 .menu__list .menu__list .menu__list-item-collapsible .menu__link {
   padding-left: 1rem !important;
   color: #ffffff !important;
