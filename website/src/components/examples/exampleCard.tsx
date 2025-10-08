@@ -18,12 +18,12 @@ export const ExampleCard = ({ example }: ExampleCardProps) => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        className="group border-solid bg-gradient-to-br from-white/[0.07] to-white/[0.02] border-[#1e293b]/50 border rounded-xl overflow-hidden transition-all duration-300 h-full hover:border-[#00d992]/40 hover:shadow-lg hover:shadow-[#00d992]/10 cursor-pointer relative"
-        style={{
-          backdropFilter: "blur(8px)",
-          WebkitBackdropFilter: "blur(8px)",
-        }}
+        className="group relative border-solid bg-gradient-to-br from-emerald-500/20 via-slate-900/70 to-slate-900/30 border-emerald-500/20 border rounded-xl overflow-hidden transition-all duration-300 h-full hover:border-emerald-500/40 hover:shadow-2xl hover:shadow-emerald-600/20 cursor-pointer shadow-2xl shadow-emerald-600/20"
       >
+        {/* Glow effects */}
+        <div className="absolute -top-12 -right-8 h-32 w-32 rounded-full bg-emerald-500/30 blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-6 -left-5 h-24 w-24 rounded-full bg-emerald-400/20 blur-[100px] pointer-events-none" />
+
         {/* Gradient overlay on hover */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#00d992]/0 to-[#00d992]/0 group-hover:from-[#00d992]/5 group-hover:to-transparent transition-all duration-300 pointer-events-none" />
 
