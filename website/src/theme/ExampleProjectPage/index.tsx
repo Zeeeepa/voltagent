@@ -280,7 +280,7 @@ export default function ExampleProjectPage({
               className="flex justify-center"
             >
               <div className="flex w-full max-w-6xl gap-10">
-                <div className="flex-1 min-w-0 space-y-6 text-[#b4b4b4] [&_strong]:text-white [&_a]:text-[#00d992] [&_a:hover]:text-[#00c182] [&_code]:text-[#00d992] [&_blockquote]:border-l-4 [&_blockquote]:border-[#00d992] [&_blockquote]:pl-4 [&_blockquote]:py-2 [&_blockquote]:italic [&_h2]:text-emerald-400 [&_h3]:text-emerald-400 [&_h4]:text-emerald-400 [&_h5]:text-emerald-400 [&_h6]:text-emerald-400 [&_details]:my-6 [&_details>summary::-webkit-details-marker]:hidden [&_pre]:overflow-x-auto [&_pre]:max-w-full">
+                <div className="flex-1 min-w-0 space-y-6 text-[#b4b4b4] [&_strong]:text-white [&_a]:text-[#00d992] [&_a:hover]:text-[#00c182] [&_code]:text-[#00d992] [&_blockquote]:border-l-4 [&_blockquote]:border-[#00d992] [&_blockquote]:pl-4 [&_blockquote]:py-2 [&_blockquote]:italic [&_h1]:text-[#f2f2f2] [&_h1]:font-medium [&_h2]:text-[#f2f2f2] [&_h2]:font-medium [&_h3]:text-[#f2f2f2] [&_h3]:font-medium [&_h4]:text-[#f2f2f2] [&_h4]:font-medium [&_h5]:text-[#f2f2f2] [&_h5]:font-medium [&_h6]:text-[#f2f2f2] [&_h6]:font-medium [&_details]:my-6 [&_details>summary::-webkit-details-marker]:hidden [&_pre]:overflow-x-auto [&_pre]:max-w-full">
                   <MDXProvider components={mdxComponents}>
                     {React.createElement(content)}
                   </MDXProvider>
