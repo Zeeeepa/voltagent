@@ -207,6 +207,30 @@
   border-color: rgba(148, 163, 184, 0.3);
 }
 
+.ctaButton {
+  width: auto;
+  padding: 0 0.85rem;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: rgba(52, 211, 153, 0.92);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+
+
+.ctaIcon {
+  width: 16px;
+  height: 16px;
+}
+
+.socialIconHome {
+  width: 18px;
+  height: 18px;
+  color: rgba(226, 232, 240, 0.92);
+}
+
 .socialIconDiscord {
   width: 18px;
   height: 18px;
@@ -312,6 +336,22 @@
 
 [data-theme='light'] .socialButton {
   background: transparent;
+}
+
+[data-theme='light'] .ctaButton {
+  color: #047857;
+  background: rgba(16, 185, 129, 0.12);
+  border-color: rgba(5, 150, 105, 0.45);
+}
+
+[data-theme='light'] .ctaButton:hover {
+  background: rgba(16, 185, 129, 0.16);
+  border-color: rgba(5, 150, 105, 0.6);
+  color: #065f46;
+}
+
+[data-theme='light'] .socialIconHome {
+  color: #0f172a;
 }
 
 [data-theme='light'] .socialIconGitHub {
