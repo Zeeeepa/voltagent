@@ -274,7 +274,7 @@ pre code,
 .theme-code-block {
   border-radius: 8px;
   overflow: hidden;
-  border: 1px solid #30363d99
+  border: 1px solid #30363d99;
 }
 
   .theme-code-block pre {
