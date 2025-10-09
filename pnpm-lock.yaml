@@ -2160,6 +2160,43 @@ importers:
         specifier: ^5.8.2
         version: 5.9.2
 
+  examples/with-youtube-to-blog:
+    dependencies:
+      '@ai-sdk/openai':
+        specifier: ^2.0.2
+        version: 2.0.42(zod@3.25.76)
+      '@voltagent/cli':
+        specifier: ^0.1.11
+        version: link:../../packages/cli
+      '@voltagent/core':
+        specifier: ^1.1.24
+        version: link:../../packages/core
+      '@voltagent/libsql':
+        specifier: ^1.0.7
+        version: link:../../packages/libsql
+      '@voltagent/logger':
+        specifier: ^1.0.2
+        version: link:../../packages/logger
+      '@voltagent/server-hono':
+        specifier: ^1.0.16
+        version: link:../../packages/server-hono
+      ai:
+        specifier: ^5.0.12
+        version: 5.0.59(zod@3.25.76)
+      zod:
+        specifier: ^3.25.76
+        version: 3.25.76
+    devDependencies:
+      '@types/node':
+        specifier: ^24.2.1
+        version: 24.6.2
+      tsx:
+        specifier: ^4.19.3
+        version: 4.20.4
+      typescript:
+        specifier: ^5.8.2
+        version: 5.9.2
+
   examples/with-zapier-mcp:
     dependencies:
       '@ai-sdk/amazon-bedrock':
