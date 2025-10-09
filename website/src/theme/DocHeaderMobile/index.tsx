@@ -2,6 +2,7 @@ import Link from "@docusaurus/Link";
 import { useActiveDocContext } from "@docusaurus/plugin-content-docs/client";
 import { useLocation } from "@docusaurus/router";
 import { useDocsSidebar, useNavbarMobileSidebar } from "@docusaurus/theme-common/internal";
+import { HomeIcon } from "@heroicons/react/24/outline";
 import NavbarColorModeToggle from "@theme/Navbar/ColorModeToggle";
 import React, { useMemo } from "react";
 import styles from "./styles.module.css";
@@ -89,6 +90,9 @@ export default function DocHeaderMobile() {
             <line x1="21" y1="21" x2="16.65" y2="16.65" />
           </svg>
         </button>
+        <Link to="/" className={styles.iconBtn} aria-label="Home">
+          <HomeIcon width={18} height={18} aria-hidden />
+        </Link>
         <Link
           to="https://s.voltagent.dev/discord"
           className={styles.iconBtn}

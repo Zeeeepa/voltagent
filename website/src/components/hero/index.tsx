@@ -114,7 +114,7 @@ export function Hero() {
         <div>
           {/* Main Heading */}
           <h2
-            className={`text-2xl text-left mb-2 font-bold transition-all duration-1000 ${
+            className={`text-2xl text-left mb-2 font-bold transition-all duration-1000 tracking-[-0.025em] ${
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
             }`}
           >
@@ -140,7 +140,7 @@ export function Hero() {
           </h2>
 
           <h1
-            className={`text-4xl sm:text-5xl text-neutral-100 md:text-6xl font-bold text-left mb-6 transition-all duration-1000 ${
+            className={`text-4xl sm:text-5xl text-neutral-100 md:text-6xl font-bold text-left mb-6 transition-all duration-1000 tracking-[-0.025em] ${
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
             }`}
           >

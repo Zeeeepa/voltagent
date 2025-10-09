@@ -17,7 +17,7 @@ This example includes a WhatsApp AI agent that:
 - Maintains conversation context using working memory
 - Stores all orders persistently in the database
 
-### Setup
+## Setup
 
 <Info title="Before you begin, line up these accounts and keys:">
 - Sign in to [VoltOps LLM Observability platfrom](https://console.voltagent.dev/login)
@@ -26,7 +26,7 @@ This example includes a WhatsApp AI agent that:
 - An OpenAI API key from [platform.openai.com](https://platform.openai.com/api-keys)
 </Info>
 
-#### Get the example code
+### Get the example code
 
 Use the VoltAgent CLI to get the WhatsApp order AI agent example from our repository:
 
@@ -37,8 +37,7 @@ cd with-whatsapp
 
 You can find the source code of this example [here](https://github.com/VoltAgent/voltagent/tree/main/examples/with-whatsapp).
 
-
-#### Configure environment variables
+### Configure environment variables
 
 Create a `.env` file with your API keys:
 
@@ -60,7 +59,7 @@ VOLTAGENT_PUBLIC_KEY=your_public_key
 VOLTAGENT_SECRET_KEY=your_secret_key
 ```
 
-#### Set up the database
+### Set up the database
 
 First, set up your Supabase database:
 
@@ -73,7 +72,7 @@ For detailed Supabase setup instructions, see the [official Supabase documentati
 
 ![supabase table](https://cdn.voltagent.dev/examples/with-whatsapp/supabase.png)
 
-#### Menu Items Table
+### Menu Items Table
 
 ```sql
 CREATE TABLE public.menu_items (
@@ -88,7 +87,7 @@ CREATE TABLE public.menu_items (
 CREATE INDEX idx_menu_items_category ON public.menu_items(category);
 ```
 
-#### Orders Table
+### Orders Table
 
 ```sql
 CREATE TABLE public.orders (
@@ -104,7 +103,7 @@ CREATE TABLE public.orders (
 CREATE INDEX idx_orders_status ON public.orders(status);
 ```
 
-#### Order Items Table
+### Order Items Table
 
 ```sql
 CREATE TABLE public.order_items (
@@ -120,7 +119,7 @@ CREATE INDEX idx_order_items_order_id ON public.order_items(order_id);
 CREATE INDEX idx_order_items_menu_item_id ON public.order_items(menu_item_id);
 ```
 
-#### Sample Menu Data
+### Sample Menu Data
 
 ```sql
 INSERT INTO menu_items (category, name, description, price) VALUES
@@ -239,7 +238,7 @@ export const listMenuItemsTool = createTool({
 
 **What this tool does:** Fetches menu items from Supabase with optional pagination, returning a structured response that keeps error handling and schema validation in one place so the agent can safely show the menu whenever a conversation starts.
 
-### Create Order Tool
+## Create Order Tool
 
 This tool processes and saves customer orders to the database:
 
@@ -339,7 +338,7 @@ export const createOrderTool = createTool({
 
 **Working memory integration:** This tool demonstrates how VoltAgent's working memory maintains conversation context across messages - the AI agent remembers cart items and delivery details without requiring the customer to repeat information.
 
-### Check Order Status Tool
+## Check Order Status Tool
 
 This tool allows customers to check the status of their orders:
 
@@ -477,7 +476,7 @@ export const checkOrderStatusTool = createTool({
 
 **What this tool does:** Pulls recent orders for the current WhatsApp user, optionally filtering by ID, so the agent can answer “Where is my order?” questions with up-to-date status information without exposing anyone else’s data.
 
-### The Complete Application Structure
+## The Complete Application Structure
 
 Now let's examine the complete `src/index.ts` file that brings everything together:
 
@@ -597,7 +596,7 @@ new VoltAgent({
 
 Let's understand each section of this code:
 
-### Working Memory Schema
+## Working Memory Schema
 
 We defined the conversation state structure using Zod:
 
@@ -702,7 +701,7 @@ Always be friendly and helpful. Start with "Welcome!" greeting.`,
 - Memory integration maintains conversation context across messages
 - `name: "with-whatsapp"` identifies the agent in logs and traces
 
-### WhatsApp Webhook Integration
+## WhatsApp Webhook Integration
 
 <Info title="Connect your Meta app">
 Work through the [WhatsApp Cloud API onboarding guide](https://developers.facebook.com/docs/whatsapp/cloud-api/get-started) to create a Meta app, provision a WhatsApp Business account, and register your webhook URL. The verification token, access token, and phone number ID you generate there drop straight into `.env` as `WHATSAPP_WEBHOOK_TOKEN`, `WHATSAPP_ACCESS_TOKEN`, and `WHATSAPP_PHONE_NUMBER_ID`, which the webhook handlers expect.
@@ -842,7 +841,7 @@ export async function handleWhatsAppMessage(c: Context, agent: Agent) {
 
 </details>
 
-#### Function Breakdown
+### Function Breakdown
 
 **1. `sendWhatsAppMessage`** wraps the Meta Graph API call, adds the required auth headers, and logs any failures so you know whether WhatsApp actually accepted the reply.
 
@@ -901,7 +900,7 @@ new VoltAgent({
 - Custom server configuration allows WhatsApp-specific routing
 - Async handlers support concurrent message processing
 
-### Running the AI Agent
+## Running the AI Agent
 
 Once deployed, your AI agent handles natural conversations.
 
@@ -909,7 +908,7 @@ Once deployed, your AI agent handles natural conversations.
 
 Here are example interactions:
 
-#### Example Conversation 1: First-time Order
+### Example Conversation 1: First-time Order
 
 ```
 Customer: Hi
@@ -951,7 +950,7 @@ Agent: Thank you! Order #1057 confirmed!
 We'll notify you when your order is on the way!
 ```
 
-#### Example Conversation 2: Checking Order Status
+### Example Conversation 2: Checking Order Status
 
 ```
 Customer: What's the status of my order?

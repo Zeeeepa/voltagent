@@ -8,7 +8,7 @@ import type { Props } from "@theme/DocRoot/Layout/Main";
 import clsx from "clsx";
 import React, { useMemo } from "react";
 
-import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
+import { ArrowRightIcon, ArrowTopRightOnSquareIcon, HomeIcon } from "@heroicons/react/24/outline";
 import styles from "./styles.module.css";
 
 export default function DocRootLayoutMain({
@@ -71,33 +71,52 @@ export default function DocRootLayoutMain({
       )}
     >
       <div className={styles.docHeader}>
-        <div className={styles.tabList} role="tablist" aria-label="Documentation sections">
-          <Link
-            to="/docs/"
-            className={clsx(styles.tab, location.pathname.startsWith("/docs/") && styles.tabActive)}
-          >
-            VoltAgent Docs
-          </Link>
-          <Link
-            to="/voltops-llm-observability-docs/"
-            className={clsx(
-              styles.tab,
-              location.pathname.startsWith("/voltops-llm-observability-docs/") && styles.tabActive,
-            )}
-          >
-            VoltOps Docs
-          </Link>
-          <Link
-            to="https://github.com/voltagent/voltagent/blob/main/CHANGELOG.md"
-            className={styles.tab}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <span>Changelog</span>
-            <ArrowTopRightOnSquareIcon className="w-4 h-4 ml-1" />
-          </Link>
+        <div className={styles.leftGroup}>
+          <div className={styles.tabList} role="tablist" aria-label="Documentation sections">
+            <Link
+              to="/docs/"
+              className={clsx(
+                styles.tab,
+                location.pathname.startsWith("/docs/") && styles.tabActive,
+              )}
+            >
+              VoltAgent Docs
+            </Link>
+            <Link
+              to="/voltops-llm-observability-docs/"
+              className={clsx(
+                styles.tab,
+                location.pathname.startsWith("/voltops-llm-observability-docs/") &&
+                  styles.tabActive,
+              )}
+            >
+              VoltOps Docs
+            </Link>
+            <Link
+              to="https://github.com/voltagent/voltagent/blob/main/CHANGELOG.md"
+              className={styles.tab}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span>Changelog</span>
+              <ArrowTopRightOnSquareIcon className="w-4 h-4 ml-1" />
+            </Link>
+          </div>
         </div>
         <div className={styles.actionGroup}>
+          <Link
+            to="https://console.voltagent.dev/"
+            className={clsx(styles.socialButton, styles.ctaButton)}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Try VoltOps"
+          >
+            <span>Try VoltOps</span>
+            <ArrowRightIcon className={styles.ctaIcon} />
+          </Link>
+          <Link to="/" className={styles.socialButton} aria-label="Home">
+            <HomeIcon className={styles.socialIconHome} />
+          </Link>
           <Link
             to="https://s.voltagent.dev/discord"
             className={styles.socialButton}

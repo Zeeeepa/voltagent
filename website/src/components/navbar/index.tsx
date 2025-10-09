@@ -13,6 +13,7 @@ import {
   CubeIcon,
   CurrencyDollarIcon,
   DocumentTextIcon,
+  HomeIcon,
   InformationCircleIcon,
   MegaphoneIcon,
   PencilSquareIcon,

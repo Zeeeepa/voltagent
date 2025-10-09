@@ -124,46 +124,7 @@ html[data-theme="dark"] {
   }
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-weight: 700;
-  margin-bottom: 1rem;
-  margin-top: 1.5rem;
-  font-family: "Inter", sans-serif;
-  line-height: 1.3;
-}
-
-h1 {
-  font-size: 24px;
-  line-height: 1.3;
-  margin-top: 0;
-  margin-bottom: 1.5rem;
-  font-weight: 600;
-}
-
-h2 {
-  font-size: 1.25rem;
-  margin-top: 2rem;
-  margin-bottom: 1rem;
-  font-weight: 600;
-}
-
-h3 {
-  font-size: 1.125rem;
-  margin-top: 1.5rem;
-  margin-bottom: 0.75rem;
-  font-weight: 600;
-}
-
-h4 {
-  font-weight: 600;
-}
-
-/* Blog ve Docs için tüm heading'ler 500 */
+/* All headings font-weight 500 for Blog and Docs */
 .blog-content h1,
 .blog-content h2,
 .blog-content h3,
@@ -200,7 +161,6 @@ html[data-theme="dark"] .theme-doc-markdown p {
 .theme-doc-markdown pre {
   margin: 1.5rem 0;
   border-radius: 6px;
-  border: 1px solid rgba(48, 54, 61, 0.6);
   box-shadow: none;
   background-color: #010409 !important;
 }
@@ -313,11 +273,49 @@ pre code,
 .theme-code-block {
   border-radius: 8px;
   overflow: hidden;
+  border: 1px solid #30363d99;
 }
 
 .theme-code-block pre {
   border-radius: 8px;
   margin: 0;
+}
+
+/* Docs heading scale: base h1 = 24px, others proportional */
+.theme-doc-markdown {
+  --docs-h1: 24px;
+  /* Keep h2 same as h1 per request */
+  --docs-h2: calc(var(--docs-h1) * 0.9);
+  --docs-h3: calc(var(--docs-h1) * 0.833333);
+  --docs-h4: calc(var(--docs-h1) * 0.75);
+  --docs-h5: calc(var(--docs-h1) * 0.666667);
+  --docs-h6: calc(var(--docs-h1) * 0.583333);
+}
+
+/* Increase specificity to override mobile `.markdown h*` rules */
+article.theme-doc-markdown h1,
+.theme-doc-markdown h1 {
+  font-size: var(--docs-h1) !important;
+}
+article.theme-doc-markdown h2,
+.theme-doc-markdown h2 {
+  font-size: var(--docs-h2) !important;
+}
+article.theme-doc-markdown h3,
+.theme-doc-markdown h3 {
+  font-size: var(--docs-h3) !important;
+}
+article.theme-doc-markdown h4,
+.theme-doc-markdown h4 {
+  font-size: var(--docs-h4) !important;
+}
+article.theme-doc-markdown h5,
+.theme-doc-markdown h5 {
+  font-size: var(--docs-h5) !important;
+}
+article.theme-doc-markdown h6,
+.theme-doc-markdown h6 {
+  font-size: var(--docs-h6) !important;
 }
 
 /* Keep copy button always visible */
@@ -4459,10 +4457,10 @@ code .token.coord {
   background-color: transparent !important;
 }
 
-/* Root level section başlıkları (GETTING STARTED, AGENTS, vb.) */
+/* Root level section headers (GETTING STARTED, AGENTS, etc.) */
 .menu__list-item-collapsible .menu__link {
   font-weight: 600 !important;
-  color: #ffffff !important; /* Default beyaz, emerald sadece root level için override edilecek */
+  color: #ffffff !important; /* Default white, emerald will only override for root level */
   font-size: 0.75rem !important;
   text-transform: uppercase !important;
   letter-spacing: 0.05em !important;
@@ -4477,7 +4475,7 @@ code .token.coord {
   cursor: pointer !important;
 }
 
-/* Root level'ı beyaz yap */
+/* Make root level white */
 .theme-doc-sidebar-item-category-level-1 .menu__list-item-collapsible .menu__link {
   color: #ffffff !important;
 }
@@ -4503,7 +4501,7 @@ code .token.coord {
   color: #ffffff !important;
 }
 
-/* Sadece root level section başlıkları beyaz (GETTING STARTED, AGENTS, vb.) */
+/* Only root level section headers white (GETTING STARTED, AGENTS, etc.) */
 .theme-doc-sidebar-item-category-level-1 > .menu__list-item-collapsible .menu__link,
 [data-theme="dark"]
   .theme-doc-sidebar-item-category-level-1
@@ -4563,7 +4561,7 @@ code .token.coord {
   color: #ffffff !important;
 }
 
-/* Submenu Items - Level 2 (nested dropdown içindekiler) */
+/* Submenu Items - Level 2 (items inside nested dropdown) */
 .menu__list .menu__list .menu__list {
   padding-left: 0 !important;
   margin-left: 1rem !important;
@@ -4575,12 +4573,12 @@ code .token.coord {
   position: relative !important;
 }
 
-/* Submenu Items - Level 3+ (çok derin nested) */
+/* Submenu Items - Level 3+ (deeply nested) */
 .menu__list .menu__list .menu__list .menu__list .menu__link {
   padding-left: 3.5rem !important;
 }
 
-/* Level 2 nested dropdown headers (Serverless Platforms gibi) - beyaz olmalı */
+/* Level 2 nested dropdown headers (like Serverless Platforms) - should be white */
 .menu__list .menu__list .menu__list-item-collapsible .menu__link {
   padding-left: 1rem !important;
   color: #ffffff !important;
@@ -5368,4 +5366,51 @@ nav.table-of-contents .table-of-contents__link--active,
 /* Sandpack */
 .sp-pristine {
   background-color: #000 !important;
+}
+
+/* Examples page heading colors and font weight */
+body:has([class*="ExampleProjectPage"]) main h1,
+body:has([class*="ExampleProjectPage"]) main h2,
+body:has([class*="ExampleProjectPage"]) main h3,
+body:has([class*="ExampleProjectPage"]) main h4,
+body:has([class*="ExampleProjectPage"]) main h5,
+body:has([class*="ExampleProjectPage"]) main h6 {
+  color: #f2f2f2 !important;
+  font-weight: 500 !important;
+}
+
+/* Docs and Blog page heading font weight */
+article.theme-doc-markdown h1,
+article.theme-doc-markdown h2,
+article.theme-doc-markdown h3,
+article.theme-doc-markdown h4,
+article.theme-doc-markdown h5,
+article.theme-doc-markdown h6,
+.theme-blog-post-page h1,
+.theme-blog-post-page h2,
+.theme-blog-post-page h3,
+.theme-blog-post-page h4,
+.theme-blog-post-page h5,
+.theme-blog-post-page h6 {
+  font-weight: 500 !important;
+}
+
+/* Examples page background color */
+body:has([class*="ExampleProjectPage"]) {
+  background-color: #0a0a0a !important;
+}
+
+body:has([class*="ExampleProjectPage"]) main {
+  background-color: #0a0a0a !important;
+}
+
+body:has([class*="ExampleProjectPage"]) section {
+  background-color: #0a0a0a !important;
+}
+
+/* Examples page text color */
+body:has([class*="ExampleProjectPage"]) main,
+body:has([class*="ExampleProjectPage"]) main p,
+body:has([class*="ExampleProjectPage"]) main div {
+  color: #d1d5db !important;
 }
