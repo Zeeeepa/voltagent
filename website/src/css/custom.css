@@ -124,7 +124,6 @@ html[data-theme="dark"] {
   }
 }
 
-
 /* All headings font-weight 500 for Blog and Docs */
 .blog-content h1,
 .blog-content h2,
@@ -277,11 +276,10 @@ pre code,
   border: 1px solid #30363d99;
 }
 
-  .theme-code-block pre {
+.theme-code-block pre {
   border-radius: 8px;
   margin: 0;
 }
-
 
 /* Docs heading scale: base h1 = 24px, others proportional */
 .theme-doc-markdown {
@@ -295,15 +293,30 @@ pre code,
 }
 
 /* Increase specificity to override mobile `.markdown h*` rules */
-article.theme-doc-markdown h1, .theme-doc-markdown h1 { font-size: var(--docs-h1) !important; }
-article.theme-doc-markdown h2, .theme-doc-markdown h2 { font-size: var(--docs-h2) !important; }
-article.theme-doc-markdown h3, .theme-doc-markdown h3 { font-size: var(--docs-h3) !important; }
-article.theme-doc-markdown h4, .theme-doc-markdown h4 { font-size: var(--docs-h4) !important; }
-article.theme-doc-markdown h5, .theme-doc-markdown h5 { font-size: var(--docs-h5) !important; }
-article.theme-doc-markdown h6, .theme-doc-markdown h6 { font-size: var(--docs-h6) !important; }
-
-
-
+article.theme-doc-markdown h1,
+.theme-doc-markdown h1 {
+  font-size: var(--docs-h1) !important;
+}
+article.theme-doc-markdown h2,
+.theme-doc-markdown h2 {
+  font-size: var(--docs-h2) !important;
+}
+article.theme-doc-markdown h3,
+.theme-doc-markdown h3 {
+  font-size: var(--docs-h3) !important;
+}
+article.theme-doc-markdown h4,
+.theme-doc-markdown h4 {
+  font-size: var(--docs-h4) !important;
+}
+article.theme-doc-markdown h5,
+.theme-doc-markdown h5 {
+  font-size: var(--docs-h5) !important;
+}
+article.theme-doc-markdown h6,
+.theme-doc-markdown h6 {
+  font-size: var(--docs-h6) !important;
+}
 
 /* Keep copy button always visible */
 .theme-code-block button[class*="copyButton"],
