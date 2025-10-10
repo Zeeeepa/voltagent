@@ -412,14 +412,14 @@ importers:
   examples/with-client-side-tools:
     dependencies:
       '@ai-sdk/openai':
-        specifier: ^2.0.42
+        specifier: ^2.0.2
         version: 2.0.42(zod@3.25.76)
       '@ai-sdk/react':
-        specifier: ^2.0.60
+        specifier: ^2.0.8
         version: 2.0.64(react@19.1.1)(zod@3.25.76)
       '@libsql/client':
-        specifier: 0.15.0
-        version: 0.15.0
+        specifier: ^0.15.0
+        version: 0.15.10
       '@voltagent/core':
         specifier: workspace:*
         version: link:../../packages/core
@@ -430,8 +430,8 @@ importers:
         specifier: ^1.0.1
         version: 1.0.1(@voltagent/core@packages+core)(zod@3.25.76)
       ai:
-        specifier: ^5.0.60
-        version: 5.0.63(zod@3.25.76)
+        specifier: ^5.0.12
+        version: 5.0.64(zod@3.25.76)
       next:
         specifier: 15.3.1
         version: 15.3.1(@babel/core@7.28.0)(react-dom@19.1.1)(react@19.1.1)
@@ -446,8 +446,8 @@ importers:
         version: 3.25.76
     devDependencies:
       '@types/node':
-        specifier: ^22.13.5
-        version: 22.17.1
+        specifier: ^24.2.1
+        version: 24.6.2
       '@types/react':
         specifier: ^19
         version: 19.1.10
@@ -8701,19 +8701,6 @@ packages:
       - typescript
     dev: true
 
-  /@libsql/client@0.15.0:
-    resolution: {integrity: sha512-AkJg9mxnAVCtHAVndZ8YwxqG43nSYVNZHAEX55MZ0R06rBcCoYLwjAr8grxC02/tNZpf4KMJj+BVPqNnQOD8ZQ==}
-    dependencies:
-      '@libsql/core': 0.15.10
-      '@libsql/hrana-client': 0.7.0
-      js-base64: 3.7.8
-      libsql: 0.5.17
-      promise-limit: 2.7.0
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
-    dev: false
-
   /@libsql/client@0.15.10:
     resolution: {integrity: sha512-J9cJQwrgH92JlPBYjUGxPIH5G9z3j/V/aPnQvcmmCgjatdVb/f7bzK3yNq15Phc+gVuKMwox3toXL+58qUMylg==}
     dependencies:
@@ -16323,7 +16310,7 @@ packages:
     dependencies:
       '@ai-sdk/openai': 2.0.42(zod@3.25.76)
       '@voltagent/core': link:packages/core
-      ai: 5.0.63(zod@3.25.76)
+      ai: 5.0.64(zod@3.25.76)
       ts-pattern: 5.8.0
       type-fest: 4.41.0
       zod: 3.25.76
@@ -16337,7 +16324,7 @@ packages:
     dependencies:
       '@voltagent/core': link:packages/core
       '@voltagent/internal': 0.0.9
-      ai: 5.0.63(zod@3.25.76)
+      ai: 5.0.64(zod@3.25.76)
       ts-pattern: 5.8.0
       type-fest: 4.41.0
       zod: 3.25.76
