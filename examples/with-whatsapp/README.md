@@ -248,8 +248,7 @@ Tools are functions your AI can call. Each tool:
 
 Fetches menu from Supabase with pagination support.
 
-<details>
-<summary>📄 src/tools/list-menu-items.ts</summary>
+**📄 src/tools/list-menu-items.ts**
 
 ```typescript
 import { createTool } from "@voltagent/core";
@@ -292,8 +291,6 @@ export const listMenuItemsTool = createTool({
 });
 ```
 
-</details>
-
 ![List Menu Tool](https://cdn.voltagent.dev/examples/with-whatsapp/list-tool.png)
 
 The AI automatically calls this when customers say "show me the menu" or start ordering.
@@ -302,8 +299,7 @@ The AI automatically calls this when customers say "show me the menu" or start o
 
 Takes cart items and saves everything to database.
 
-<details>
-<summary>📄 src/tools/create-order.ts</summary>
+**📄 src/tools/create-order.ts**
 
 ```typescript
 import { createTool } from "@voltagent/core";
@@ -387,8 +383,6 @@ export const createOrderTool = createTool({
 });
 ```
 
-</details>
-
 ![Create Order Tool](https://cdn.voltagent.dev/examples/with-whatsapp/create-order.png)
 
 Called automatically after customer provides delivery address. Creates records in both `orders` and `order_items` tables.
@@ -397,8 +391,7 @@ Called automatically after customer provides delivery address. Creates records i
 
 Retrieves order history for the current customer.
 
-<details>
-<summary>📄 src/tools/check-order-status.ts</summary>
+**📄 src/tools/check-order-status.ts**
 
 ```typescript
 import { createTool } from "@voltagent/core";
@@ -484,8 +477,6 @@ export const checkOrderStatusTool = createTool({
 });
 ```
 
-</details>
-
 ![Check Order Status Tool](https://cdn.voltagent.dev/examples/with-whatsapp/order-status.png)
 
 Filters by phone number so customers only see their own orders. Answers "where's my order?" type questions.
@@ -496,8 +487,7 @@ Filters by phone number so customers only see their own orders. Answers "where's
 
 Here's how `src/index.ts` wires everything up:
 
-<details>
-<summary>📄 src/index.ts</summary>
+**📄 src/index.ts**
 
 ```typescript
 import "dotenv/config";
@@ -608,8 +598,6 @@ new VoltAgent({
 });
 ```
 
-</details>
-
 ### Key Components Breakdown
 
 #### Working Memory Schema
@@ -677,8 +665,7 @@ Get your WhatsApp tokens from [Meta for Developers](https://developers.facebook.
 
 `src/webhooks/whatsapp.ts` handles all WhatsApp communication:
 
-<details>
-<summary>📄 src/webhooks/whatsapp.ts</summary>
+**📄 src/webhooks/whatsapp.ts**
 
 ```typescript
 import { Context } from "hono";
@@ -800,8 +787,6 @@ export async function handleWhatsAppMessage(c: Context, agent: Agent) {
   }
 }
 ```
-
-</details>
 
 **Three functions handle everything:**
 
