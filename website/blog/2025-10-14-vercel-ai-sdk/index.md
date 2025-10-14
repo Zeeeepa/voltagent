@@ -116,7 +116,9 @@ The SDK looks for environment variables like `OPENAI_API_KEY` or `ANTHROPIC_API_
 
 ## VoltAgent: Building Autonomous AI Agents
 
-VoltAgent is a TypeScript framework for creating autonomous AI agents. While Vercel AI SDK focuses on model communication, VoltAgent provides the agent architecture — tools, memory, reasoning, and coordination.
+VoltAgent is a TypeScript framework for creating autonomous AI agents. While Vercel AI SDK focuses on model communication, VoltAgent provides the agent architecture tools, memory, reasoning, and coordination.
+
+Refer to [Vercel AI SDK docs](https://voltagent.dev/docs/integrations/vercel-ai/) on Voltagent.
 
 ### Core VoltAgent Concepts
 
