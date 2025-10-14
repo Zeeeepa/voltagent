@@ -153,7 +153,20 @@ const sidebars: SidebarsConfig = {
     {
       type: "category",
       label: "Evals",
-      items: ["evals/overview", "evals/quick-start"],
+      items: [
+        "evals/overview",
+        "evals/offline-evaluations",
+        "evals/live-evaluations",
+        "evals/datasets",
+        "evals/experiments",
+        {
+          type: "category",
+          label: "Scorers",
+          items: ["evals/prebuilt-scorers", "evals/building-custom-scorers"],
+        },
+        "evals/cli-reference",
+        "evals/using-with-viteval",
+      ],
     },
     {
       type: "category",
