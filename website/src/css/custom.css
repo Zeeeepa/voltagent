@@ -38,6 +38,9 @@
   --background: 0 0% 100%;
   --foreground: 222.2 47.4% 11.2%;
 
+  --sidebar-badge-accent-bg: rgba(16, 185, 129, 0.12);
+  --sidebar-badge-accent-color: #047857;
+
   --muted: 210 40% 96.1%;
   --muted-foreground: 215.4 16.3% 46.9%;
 
@@ -109,6 +112,9 @@ html[data-theme="dark"] {
 
   --ring: 142 71% 45%;
 
+  --sidebar-badge-accent-bg: rgba(16, 185, 129, 0.2);
+  --sidebar-badge-accent-color: #6ee7b7;
+
   --radius: 0.5rem;
 }
 
@@ -156,6 +162,34 @@ html[data-theme="dark"] .theme-doc-markdown p {
 .theme-doc-markdown strong {
   font-weight: 500;
 }
+
+/* Sidebar badges */
+.menu__link--with-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.sidebar-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1;
+}
+
+.sidebar-badge--accent {
+  background-color: var(--sidebar-badge-accent-bg);
+  color: var(--sidebar-badge-accent-color);
+  border-color: rgba(16, 185, 129, 0.18);
+}
+
 
 /* Code blocks */
 .theme-doc-markdown pre {
