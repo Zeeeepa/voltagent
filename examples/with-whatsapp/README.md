@@ -19,7 +19,7 @@
 
 </div>
 
-## WhatsApp AI Agent Order Chatbot Example
+## WhatsApp Food Ordering AI Agent Example
 
 Build a food ordering system for WhatsApp with VoltAgent. This example shows you how to create an intelligent chatbot that takes orders, manages menus, and tracks deliveries all through natural WhatsApp conversations.
 
