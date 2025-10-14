@@ -1,52 +1,31 @@
 <div align="center">
-  <a href="https://voltagent.dev/">
-    <img width="1800" alt="VoltAgent WhatsApp Example" src="https://github.com/user-attachments/assets/452a03e7-eeda-4394-9ee7-0ffbcf37245c" />
-  </a>
+<a href="https://voltagent.dev/">
+<img width="1800" alt="435380213-b6253409-8741-462b-a346-834cd18565a9" src="https://github.com/user-attachments/assets/dc9c4986-3e68-42f8-a450-ecd79b4dbd99" />
+</a>
 
-  <br />
-  <br />
+<br/>
 
-  <div align="center">
-    <a href="https://voltagent.dev">Home Page</a> |
-    <a href="https://voltagent.dev/docs/">Documentation</a> |
-    <a href="https://github.com/VoltAgent/voltagent/tree/main/examples">Examples</a> |
-    <a href="https://s.voltagent.dev/discord">Discord</a> |
-    <a href="https://voltagent.dev/blog/">Blog</a>
-  </div>
 </div>
 
-<br />
-
-<div align="center">
-  <strong>VoltAgent is an open-source TypeScript framework for building and orchestrating AI agents.</strong><br />
-  Escape the limits of no-code builders and the complexity of starting from scratch.
-  <br /><br />
-</div>
+<br/>
 
 <div align="center">
 
-[![npm version](https://img.shields.io/npm/v/@voltagent/core.svg)](https://www.npmjs.com/package/@voltagent/core)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.0-4baaaa.svg)](CODE_OF_CONDUCT.md)
+[![npm version](https://img.shields.io/npm/v/@voltagent/core.svg)](https://www.npmjs.com/package/@voltagent/core)
+[![npm downloads](https://img.shields.io/npm/dm/@voltagent/core.svg)](https://www.npmjs.com/package/@voltagent/core)
 [![Discord](https://img.shields.io/discord/1361559153780195478.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://s.voltagent.dev/discord)
-[![Twitter Follow](https://img.shields.io/twitter/follow/voltagent_dev?style=social)](https://twitter.com/voltagent_dev)
 
 </div>
-
-<br />
 
 ## WhatsApp AI Agent Order Chatbot Example
 
-Build a complete food ordering system for WhatsApp with VoltAgent. This example shows you how to create an intelligent chatbot that takes orders, manages menus, and tracks deliveries—all through natural WhatsApp conversations.
+Build a food ordering system for WhatsApp with VoltAgent. This example shows you how to create an intelligent chatbot that takes orders, manages menus, and tracks deliveries all through natural WhatsApp conversations.
 
-## Quick Start
+The main goal is to show how to build and extend this kind of agent. It’s minimal on purpose feel free to fork and build on top.
 
-```bash
-npm create voltagent-app@latest -- --example with-whatsapp
-```
-
-## What You'll Build
-
-An AI-powered WhatsApp bot that:
+Basic features:
 
 - Shows restaurant menu from your database
 - Takes customer orders in natural language
@@ -55,22 +34,23 @@ An AI-powered WhatsApp bot that:
 - Saves orders to your database
 - Lets customers check their order status
 
-## Technical Stack
+## Quick Start
 
-- **WhatsApp Cloud API** – Connect to WhatsApp Business
-- **Supabase** – PostgreSQL database for menus and orders
-- **VoltAgent Tools** – Three custom tools with input validation
-- **Working Memory** – Persistent conversation state
-- **VoltOps** – Real-time monitoring and debugging
+You can use the VoltAgent CLI to get the agent example from our repository:
+
+```bash
+npm create voltagent-app@latest -- --example with-whatsapp
+```
 
 ## What You'll Need
 
-- Node.js 20.19.0+
-- Package manager: pnpm, npm, or yarn
-- [VoltOps account](https://console.voltagent.dev/login) (free)
-- [Supabase account](https://supabase.com) (free tier OK)
-- [WhatsApp Business API](https://developers.facebook.com) access
-- [OpenAI API key](https://platform.openai.com/api-keys)
+**Tech Stack:**
+
+- [VoltAgent](https://voltagent.dev) – Open-source TypeScript framework for AI agents
+- [WhatsApp Cloud API](https://developers.facebook.com) – Connect to WhatsApp Business
+- [Supabase](https://supabase.com) (free tier OK) – PostgreSQL database for menus and orders
+- [OpenAI API key](https://platform.openai.com/api-keys) – Powers the AI agent
+- [VoltOps account](https://console.voltagent.dev/login) (free) – Real-time monitoring and debugging
 
 ## Installation & Setup
 
