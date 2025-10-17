@@ -270,7 +270,7 @@ const auditedAgent = new Agent({
 
 ## OperationContext Properties
 
-The `OperationContext` type (defined in [types.ts](/Users/omer/Projects/voltagent/packages/core/src/agent/types.ts)) contains multiple properties beyond the user-managed `context` Map. Understanding these properties helps with debugging, observability, and advanced use cases.
+The `OperationContext` type (defined in [types.ts](https://github.com/VoltAgent/voltagent/blob/main/packages/core/src/agent/types.ts)) contains multiple properties beyond the user-managed `context` Map. Understanding these properties helps with debugging, observability, and advanced use cases.
 
 ### User-Managed Fields
 
@@ -378,7 +378,7 @@ interface OperationContext {
 - **`context`**: Your data - use this for sharing information between components
 - **`systemContext`**: Framework internals - stores stream writers, internal state, etc.
 
-The framework uses `systemContext` to pass internal state between components. For example, when a sub-agent streams data, the parent agent's stream writer is stored in `systemContext` (see [subagent/index.ts:145-148](/Users/omer/Projects/voltagent/packages/core/src/agent/subagent/index.ts#L145-L148)).
+The framework uses `systemContext` to pass internal state between components. For example, when a sub-agent streams data, the parent agent's stream writer is stored in `systemContext` (see [subagent/index.ts:145-148](https://github.com/VoltAgent/voltagent/blob/main/packages/core/src/agent/subagent/index.ts#L145-L148)).
 
 ### Input/Output (Automatically Set)
 
@@ -481,7 +481,7 @@ try {
 }
 ```
 
-The agent creates an internal `AbortController` and cascades the external signal to it (see [agent.ts:3385-3395](/Users/omer/Projects/voltagent/packages/core/src/agent/agent.ts#L3385-L3395)). Sub-agents automatically inherit the parent's abort controller.
+The agent creates an internal `AbortController` and cascades the external signal to it (see [agent.ts:3385-3395](https://github.com/VoltAgent/voltagent/blob/main/packages/core/src/agent/agent.ts#L3385-L3395)). Sub-agents automatically inherit the parent's abort controller.
 
 ## Retrievers Store References
 
@@ -578,7 +578,7 @@ console.log("Worker start time:", response.context?.get("workerStartTime"));
 
 ### Context Inheritance Priority
 
-When creating an `OperationContext`, the framework follows this priority (see [agent.ts:3343-3371](/Users/omer/Projects/voltagent/packages/core/src/agent/agent.ts#L3343-L3371)):
+When creating an `OperationContext`, the framework follows this priority (see [agent.ts:3343-3371](https://github.com/VoltAgent/voltagent/blob/main/packages/core/src/agent/agent.ts#L3343-L3371)):
 
 1. **Parent context** (if sub-agent): Use parent's context Map reference
 2. **Runtime context** (if provided at execution): Use the provided Map

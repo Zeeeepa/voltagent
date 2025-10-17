@@ -28,7 +28,7 @@ When you provide a function instead of a static value, the agent calls it during
 3. Function receives `{ context, prompts }` and returns the value
 4. Agent uses the resolved value for that operation
 
-The resolution happens in [agent.ts:2583-2606](/Users/omer/Projects/voltagent/packages/core/src/agent/agent.ts#L2583-L2606) via the `resolveValue()` method. Dynamic functions are called on every operation, so keep them synchronous or fast.
+The resolution happens in [agent.ts:2583-2606](https://github.com/VoltAgent/voltagent/blob/main/packages/core/src/agent/agent.ts#L2583-L2606) via the `resolveValue()` method. Dynamic functions are called on every operation, so keep them synchronous or fast.
 
 ### Type System
 
@@ -109,7 +109,7 @@ const agent = new Agent({
 
 ### Dynamic Models
 
-The model can be a static `LanguageModel` or a function returning one. The agent resolves the model at [agent.ts:1672](/Users/omer/Projects/voltagent/packages/core/src/agent/agent.ts#L1672) before each generation call.
+The model can be a static `LanguageModel` or a function returning one. The agent resolves the model at [agent.ts:1672](https://github.com/VoltAgent/voltagent/blob/main/packages/core/src/agent/agent.ts#L1672) before each generation call.
 
 ```ts
 const agent = new Agent({
@@ -134,7 +134,7 @@ const agent = new Agent({
 
 ### Dynamic Tools
 
-Tools can be a static array or a function returning an array. The agent stores dynamic tool functions separately in the `dynamicTools` property ([agent.ts:337](/Users/omer/Projects/voltagent/packages/core/src/agent/agent.ts#L337)) and resolves them at [agent.ts:1673](/Users/omer/Projects/voltagent/packages/core/src/agent/agent.ts#L1673).
+Tools can be a static array or a function returning an array. The agent stores dynamic tool functions separately in the `dynamicTools` property ([agent.ts:337](https://github.com/VoltAgent/voltagent/blob/main/packages/core/src/agent/agent.ts#L337)) and resolves them at [agent.ts:1673](https://github.com/VoltAgent/voltagent/blob/main/packages/core/src/agent/agent.ts#L1673).
 
 ```ts
 import { createTool } from "@voltagent/core";
