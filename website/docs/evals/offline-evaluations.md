@@ -7,27 +7,419 @@ sidebar_position: 2
 
 Offline evaluations run against a fixed dataset and produce deterministic results. Use them for regression testing, CI gates, and comparing model or prompt changes before deployment.
 
-## Creating an Experiment
+This guide walks you through building an evaluation experiment step-by-step, from a basic setup to advanced configurations.
 
-Define an experiment with `createExperiment`:
+## Step 1: Create a Basic Experiment
+
+Start with the simplest possible experiment using `createExperiment`. You need three things: an `id`, a `dataset` with inline items, and a `runner` function.
 
 ```ts
 import { createExperiment } from "@voltagent/evals";
-import { scorers } from "@voltagent/scorers";
+import { Agent } from "@voltagent/core";
+import { openai } from "@ai-sdk/openai";
 
 export default createExperiment({
-  id: "support-regression",
-  dataset: { name: "support-qa-v1" },
-  runner: async ({ item }) => {
-    const reply = await supportAgent.generateText(item.input);
-    return { output: reply.text };
+  id: "offline-smoke",
+  dataset: {
+    items: [
+      {
+        id: "1",
+        input: "The color of the sky",
+        expected: "blue",
+      },
+      {
+        id: "2",
+        input: "2+2",
+        expected: "4",
+      },
+    ],
   },
-  scorers: [scorers.exactMatch],
-  passCriteria: { type: "passRate", min: 0.95 },
+  runner: async ({ item }) => {
+    const supportAgent = new Agent({
+      name: "offline-evals-support",
+      instructions: "You are a helpful assistant. Answer questions very short.",
+      model: openai("gpt-4o-mini"),
+    });
+    const result = await supportAgent.generateText(item.input);
+    return {
+      output: result.text,
+    };
+  },
 });
 ```
 
-The experiment returns a definition object that can be executed with `runExperiment`.
+The `runner` function receives each dataset item and returns an output. The runner can return the output directly or wrap it in an object with additional metadata.
+
+At this point, your experiment runs but doesn't evaluate anything. Let's add scoring.
+
+## Step 2: Add a Scorer
+
+Add a scorer to evaluate the runner's output against the expected value. Start with a basic heuristic scorer like `levenshtein`, which measures string similarity.
+
+```ts
+import { createExperiment } from "@voltagent/evals";
+import { Agent } from "@voltagent/core";
+import { openai } from "@ai-sdk/openai";
+import { scorers } from "@voltagent/scorers";
+
+export default createExperiment({
+  id: "offline-smoke",
+  dataset: {
+    items: [
+      {
+        id: "1",
+        input: "The color of the sky",
+        expected: "blue",
+      },
+      {
+        id: "2",
+        input: "2+2",
+        expected: "4",
+      },
+    ],
+  },
+  runner: async ({ item }) => {
+    const supportAgent = new Agent({
+      name: "offline-evals-support",
+      instructions: "You are a helpful assistant. Answer questions very short.",
+      model: openai("gpt-4o-mini"),
+    });
+    const result = await supportAgent.generateText(item.input);
+    return {
+      output: result.text,
+    };
+  },
+  scorers: [scorers.levenshtein],
+});
+```
+
+By default, scorers have a **threshold of 0**, meaning every item passes regardless of the score. The scorer produces a numeric score (0.0 to 1.0), but without a threshold, it doesn't affect pass/fail status.
+
+## Step 3: Set a Threshold
+
+Make the scorer meaningful by adding a `threshold`. Items fail if their score falls below this value.
+
+```ts
+import { createExperiment } from "@voltagent/evals";
+import { Agent } from "@voltagent/core";
+import { openai } from "@ai-sdk/openai";
+import { scorers } from "@voltagent/scorers";
+
+export default createExperiment({
+  id: "offline-smoke",
+  dataset: {
+    items: [
+      {
+        id: "1",
+        input: "The color of the sky",
+        expected: "blue",
+      },
+      {
+        id: "2",
+        input: "2+2",
+        expected: "4",
+      },
+    ],
+  },
+  runner: async ({ item }) => {
+    const supportAgent = new Agent({
+      name: "offline-evals-support",
+      instructions: "You are a helpful assistant. Answer questions very short.",
+      model: openai("gpt-4o-mini"),
+    });
+    const result = await supportAgent.generateText(item.input);
+    return {
+      output: result.text,
+    };
+  },
+  scorers: [
+    {
+      scorer: scorers.levenshtein,
+      threshold: 0.5,
+    },
+  ],
+});
+```
+
+Now, if the levenshtein score is below 0.5, the item is marked as `failed`. You can also assign a custom `id` to reference this scorer in pass criteria:
+
+```ts
+scorers: [
+  {
+    id: "my-custom-scorer-id",
+    scorer: scorers.levenshtein,
+    threshold: 0.5,
+  },
+],
+```
+
+## Step 4: Add Pass Criteria
+
+While individual scorers determine if each item passes or fails, **pass criteria** define whether the **entire experiment** succeeds. Use `passCriteria` to set overall success conditions.
+
+There are two types of criteria:
+
+- **`meanScore`**: Average score across all items must meet a minimum
+- **`passRate`**: Percentage of passed items must meet a minimum
+
+```ts
+import { createExperiment } from "@voltagent/evals";
+import { Agent } from "@voltagent/core";
+import { openai } from "@ai-sdk/openai";
+import { scorers } from "@voltagent/scorers";
+
+export default createExperiment({
+  id: "offline-smoke",
+  dataset: {
+    items: [
+      {
+        id: "1",
+        input: "The color of the sky",
+        expected: "blue",
+      },
+      {
+        id: "2",
+        input: "2+2",
+        expected: "4",
+      },
+    ],
+  },
+  runner: async ({ item }) => {
+    const supportAgent = new Agent({
+      name: "offline-evals-support",
+      instructions: "You are a helpful assistant. Answer questions very short.",
+      model: openai("gpt-4o-mini"),
+    });
+    const result = await supportAgent.generateText(item.input);
+    return {
+      output: result.text,
+    };
+  },
+  scorers: [
+    {
+      id: "my-custom-scorer-id",
+      scorer: scorers.levenshtein,
+      threshold: 0.5,
+    },
+  ],
+  passCriteria: [
+    {
+      type: "passRate",
+      min: 1.0, // All items must pass
+      scorerId: "my-custom-scorer-id", // Only consider this scorer
+    },
+    {
+      type: "meanScore",
+      min: 0.5, // Average score must be at least 0.5
+    },
+  ],
+});
+```
+
+Pass criteria are evaluated **after all items complete**. If any criterion fails, the experiment result shows which criteria were not met. You can also set `severity: "warn"` on criteria that shouldn't fail the run but should be reported.
+
+## Step 5: Run Your Experiment
+
+There are two ways to execute experiments: programmatically via the API or through the VoltAgent CLI.
+
+### Option 1: Run with the API
+
+Use `runExperiment` to execute your experiment programmatically:
+
+```ts
+import { runExperiment } from "@voltagent/evals";
+import experiment from "./experiments/offline.experiment";
+
+const result = await runExperiment(experiment, {
+  onProgress: ({ completed, total }) => {
+    const label = total !== undefined ? `${completed}/${total}` : `${completed}`;
+    console.log(`[with-offline-evals] processed ${label} items`);
+  },
+});
+
+console.log("Summary:", {
+  success: result.summary.successCount,
+  failures: result.summary.failureCount,
+  errors: result.summary.errorCount,
+  meanScore: result.summary.meanScore,
+  passRate: result.summary.passRate,
+});
+```
+
+**API Options:**
+
+- `concurrency` - Number of items processed in parallel (default: 1)
+- `signal` - AbortSignal to cancel the run
+- `voltOpsClient` - VoltOps SDK instance for telemetry and cloud datasets
+- `onProgress` - Callback invoked after each item with `{ completed, total? }`
+- `onItem` - Callback invoked after each item with `{ index, item, result, summary }`
+
+Example with all options:
+
+```ts
+import { VoltOpsRestClient } from "@voltagent/sdk";
+
+const result = await runExperiment(experiment, {
+  concurrency: 4,
+  signal: abortController.signal,
+  voltOpsClient: new VoltOpsRestClient({
+    publicKey: process.env.VOLTAGENT_PUBLIC_KEY,
+    secretKey: process.env.VOLTAGENT_SECRET_KEY,
+  }),
+  onProgress: ({ completed, total }) => {
+    console.log(`Processed ${completed}/${total ?? "?"} items`);
+  },
+  onItem: ({ index, result }) => {
+    console.log(`Item ${index}: ${result.status}`);
+  },
+});
+```
+
+### Option 2: Run with the CLI
+
+The VoltAgent CLI provides a convenient way to run experiments from the command line:
+
+```bash
+pnpm volt eval run --experiment ./src/experiments/offline.experiment.ts
+```
+
+**CLI Options:**
+
+- `--experiment <path>` (required) - Path to the experiment module
+- `--concurrency <count>` - Maximum concurrent items (default: 1)
+- `--dataset <name>` - Dataset name override applied at runtime
+- `--experiment-name <name>` - VoltOps experiment name override
+- `--tag <trigger>` - VoltOps trigger source tag (default: "cli-experiment")
+- `--dry-run` - Skip VoltOps submission (local scoring only)
+
+Example with concurrency:
+
+```bash
+pnpm volt eval run \
+  --experiment ./src/experiments/offline.experiment.ts \
+  --concurrency 4
+```
+
+The CLI automatically resolves TypeScript imports, streams progress to stdout, and links the run to VoltOps when credentials are present in environment variables (`VOLTAGENT_PUBLIC_KEY` and `VOLTAGENT_SECRET_KEY`).
+
+## Step 6: Use a Custom Dataset Resolver
+
+Instead of inline items, you can provide a custom `resolve` function to fetch data from external sources, databases, or APIs.
+
+```ts
+import { createExperiment } from "@voltagent/evals";
+
+export default createExperiment({
+  id: "custom-dataset-example",
+  dataset: {
+    name: "custom-source",
+    resolve: async ({ limit, signal }) => {
+      // Fetch from your API, database, or any source
+      const response = await fetch("https://api.example.com/test-data", { signal });
+      const data = await response.json();
+
+      // Apply limit if provided
+      const items = limit ? data.slice(0, limit) : data;
+
+      return {
+        items, // Can be an array or async iterable
+        total: data.length, // Optional: total count for progress tracking
+        dataset: {
+          name: "custom-source",
+          metadata: { source: "api", fetchedAt: new Date().toISOString() },
+        },
+      };
+    },
+  },
+  runner: async ({ item }) => {
+    // Your runner logic
+    return { output: processItem(item.input) };
+  },
+});
+```
+
+**Resolver function:**
+
+- Receives `{ limit?, signal? }` as arguments
+- Can return an iterable, async iterable, or object with `{ items, total?, dataset? }`
+- Supports streaming large datasets with async iterables
+- `signal` enables cancellation handling
+
+Example with async iterable for streaming:
+
+```ts
+dataset: {
+  resolve: async function* ({ signal }) {
+    for await (const item of fetchItemsStream()) {
+      if (signal?.aborted) break;
+      yield item;
+    }
+  },
+}
+```
+
+## Step 7: Use Named Datasets from VoltOps
+
+For production workflows, store datasets in VoltOps and reference them by name. This enables version control, collaboration, and reusable test suites.
+
+```ts
+import { createExperiment } from "@voltagent/evals";
+
+export default createExperiment({
+  id: "voltops-dataset-example",
+  dataset: {
+    name: "support-qa-v1",
+    versionId: "abc123", // Optional - defaults to latest version
+    limit: 100, // Optional - limit items processed
+  },
+  runner: async ({ item }) => {
+    // Your runner logic
+    return { output: processItem(item.input) };
+  },
+});
+```
+
+**Dataset configuration:**
+
+- `name` - Dataset name in VoltOps (required)
+- `versionId` - Specific version ID (optional, defaults to latest)
+- `limit` - Maximum number of items to process (optional)
+
+When you run the experiment with a `voltOpsClient`, the dataset is automatically fetched from VoltOps. If no client is provided, the experiment fails with a clear error message.
+
+### Managing Datasets with the CLI
+
+Use the CLI to push local datasets to VoltOps or pull remote datasets locally:
+
+**Push a dataset:**
+
+```bash
+pnpm volt eval dataset push \
+  --name support-qa-v1 \
+  --file ./datasets/support-qa.json
+```
+
+**Pull a dataset:**
+
+```bash
+pnpm volt eval dataset pull \
+  --name support-qa-v1 \
+  --version abc123 \
+  --output ./datasets/support-qa-v1.json
+```
+
+**CLI dataset commands:**
+
+- `push` - Upload a local dataset file to VoltOps
+  - `--name <datasetName>` (required) - Dataset name
+  - `--file <datasetFile>` - Path to dataset JSON file
+- `pull` - Download a dataset version from VoltOps
+  - `--name <datasetName>` - Dataset name (defaults to `VOLTAGENT_DATASET_NAME`)
+  - `--id <datasetId>` - Dataset ID (overrides `--name`)
+  - `--version <versionId>` - Version ID (defaults to latest)
+  - `--output <filePath>` - Custom output file path
+  - `--overwrite` - Overwrite existing file if present
+  - `--page-size <size>` - Number of items to fetch per request
 
 ## Configuration Reference
 
@@ -105,6 +497,7 @@ runner: async ({ item }) => {
   return {
     output: "agent response",
     metadata: { tokens: 150 },
+    traceIds: ["trace-id-1"], // Optional: trace IDs for observability
   };
 };
 
@@ -129,7 +522,19 @@ Array of scoring functions to evaluate outputs. Each scorer compares the runner 
 scorers: [scorers.exactMatch, scorers.levenshtein, scorers.numericDiff];
 ```
 
-**With thresholds and LLM-based scorers:**
+**With thresholds and custom IDs:**
+
+```ts
+scorers: [
+  {
+    id: "similarity-check",
+    scorer: scorers.levenshtein,
+    threshold: 0.8,
+  },
+];
+```
+
+**With LLM-based scorers:**
 
 ```ts
 import { createAnswerCorrectnessScorer } from "@voltagent/scorers";
@@ -225,7 +630,7 @@ Binds the run to a named experiment in VoltOps:
 experiment: {
   name: "support-regression",
   id: "exp-123",        // optional - explicit experiment ID
-  autoCreate: true,     // optional - create experiment if missing
+  autoCreate: true,     // optional - create experiment if missing (default: true)
 }
 ```
 
@@ -244,49 +649,6 @@ voltOps: {
   tags: ["regression", "v2"],   // optional - additional tags
 }
 ```
-
-## Running Experiments
-
-### Programmatic Execution
-
-```ts
-import { runExperiment } from "@voltagent/evals";
-import { VoltOpsRestClient } from "@voltagent/sdk";
-import experiment from "./experiments/support.experiment";
-
-const result = await runExperiment(experiment, {
-  concurrency: 4,
-  signal: abortController.signal,
-  voltOpsClient: new VoltOpsRestClient({
-    publicKey: process.env.VOLTAGENT_PUBLIC_KEY,
-    secretKey: process.env.VOLTAGENT_SECRET_KEY,
-  }),
-  onProgress: ({ completed, total }) => {
-    console.log(`Processed ${completed}/${total ?? "?"} items`);
-  },
-  onItem: ({ index, result }) => {
-    console.log(`Item ${index}: ${result.status}`);
-  },
-});
-```
-
-**Options:**
-
-- `concurrency` - Number of items processed in parallel (default: 1)
-- `signal` - AbortSignal to cancel the run
-- `voltOpsClient` - SDK instance for telemetry and datasets
-- `onProgress` - Called after each item with `{ completed, total? }`
-- `onItem` - Called after each item with `{ index, item, result, summary }`
-
-### CLI Execution
-
-```bash
-npx @voltagent/cli eval run \
-  --experiment ./src/experiments/support.experiment.ts \
-  --concurrency 4
-```
-
-The CLI resolves TypeScript imports, streams progress to stdout, and links the run to VoltOps when credentials are present in environment variables.
 
 ## Dataset Items
 
@@ -644,34 +1006,6 @@ export default createExperiment({
     { type: "passRate", min: 0.9 },
   ],
 });
-```
-
-### Multi-Model Comparison
-
-```ts
-import { createExperiment } from "@voltagent/evals";
-import { scorers } from "@voltagent/scorers";
-
-const models = ["gpt-4o", "gpt-4o-mini", "claude-3-5-sonnet"];
-
-for (const model of models) {
-  const experiment = createExperiment({
-    id: `model-comparison-${model}`,
-    dataset: { name: "benchmark-suite" },
-    runner: async ({ item }) => {
-      const answer = await generateText({
-        model,
-        prompt: item.input,
-      });
-      return answer.text;
-    },
-    scorers: [scorers.exactMatch, scorers.answerCorrectness],
-    tags: ["model-comparison", model],
-    metadata: { model },
-  });
-
-  await runExperiment(experiment, { voltOpsClient });
-}
 ```
 
 ## Next Steps
