@@ -176,15 +176,6 @@ const customScorer = buildScorer({
   .build();
 ```
 
-**Lazy-loaded scorer:**
-
-```ts
-scorer: async () => {
-  const { createAnswerCorrectnessScorer } = await import("@voltagent/scorers");
-  return createAnswerCorrectnessScorer();
-};
-```
-
 #### `params`
 
 Static or dynamic parameters passed to the scorer.

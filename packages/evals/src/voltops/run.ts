@@ -424,10 +424,18 @@ function inferTerminalStatus(summary: ExperimentSummary): CompleteEvalRunRequest
   const hasErrors = summary.errorCount > 0;
   const hasFailures = summary.failureCount > 0;
   const criteriaEvaluations = summary.criteria ?? [];
-  const passedAllCriteria =
-    criteriaEvaluations.length === 0 || criteriaEvaluations.every((entry) => entry.passed);
+  const hasCriteria = criteriaEvaluations.length > 0;
+  const passedAllCriteria = criteriaEvaluations.every((entry) => entry.passed);
 
-  if (hasErrors || hasFailures || !passedAllCriteria) {
+  if (hasErrors) {
+    return "failed";
+  }
+
+  if (hasCriteria) {
+    return passedAllCriteria ? "succeeded" : "failed";
+  }
+
+  if (hasFailures) {
     return "failed";
   }
 

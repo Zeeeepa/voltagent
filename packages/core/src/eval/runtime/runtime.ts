@@ -1,5 +1,7 @@
 import { safeStringify } from "@voltagent/internal/utils";
 
+const RUNTIME_METADATA_KEY = "__runtime";
+
 export type SamplingPolicy =
   | { type: "always" }
   | { type: "never" }
@@ -198,6 +200,15 @@ export async function runLocalScorers<Payload extends Record<string, unknown>>(
     }
 
     const durationMs = Date.now() - start;
+
+    const runtimeSnapshot: Record<string, unknown> = {
+      payload: cloneRecord(payload) ?? payload ?? null,
+      params: cloneRecord(scorerParams) ?? scorerParams ?? {},
+    };
+
+    metadata = mergeMetadata(metadata, {
+      [RUNTIME_METADATA_KEY]: runtimeSnapshot,
+    });
 
     const execution: LocalScorerExecutionResult = {
       id: definition.id,
