@@ -44,8 +44,9 @@ export async function createApp(
     const originalUse = app.use.bind(app);
     app.use = ((...args: any[]) => {
       // Check if cors middleware is being registered
+      // Note: Hono's cors function is named 'cors2' (not 'cors')
       const middleware = args[args.length - 1];
-      if (middleware && middleware.name === "cors") {
+      if (middleware && middleware.name === "cors2") {
         userConfiguredCors = true;
       }
       return originalUse(...args);
