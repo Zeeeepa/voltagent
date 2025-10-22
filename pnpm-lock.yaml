@@ -2882,7 +2882,7 @@ importers:
         specifier: ^1.12.1
         version: 1.17.2
       '@voltagent/core':
-        specifier: workspace:*
+        specifier: ^1.1.31
         version: link:../core
       '@voltagent/internal':
         specifier: ^0.0.12
@@ -2925,7 +2925,7 @@ importers:
         specifier: ^1.0.2
         version: link:../a2a-server
       '@voltagent/core':
-        specifier: workspace:*
+        specifier: ^1.1.31
         version: link:../core
       '@voltagent/internal':
         specifier: ^0.0.12
