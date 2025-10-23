@@ -3,6 +3,7 @@ import Layout from "@theme/Layout";
 
 import { AgentsDetail } from "../components/agents-detail";
 import { CommunitySection } from "../components/community-section";
+import { CompaniesMarquee } from "../components/companies/CompaniesMarquee";
 import { FeaturedBlog } from "../components/featured-blog";
 import { Hero } from "../components/hero";
 import { Integrations } from "../components/integrations";
@@ -66,6 +67,7 @@ export default function Home(): JSX.Element {
           <Hero />
           <TwoBlocks />
           <LivePreview />
+          <CompaniesMarquee />
 
           <div className="relative">
             <AgentsDetail />
@@ -82,7 +84,8 @@ export default function Home(): JSX.Element {
           {/* Global CSS for animations */}
           <style jsx global>{`
             @keyframes gradientShift {
-              0%, 100% {
+              0%,
+              100% {
                 transform: translate(0, 0) rotate(0deg);
               }
               25% {
