@@ -3,6 +3,7 @@ import {
   AccentureLogo,
   AdobeLogo,
   AmazonLogo,
+  BayerLogo,
   BroadcomLogo,
   CarrefourLogo,
   CognizantLogo,
@@ -16,6 +17,7 @@ import {
   NissanLogo,
   OracleLogo,
   SamsungLogo,
+  StellantisLogo,
   TacoBellLogo,
   TataLogo,
   VerizonLogo,
@@ -34,37 +36,33 @@ type LogoItem = {
 const ROW1_LOGOS: LogoItem[] = [
   { key: "samsung", Component: SamsungLogo, label: "Samsung", wrapperClassName: "w-32" },
   { key: "tata", Component: TataLogo, label: "Tata", wrapperClassName: "w-36" },
-  { key: "accenture", Component: AccentureLogo, label: "Accenture", wrapperClassName: "w-32" },
   { key: "infosys", Component: InfosysLogo, label: "Infosys", wrapperClassName: "w-32" },
   { key: "cognizant", Component: CognizantLogo, label: "Cognizant", wrapperClassName: "w-32" },
   { key: "wellsfargo", Component: WellsFargoLogo, label: "Wells Fargo", wrapperClassName: "w-22" },
+  { key: "bayer", Component: BayerLogo, label: "Bayer", wrapperClassName: "w-32" },
   { key: "oracle", Component: OracleLogo, label: "Oracle", wrapperClassName: "w-36" },
-  { key: "hsbc", Component: HSBCLogo, label: "HSBC", wrapperClassName: "w-32" },
-  { key: "huawei", Component: HuaweiLogo, label: "Huawei", wrapperClassName: "w-34" },
+  { key: "huawei", Component: HuaweiLogo, label: "Huawei", wrapperClassName: "w-32" },
+  {
+    key: "microsoft",
+    Component: MicrosoftCorpLogo,
+    label: "Microsoft",
+    wrapperClassName: "w-32",
+  },
 ];
 
 const ROW2_LOGOS: LogoItem[] = [
   { key: "abb", Component: ABBLogo, label: "ABB", wrapperClassName: "w-28" },
   { key: "amazon", Component: AmazonLogo, label: "Amazon", wrapperClassName: "w-22" },
-
+  { key: "stellantis", Component: StellantisLogo, label: "Stellantis", wrapperClassName: "w-32" },
   { key: "verizon", Component: VerizonLogo, label: "Verizon", wrapperClassName: "w-32" },
   { key: "carrefour", Component: CarrefourLogo, label: "Carrefour", wrapperClassName: "w-32" },
-  {
-    key: "deutschebank",
-    Component: DeutscheBankLogo,
-    label: "Deutsche Bank",
-    wrapperClassName: "w-32",
-  },
+
   { key: "godaddy", Component: GoDaddyLogo, label: "GoDaddy", wrapperClassName: "w-32" },
   { key: "broadcom", Component: BroadcomLogo, label: "Broadcom", wrapperClassName: "w-32" },
+  { key: "accenture", Component: AccentureLogo, label: "Accenture", wrapperClassName: "w-32" },
+
   { key: "nissan", Component: NissanLogo, label: "Nissan", wrapperClassName: "w-28" },
-  {
-    key: "microsoft",
-    Component: MicrosoftCorpLogo,
-    label: "Microsoft",
-    wrapperClassName: "w-24",
-    svgClassName: "max-h-[70%] max-w-[70%]",
-  },
+
   { key: "adobe", Component: AdobeLogo, label: "Adobe", wrapperClassName: "w-28" },
   { key: "fiverr", Component: FiverrLogo, label: "Fiverr", wrapperClassName: "w-28" },
 ];
@@ -148,7 +146,7 @@ export const CompaniesMarquee = () => {
       <div className="companies-marquee relative max-w-7xl xs:px-4 lg:px-8 mx-auto landing-xs:mb-16 landing-md:mb-36">
         <div className="text-center mb-6 sm:mb-8">
           <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-white/60">
-            Used and Tested by Developers
+            Used and Tested by Developers at
           </h2>
         </div>
         {renderRow(ROW1_LOGOS, false)}
