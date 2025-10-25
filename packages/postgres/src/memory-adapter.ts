@@ -217,6 +217,13 @@ export class PostgreSQLMemoryAdapter implements StorageAdapter {
         this.log("Error adding UIMessage columns (non-critical):", error);
       }
 
+      // Run workflow state columns migration
+      try {
+        await this.addWorkflowStateColumns(client);
+      } catch (error) {
+        this.log("Error adding workflow state columns (non-critical):", error);
+      }
+
       await client.query("COMMIT");
 
       // Migrate default user_id values to actual values from conversations
@@ -1174,6 +1181,61 @@ export class PostgreSQLMemoryAdapter implements StorageAdapter {
     } catch (error) {
       // Log the error but don't throw - this migration is not critical
       this.log("Failed to migrate default user_ids:", error);
+    }
+  }
+
+  /**
+   * Add new columns to workflow_states table for event persistence
+   * This migration adds support for events, output, and cancellation tracking
+   */
+  private async addWorkflowStateColumns(client: PoolClient): Promise<void> {
+    const workflowStatesTable = `${this.tablePrefix}_workflow_states`;
+
+    try {
+      // Check which columns exist
+      const columnCheck = await client.query(
+        `
+        SELECT column_name
+        FROM information_schema.columns
+        WHERE table_name = $1
+        `,
+        [workflowStatesTable],
+      );
+
+      const existingColumns = columnCheck.rows.map((row) => row.column_name);
+
+      // Add events column if it doesn't exist
+      if (!existingColumns.includes("events")) {
+        try {
+          await client.query(`ALTER TABLE ${workflowStatesTable} ADD COLUMN events JSONB`);
+          this.log("Added 'events' column to workflow_states table");
+        } catch (_e) {
+          // Column might already exist
+        }
+      }
+
+      // Add output column if it doesn't exist
+      if (!existingColumns.includes("output")) {
+        try {
+          await client.query(`ALTER TABLE ${workflowStatesTable} ADD COLUMN output JSONB`);
+          this.log("Added 'output' column to workflow_states table");
+        } catch (_e) {
+          // Column might already exist
+        }
+      }
+
+      // Add cancellation column if it doesn't exist
+      if (!existingColumns.includes("cancellation")) {
+        try {
+          await client.query(`ALTER TABLE ${workflowStatesTable} ADD COLUMN cancellation JSONB`);
+          this.log("Added 'cancellation' column to workflow_states table");
+        } catch (_e) {
+          // Column might already exist
+        }
+      }
+    } catch (error) {
+      // Log warning but don't throw - existing deployments without these columns will still work
+      this.log("Failed to add workflow state columns (non-critical):", error);
     }
   }
 
