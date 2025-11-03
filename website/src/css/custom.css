@@ -4548,6 +4548,19 @@ code .token.coord {
   font-weight: 600 !important;
 }
 
+/* Level 2 category headers (Storage Adapters, SCORERS, etc.) - same size as level 1 */
+.theme-doc-sidebar-item-category-level-2 .menu__list-item-collapsible .menu__link {
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
+  color: #ffffff !important;
+}
+
+.theme-doc-sidebar-item-category-level-2 > .menu__list-item-collapsible > .menu__link {
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
+  color: #ffffff !important;
+}
+
 [data-theme="dark"] .menu__list-item-collapsible .menu__link::before {
   color: rgb(16, 185, 129) !important;
 }
@@ -4615,6 +4628,8 @@ code .token.coord {
 .menu__list .menu__list .menu__list-item-collapsible .menu__link {
   padding-left: 1rem !important;
   color: #ffffff !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
 }
 
 [data-theme="dark"] .menu__list .menu__list .menu__list-item-collapsible .menu__link {
