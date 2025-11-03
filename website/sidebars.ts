@@ -140,6 +140,11 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
+      label: "Triggers",
+      items: ["triggers/overview", "triggers/usage"],
+    },
+    {
+      type: "category",
       label: "Tools",
       items: ["tools/overview", "tools/reasoning-tool"],
     },
