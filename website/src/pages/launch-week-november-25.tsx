@@ -77,13 +77,13 @@ const Day1 = () => (
   <DayComponent
     enabled={true}
     date="DAY 1 | TUESDAY, NOVEMBER 5, 2025"
-    title="Triggers - Event-Driven Agent Automation"
-    description="Connect your agents to external services and automate workflows with powerful event triggers. Integrate with popular platforms like Airtable, Slack, and more to build responsive AI systems."
+    title="Triggers - Event Driven Agent Automation"
+    description="Automate your AI agents with external events and schedules. Connect to Slack, Gmail, Airtable, GitHub, and cron schedules with full observability in VoltOps."
     detailsLink="https://voltagent.dev/docs/triggers/"
   >
     <div className="rounded-md border-solid p-1 border-2 border-emerald-600 flex items-center justify-center relative overflow-hidden">
       <img
-        src="/img/triggers/image.png"
+        src="/img/triggers/configure-provider.png"
         alt="Triggers Feature Preview"
         className="object-cover w-full h-full rounded-md border border-gray-800"
       />
