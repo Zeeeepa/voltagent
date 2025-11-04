@@ -118,7 +118,7 @@ const LaunchWeek = () => {
       title="Launch Week"
       description="5 days of exciting new features and improvements to VoltAgent"
     >
-      <div className="min-h-screen flex flex-col justify-center items-center">
+      <div className="min-h-screen flex flex-col justify-center mt-12 items-center">
         <DotPattern dotColor="#94a3b8" dotSize={1.2} spacing={20} />
         {/* Header */}
         <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-20">
@@ -135,7 +135,7 @@ const LaunchWeek = () => {
               November 5-9, 2025
             </div>
             <p className="text-lg sm:text-xl text-gray-400 max-w-3xl mx-auto px-4">
-              5 days of features to transform how you build and monitor AI agents.
+              5 days of new features to transform how you build and monitor AI agents.
             </p>
           </div>
           {/* Feature Items */}
