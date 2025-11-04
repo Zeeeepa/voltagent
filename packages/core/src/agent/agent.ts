@@ -1,4 +1,9 @@
-import type { ModelMessage, ProviderOptions, SystemModelMessage } from "@ai-sdk/provider-utils";
+import type {
+  ModelMessage,
+  ProviderOptions,
+  SystemModelMessage,
+  ToolCallOptions,
+} from "@ai-sdk/provider-utils";
 import type { Span } from "@opentelemetry/api";
 import { SpanKind, SpanStatusCode } from "@opentelemetry/api";
 import type { Logger } from "@voltagent/internal";
@@ -510,6 +515,7 @@ export class Agent {
         const {
           userId,
           conversationId,
+          context, // Explicitly exclude to prevent collision with AI SDK's future 'context' field
           parentAgentId,
           parentOperationContext,
           hooks,
@@ -724,6 +730,7 @@ export class Agent {
         const {
           userId,
           conversationId,
+          context, // Explicitly exclude to prevent collision with AI SDK's future 'context' field
           parentAgentId,
           parentOperationContext,
           hooks,
@@ -1191,6 +1198,7 @@ export class Agent {
         const {
           userId,
           conversationId,
+          context, // Explicitly exclude to prevent collision with AI SDK's future 'context' field
           parentAgentId,
           parentOperationContext,
           hooks,
@@ -1414,6 +1422,7 @@ export class Agent {
         const {
           userId,
           conversationId,
+          context, // Explicitly exclude to prevent collision with AI SDK's future 'context' field
           parentAgentId,
           parentOperationContext,
           hooks,
@@ -2691,9 +2700,23 @@ export class Agent {
   private createToolExecutionFactory(
     oc: OperationContext,
     hooks: AgentHooks,
-  ): (tool: BaseTool) => (args: any, options?: ToolExecuteOptions) => Promise<any> {
-    return (tool: BaseTool) => async (args: any, options?: ToolExecuteOptions) => {
+  ): (tool: BaseTool) => (args: any, options?: ToolCallOptions) => Promise<any> {
+    return (tool: BaseTool) => async (args: any, options?: ToolCallOptions) => {
+      // AI SDK passes ToolCallOptions with fields: toolCallId, messages, abortSignal
       const toolCallId = options?.toolCallId ?? randomUUID();
+      const messages = options?.messages ?? [];
+      const abortSignal = options?.abortSignal;
+
+      // Convert ToolCallOptions to ToolExecuteOptions by merging with OperationContext
+      const executionOptions: ToolExecuteOptions = {
+        ...oc,
+        toolContext: {
+          name: tool.name,
+          callId: toolCallId,
+          messages: messages,
+          abortSignal: abortSignal,
+        },
+      };
 
       // Event tracking now handled by OpenTelemetry spans
       const toolSpan = oc.traceContext.createChildSpan(`tool.execution:${tool.name}`, "tool", {
@@ -2715,13 +2738,19 @@ export class Agent {
       return await oc.traceContext.withSpan(toolSpan, async () => {
         try {
           // Call tool start hook - can throw ToolDeniedError
-          await hooks.onToolStart?.({ agent: this, tool, context: oc, args, options });
+          await hooks.onToolStart?.({
+            agent: this,
+            tool,
+            context: oc,
+            args,
+            options: executionOptions,
+          });
 
-          // Execute tool with OperationContext directly
+          // Execute tool with merged options
           if (!tool.execute) {
             throw new Error(`Tool ${tool.name} does not have "execute" method`);
           }
-          const result = await tool.execute(args, oc, options);
+          const result = await tool.execute(args, executionOptions);
           const validatedResult = await this.validateToolOutput(result, tool);
 
           // End OTEL span
@@ -2736,7 +2765,7 @@ export class Agent {
             output: validatedResult,
             error: undefined,
             context: oc,
-            options,
+            options: executionOptions,
           });
 
           return result;
@@ -2755,7 +2784,7 @@ export class Agent {
             output: undefined,
             error: errorResult as any,
             context: oc,
-            options,
+            options: executionOptions,
           });
 
           if (isToolDeniedError(e)) {
@@ -3379,16 +3408,20 @@ export class Agent {
       name: toolName,
       description: toolDescription,
       parameters: parametersSchema,
-      execute: async (args, context) => {
+      execute: async (args, options) => {
         // Extract the prompt from args
         const prompt = (args as any).prompt || args;
+
+        // Extract OperationContext from options if available
+        // Since ToolExecuteOptions extends Partial<OperationContext>, we can extract the fields
+        const oc = options as OperationContext | undefined;
 
         // Generate response using this agent
         const result = await this.generateText(prompt, {
           // Pass through the operation context if available
-          parentOperationContext: context,
-          conversationId: context?.conversationId,
-          userId: context?.userId,
+          parentOperationContext: oc,
+          conversationId: options?.conversationId,
+          userId: options?.userId,
         });
 
         // Return the text result

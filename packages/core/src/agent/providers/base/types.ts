@@ -1,6 +1,5 @@
 import type {
   DataContent as AISDKDataContent,
-  ToolCallOptions as AIToolCallOptions,
   AssistantContent,
   ModelMessage,
   ToolContent,
@@ -240,24 +239,41 @@ export type BaseMessage = ModelMessage;
 // Schema types
 export type ToolSchema = z.ZodType;
 
+/**
+ * Tool execution context containing all tool-specific metadata.
+ * Encapsulates both AI SDK fields and VoltAgent metadata for better organization.
+ */
+export type ToolContext = {
+  /** Name of the tool being executed */
+  name: string;
+
+  /** Unique identifier for this specific tool call (from AI SDK) */
+  callId: string;
+
+  /** Message history at the time of tool call (from AI SDK) */
+  messages: any[];
+
+  /** Abort signal for detecting cancellation (from AI SDK) */
+  abortSignal?: AbortSignal;
+};
+
 // Base tool types
-export type ToolExecuteOptions = AIToolCallOptions & {
+export type ToolExecuteOptions = Partial<OperationContext> & {
+  /**
+   * Tool execution context containing all tool-specific metadata.
+   * Includes both AI SDK fields (callId, messages, abortSignal) and
+   * VoltAgent metadata (name).
+   *
+   * Optional for external callers (e.g., MCP servers) that may not have tool metadata.
+   * When called from VoltAgent's agent, this is always populated.
+   */
+  toolContext?: ToolContext;
+
   /**
    * Optional AbortController for cancelling the execution and accessing the signal.
-   * Prefer using the provided abortSignal, but we keep this for backward compatibility.
+   * Prefer using toolContext.abortSignal.
    */
   abortController?: AbortController;
-
-  /**
-   * @deprecated Use abortController.signal or options.abortSignal instead. This field will be removed in a future version.
-   */
-  signal?: AbortSignal;
-
-  /**
-   * The operation context associated with the agent invocation triggering this tool execution.
-   * Provides access to operation-specific state like context and logging metadata.
-   */
-  operationContext?: OperationContext;
 
   /**
    * Additional options can be added in the future.
