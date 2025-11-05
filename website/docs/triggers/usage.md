@@ -1,9 +1,9 @@
 # Usage
 
-This guide walks through creating an **Airtable trigger** step by step using the [YouTube to Blog example agent](https://voltagent.dev/examples/agents/youtube-blog-agent/). When a new YouTube URL is added to your Airtable base, the trigger fires and the agent converts the video into a blog post. The same workflow applies to other providers (Slack, Gmail, GitHub, Schedule).
+This guide walks through creating a **trigger using Airtable** that automatically executes your agent when new records are added to your Airtable base. The same workflow applies to other providers (Slack, Gmail, GitHub, Schedule).
 
 :::tip To try this yourself
-You'll need [VoltOps Console](https://console.voltagent.dev/) access, the [YouTube to Blog agent](https://voltagent.dev/examples/agents/youtube-blog-agent/#setup) example and an [Airtable](https://airtable.com/) account with a base and Personal Access Token (we'll show you how to create one).
+You'll need [VoltOps Console](https://console.voltagent.dev/) access, a VoltAgent [example](https://voltagent.dev/examples/) or your own agent, and an [Airtable](https://airtable.com/) account with a base and Personal Access Token (we'll show you how to create one).
 :::
 
 ## Step 1: Trigger Connection
@@ -12,7 +12,7 @@ To set up a trigger, you first need to select a provider and configure its crede
 
 <video autoPlay loop muted playsInline style={{width: '100%', height: 'auto'}}>
 
-  <source src="/img/triggers/credentials.mp4" type="video/mp4" />
+  <source src="https://cdn.voltagent.dev/console/trigger/step-1-connection.mp4" type="video/mp4" />
   Your browser does not support the video tag.
 </video>
 
@@ -33,10 +33,6 @@ data.records:write
 schema.bases:read
 ```
 
-:::tip Set ACCESS TOKEN SCOPE
-![Airtable Credential Modal](/img/triggers/airtable-credential-modal.png)
-:::
-
 After pasting the token, click **Save credentials** proceed to trigger options.
 
 ## Step 2: Trigger Configuration
@@ -45,7 +41,7 @@ After configuring credentials, you need to specify which Airtable base, table, a
 
 <video autoPlay loop muted playsInline style={{width: '100%', height: 'auto'}}>
 
-  <source src="/img/triggers/setting-server.mp4" type="video/mp4" />
+  <source src="https://cdn.voltagent.dev/console/trigger/step-2-configuration.mp4" type="video/mp4" />
   Your browser does not support the video tag.
 </video>
 
@@ -76,20 +72,18 @@ After creating your binding, you need to add targets that will execute when the 
 
 Click **Add Your First Target** to open the target configuration modal with three tabs: **Target**, **Mapping**, and **Review**.
 
-![trigger](/img/triggers/image.png)
+### Target
+
+We'll configure the server and destination here.
 
 <video autoPlay loop muted playsInline style={{width: '100%', height: 'auto'}}>
 
-  <source src="/img/triggers/activate-binding.mp4" type="video/mp4" />
+  <source src="https://cdn.voltagent.dev/console/trigger/step-4-1.mp4" type="video/mp4" />
   Your browser does not support the video tag.
 </video>
 
 <br/>
 <br/>
-
-### Target
-
-We'll configure the server and destination here.
 
 - **Agent Server**: First, click **+ New** to add a new server to host your agents and workflows. This opens the **Create Agent Server** modal with the following fields:
   - **Server Name**: Name for your server
@@ -109,13 +103,22 @@ ngrok http 3141
 Then use the ngrok URL (e.g., `https://abc123.ngrok.io`) as your server URL.
 :::
 
-- **Select an Agent**: Choose the agent or workflow you want to trigger. We'll choose `YouTubeToBlogCoordinator` from our example AI Agents.
+- **Select an Agent**: Choose the agent or workflow you want to trigger from your available agents.
 
 Click **Next** to proceed to the Mapping tab.
 
 ### Mapping
 
 The Mapping tab is where you transform the Airtable trigger payload into the format your agent expects. This involves capturing sample data from Airtable and mapping it to your agent's input structure.
+
+<video autoPlay loop muted playsInline style={{width: '100%', height: 'auto'}}>
+
+  <source src="https://cdn.voltagent.dev/console/trigger/step-4-2.mp4" type="video/mp4" />
+  Your browser does not support the video tag.
+</video>
+
+<br/>
+<br/>
 
 The mapping flow has 3 steps:
 
@@ -141,7 +144,7 @@ Once captured, you'll see **Sample Captured** with a green checkmark. The **Capt
     "id": "rec7Nyu70ri1UNIz",
     "createdTime": "2025-10-31T12:52:29.000Z",
     "fields": {
-      "Label": "jim morrison",
+      "Label": "Test Trigger",
       "Created": "2025-10-31T12:52:29.000Z"
     },
     "pollAtAt": "2025-10-31T12:53:00.629Z"
@@ -161,12 +164,12 @@ Now you'll map the captured Airtable data to your agent's expected input format.
 
 Click on any property in the Captured Payload (left side), and it will insert `{{ path }}` into the mapping template at your cursor position.
 
-For example, clicking on `"Label": "jim morrison"` in the captured payload inserts `{{record.fields.Label}}` into your template.
+For example, clicking on `"Label": "Test Trigger"` in the captured payload inserts `{{record.fields.Label}}` into your template.
 
 ```json
 {
   "input": {
-    "topic": "{{ input.record.fields.Label }}"
+    "labelValue": "{{ input.record.fields.Label }}"
   }
 }
 ```
@@ -175,13 +178,26 @@ For example, clicking on `"Label": "jim morrison"` in the captured payload inser
 
 #### **3. Preview and Test**
 
-Review the final transformed payload in the **Preview** tab, then click **Test** to verify the mapping works correctly. The system will send the mapped payload to your agent and show the response.
+Now you can preview and test your mapping configuration.
 
-If the test succeeds, your mapping is correct.
+**Preview** - Review the final transformed payload based on your captured sample data and mapping template.
+
+**Test** - Click **Send Test Request** to send the mapped payload to your agent. The system will execute your agent and display the response.
+
+If the test succeeds, your mapping is ready to use.
 
 ## Step 4: Activate Binding and Test
 
-After adding your target, return to the trigger detail page and click **Activate** to start monitoring.
+Now that your binding and target are configured, you can activate the trigger and test it with real data from Airtable. We'll verify the trigger execution by checking the agent's activity in VoltOps Console.
+
+<video autoPlay loop muted playsInline style={{width: '100%', height: 'auto'}}>
+
+  <source src="https://cdn.voltagent.dev/console/trigger/final-step.mp4" type="video/mp4" />
+  Your browser does not support the video tag.
+</video>
+
+<br/>
+<br/>
 
 Test the trigger by adding a new record in your Airtable base:
 
