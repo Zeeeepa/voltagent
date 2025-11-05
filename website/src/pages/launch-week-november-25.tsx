@@ -76,14 +76,14 @@ const DayComponent: React.FC<DayProps> = ({
 const Day1 = () => (
   <DayComponent
     enabled={true}
-    date="DAY 1 | TUESDAY, NOVEMBER 5, 2025"
+    date="DAY 1 | NOVEMBER 5, 2025"
     title="Triggers - Event Driven Agent Automation"
     description="Automate your AI agents with external events and schedules. Connect to Slack, Gmail, Airtable, GitHub, and cron schedules with full observability in VoltOps."
-    detailsLink="https://voltagent.dev/docs/triggers/"
+    detailsLink="https://voltagent.dev/docs/triggers/usage/"
   >
     <div className="rounded-md border-solid p-1 border-2 border-emerald-600 flex items-center justify-center relative overflow-hidden">
       <img
-        src="/img/triggers/configure-provider.png"
+        src="https://cdn.voltagent.dev/console/trigger/trigger-img.png"
         alt="Triggers Feature Preview"
         className="object-cover w-full h-full rounded-md border border-gray-800"
       />
