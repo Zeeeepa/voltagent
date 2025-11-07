@@ -1,4 +1,5 @@
 import { BoltIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
+import CodeBlock from "@theme/CodeBlock";
 import Layout from "@theme/Layout";
 import type React from "react";
 import { DotPattern } from "../components/ui/dot-pattern";
@@ -110,7 +111,50 @@ const Day2 = () => (
 );
 
 const Day3 = () => (
-  <DayComponent enabled={false} date="DAY 3 | THURSDAY, NOVEMBER 7, 2025" title="" description="" />
+  <DayComponent
+    enabled={true}
+    date="DAY 3 | NOVEMBER 7, 2025"
+    title="Sub-Agent Early Termination - Bail for Better Control"
+    description="Give your sub-agents the power to bail early when they encounter issues or complete their tasks. Improve agent reliability and prevent wasted tokens with graceful early termination."
+    detailsLink="https://voltagent.dev/docs/agents/sub-agents/#early-termination-bail"
+  >
+    <div className="w-full">
+      <div className="bg-gray-900 border-solid border-gray-800 rounded-xl sm:rounded-md overflow-hidden flex flex-col h-full">
+        <div className="px-3 sm:px-4 py-2 sm:py-3 bg-gray-800 border-b border-gray-700">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 sm:w-3 sm:h-3 bg-red-500 rounded-full" />
+            <div className="w-2 h-2 sm:w-3 sm:h-3 bg-yellow-500 rounded-full" />
+            <div className="w-2 h-2 sm:w-3 sm:h-3 bg-green-500 rounded-full" />
+            <span className="ml-2 sm:ml-3 text-gray-400 text-xs sm:text-sm font-mono">
+              supervisor-agent.ts
+            </span>
+          </div>
+        </div>
+        <div className="text-xs sm:text-sm flex-1 h-full">
+          <CodeBlock
+            language="typescript"
+            showLineNumbers={false}
+            className="!m-0 !p-0 h-full [&>pre]:!m-0 [&>pre]:!p-4 [&>pre]:h-full"
+          >
+            {`const supervisor = new Agent({
+  name: "Workout Supervisor",
+  subAgents: [exerciseAgent, workoutBuilder],
+  hooks: {
+    onHandoffComplete: async ({ agent, result, bail, context }) => {
+      // Workout Builder produces final JSON - no processing needed
+      if (agent.name === "Workout Builder") {
+        context.logger?.info("Final output received, bailing");
+        bail(); // Skip supervisor, return directly to user
+      }
+      // Default: continue to supervisor for processing
+    },
+  },
+});`}
+          </CodeBlock>
+        </div>
+      </div>
+    </div>
+  </DayComponent>
 );
 
 const Day4 = () => (
