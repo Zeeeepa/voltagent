@@ -176,7 +176,21 @@ const Day4 = () => (
 );
 
 const Day5 = () => (
-  <DayComponent enabled={false} date="DAY 5 | SATURDAY, NOVEMBER 9, 2025" title="" description="" />
+  <DayComponent
+    enabled={true}
+    date="DAY 5 | NOVEMBER 9, 2025"
+    title="Servers – Connect and Manage Your Deployed Agents"
+    description="Register your deployed VoltAgent URLs in VoltOps to power Triggers and Evals. Instantly switch between environments from the navbar and test live agents in the playground."
+    detailsLink="https://voltagent.dev/docs/servers"
+  >
+    <div className="rounded-md border-solid p-1 border-2 border-emerald-600 flex items-center justify-center relative overflow-hidden">
+      <img
+        src="https://cdn.voltagent.dev/website/showcase/voltagent-servers.png"
+        alt="VoltAgent Servers Feature Preview"
+        className="object-cover w-full h-full rounded-md border border-gray-800"
+      />
+    </div>
+  </DayComponent>
 );
 
 const LaunchWeek = () => {
