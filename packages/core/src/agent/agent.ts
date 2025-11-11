@@ -298,6 +298,11 @@ export interface BaseGenerationOptions extends Partial<CallSettings> {
   // maxOutputTokens, temperature, topP, topK,
   // presencePenalty, frequencyPenalty, stopSequences,
   // seed, maxRetries, abortSignal, headers
+  /**
+   * Optional explicit stop sequences to pass through to the underlying provider.
+   * Mirrors the `stop` option supported by ai-sdk `generateText/streamText`.
+   */
+  stop?: string | string[];
 }
 
 export type GenerateTextOptions = BaseGenerationOptions;
@@ -547,7 +552,7 @@ export class Agent {
         });
         const finalizeLLMSpan = this.createLLMSpanFinalizer(llmSpan);
 
-        let result: GenerateTextResult<any>;
+        let result!: GenerateTextResult<ToolSet, unknown>;
         try {
           result = await oc.traceContext.withSpan(llmSpan, () =>
             generateText({
@@ -1064,6 +1069,11 @@ export class Agent {
                   : undefined,
                 toolCalls: finalResult.toolCalls,
               },
+            });
+
+            finalizeLLMSpan(SpanStatusCode.OK, {
+              usage: finalResult.totalUsage,
+              finishReason: finalResult.finishReason,
             });
 
             oc.traceContext.end("completed");
@@ -2197,7 +2207,9 @@ export class Agent {
         finishReason?: FinishReason | string | null;
       },
     ) => {
-      if (ended) return;
+      if (ended) {
+        return;
+      }
       if (details?.usage) {
         this.recordLLMUsage(span, details.usage);
       }
@@ -2232,22 +2244,26 @@ export class Agent {
     if (provider) {
       attrs["llm.provider"] = provider;
     }
+
     const callOptions = params.callOptions ?? {};
     const maybeNumber = (value: unknown): number | undefined => {
-      if (typeof value === "number") return value;
+      if (typeof value === "number") {
+        return Number.isFinite(value) ? value : undefined;
+      }
       if (typeof value === "string") {
         const parsed = Number(value);
         return Number.isFinite(parsed) ? parsed : undefined;
       }
       return undefined;
     };
+
     const temperature = maybeNumber(callOptions.temperature ?? callOptions.temp ?? undefined);
     if (temperature !== undefined) {
       attrs["llm.temperature"] = temperature;
     }
-    const maxOutput = maybeNumber(callOptions.maxOutputTokens);
-    if (maxOutput !== undefined) {
-      attrs["llm.max_output_tokens"] = maxOutput;
+    const maxOutputTokens = maybeNumber(callOptions.maxOutputTokens);
+    if (maxOutputTokens !== undefined) {
+      attrs["llm.max_output_tokens"] = maxOutputTokens;
     }
     const topP = maybeNumber(callOptions.topP);
     if (topP !== undefined) {
@@ -2280,9 +2296,14 @@ export class Agent {
   }
 
   private recordLLMUsage(span: Span, usage?: LanguageModelUsage | UsageInfo | null): void {
-    if (!usage) return;
+    if (!usage) {
+      return;
+    }
+
     const coerce = (value: unknown): number | undefined => {
-      if (typeof value === "number" && Number.isFinite(value)) return value;
+      if (typeof value === "number" && Number.isFinite(value)) {
+        return value;
+      }
       if (typeof value === "string") {
         const parsed = Number(value);
         return Number.isFinite(parsed) ? parsed : undefined;
@@ -3121,11 +3142,15 @@ export class Agent {
       };
 
       // Event tracking now handled by OpenTelemetry spans
+      const toolTags = (tool as { tags?: string[] | undefined }).tags;
       const toolSpan = oc.traceContext.createChildSpan(`tool.execution:${tool.name}`, "tool", {
         label: tool.name,
         attributes: {
           "tool.name": tool.name,
           "tool.call.id": toolCallId,
+          "tool.description": tool.description,
+          ...(toolTags && toolTags.length > 0 ? { "tool.tags": safeStringify(toolTags) } : {}),
+          "tool.parameters": safeStringify(tool.parameters),
           input: args ? safeStringify(args) : undefined,
         },
         kind: SpanKind.CLIENT,
