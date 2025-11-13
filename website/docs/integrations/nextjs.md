@@ -76,6 +76,7 @@ OPENAI_API_KEY="your-openai-api-key-here"
 Create the main chat API route with the agent and singleton defined inline in `app/api/chat/route.ts`:
 
 ```typescript title="app/api/chat/route.ts"
+import { after } from "next/server";
 import { openai } from "@ai-sdk/openai";
 import { Agent, VoltAgent, createTool } from "@voltagent/core";
 import { honoServer } from "@voltagent/server-hono";
@@ -135,6 +136,19 @@ export async function POST(req: Request) {
     const lastMessage = messages[messages.length - 1];
 
     const result = await agent.streamText([lastMessage]);
+
+    // CRITICAL for Vercel/serverless: Ensure observability spans are exported before function terminates
+    const observability = voltAgent.getObservability();
+    if (observability) {
+      after(async () => {
+        // Wait for stream to complete
+        await result.finishReason;
+
+        // Force export all pending spans
+        await observability.forceFlush();
+      });
+    }
+
     return result.toUIMessageStreamResponse();
   } catch (error) {
     return Response.json({ error: "Internal server error" }, { status: 500 });
@@ -277,3 +291,51 @@ This creates a simple but powerful VoltAgent application with:
 - **Tool integration** showing how agents use tools
 
 The agent will use the calculator tool when users ask for mathematical calculations, demonstrating how VoltAgent integrates tools seamlessly into conversations.
+
+## Deploying to Vercel (Serverless)
+
+When deploying VoltAgent to Vercel or other serverless platforms, you need to ensure observability spans are properly exported before the serverless function terminates. Without this, traces may remain in "pending" status in VoltOps even though execution completed successfully.
+
+### The Problem
+
+Serverless functions terminate immediately after sending the response. This can interrupt the OpenTelemetry BatchSpanProcessor before it exports pending spans, causing:
+
+- ❌ Traces stuck in "pending" status in VoltOps
+- ❌ Missing agent completion metadata
+- ❌ Incomplete observability data
+
+### The Solution: Using `after()`
+
+Next.js 15+ provides the `after()` API to execute code after the response is sent but before the function terminates. This is already included in the API route example above:
+
+```typescript
+import { after } from "next/server";
+
+export async function POST(req: Request) {
+  // ... your agent logic
+  const result = await agent.streamText([lastMessage]);
+
+  // Flush spans before function terminates
+  const observability = voltAgent.getObservability();
+  if (observability) {
+    after(async () => {
+      await result.finishReason; // Wait for stream completion
+      await observability.forceFlush(); // Export all spans
+    });
+  }
+
+  return result.toUIMessageStreamResponse();
+}
+```
+
+### Why This Works
+
+1. **`await result.finishReason`**: Ensures the AI SDK stream completes and the root span ends with `agent.state = completed`
+2. **`await observability.forceFlush()`**: Forces the BatchSpanProcessor to immediately export all pending spans
+3. **`after()` wrapper**: Keeps the Vercel function alive until the async work completes
+
+### Requirements
+
+- **Next.js 15+**: The `after()` API was introduced in Next.js 15
+- **Vercel Platform**: Uses Vercel's `waitUntil()` primitive under the hood
+- **VoltOps Observability**: Only needed if you're using VoltOps for trace monitoring
