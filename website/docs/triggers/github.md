@@ -100,11 +100,25 @@ After configuring credentials, you need to specify which repository and events t
 
 Select the credential you created and configure the repository settings:
 
-- **Owner**: Enter the GitHub repository owner (username or organization name)
-- **Repository**: Enter the repository name within the owner's account
-- **Branch Filter (Optional)**: Provide a branch name to restrict push events. Leave blank to allow all branches
+### Owner
 
+Enter the GitHub repository owner (username or organization name).
+
+### Repository
+
+Enter the repository name within the owner's account.
+
+:::tip
 VoltOps listens for events from this repository and configures the GitHub webhook automatically.
+:::
+
+### Branch Filter (Optional)
+
+Restrict **push events** to a specific branch. Leave blank to allow all branches.
+
+:::note
+The branch filter only applies to **push events**. Other events (pull requests, issues, releases, etc.) are not affected by this filter.
+:::
 
 ## Add Target to Activate Binding
 
@@ -126,30 +140,6 @@ When creating a trigger in VoltOps Console, you can select which events to liste
 GitHub webhook events include:
 
 <GitHubEventTypes />
-
-## Configuration Parameters
-
-After setting up authentication in **Step 1 (Connection)**, configure the trigger options in **Step 2 (Configuration)**.
-
-### Owner
-
-Enter the GitHub repository owner (username or organization name).
-
-### Repository
-
-Enter the repository name within the owner's account.
-
-:::tip
-VoltOps listens for events from this repository and configures the GitHub webhook automatically.
-:::
-
-### Branch Filter (Optional)
-
-Restrict **push events** to a specific branch. Leave blank to allow all branches.
-
-:::note
-The branch filter only applies to **push events**. Other events (pull requests, issues, releases, etc.) are not affected by this filter.
-:::
 
 ## GitHub Enterprise Support
 
