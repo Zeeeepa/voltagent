@@ -90,17 +90,6 @@ Select the timezone in which the cron expression will execute. Uses standard IAN
 - `Europe/London` - GMT (+0:00)
 - `Asia/Tokyo` - JST (+9:00)
 
-## Add Target to Activate Binding
-
-After configuring your Cron trigger, you need to add a target (agent or workflow) to activate the binding. For detailed instructions on:
-
-- Adding targets to activate bindings
-- Mapping trigger data to agent inputs
-- Testing triggers with sample payloads
-- Deploying and monitoring triggers
-
-See the [Add Target to Activate Binding section](https://voltagent.dev/docs/triggers/usage/#step-3-add-target-to-activate-binding). These steps are the same for all trigger providers.
-
 ## Event Types
 
 Cron triggers support the following event type:
@@ -133,3 +122,14 @@ VoltOps delivers scheduled execution events with the following structure:
 - **schedule.expression**: The cron expression that triggered execution
 - **schedule.timezone**: The timezone used for scheduling
 - **executedAt**: ISO 8601 timestamp of when the schedule triggered
+
+## Add Target to Activate Binding
+
+After configuring your Cron trigger, you need to add a target (agent or workflow) to activate the binding. For detailed instructions on:
+
+- Adding targets to activate bindings
+- Mapping trigger data to agent inputs
+- Testing triggers with sample payloads
+- Deploying and monitoring triggers
+
+See the [Add Target to Activate Binding section](https://voltagent.dev/docs/triggers/usage/#step-3-add-target-to-activate-binding). These steps are the same for all trigger providers.

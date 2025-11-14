@@ -120,6 +120,16 @@ Restrict **push events** to a specific branch. Leave blank to allow all branches
 The branch filter only applies to **push events**. Other events (pull requests, issues, releases, etc.) are not affected by this filter.
 :::
 
+## Event Types
+
+GitHub triggers support all GitHub webhook events. VoltOps configures the webhook when you create a trigger. No manual webhook setup is required.
+
+When creating a trigger in VoltOps Console, you can select which events to listen for. The trigger will only execute when the selected events occur.
+
+GitHub webhook events include:
+
+<GitHubEventTypes />
+
 ## Add Target to Activate Binding
 
 After configuring your GitHub trigger, you need to add a target (agent or workflow) to activate the binding. For detailed instructions on:
@@ -130,16 +140,6 @@ After configuring your GitHub trigger, you need to add a target (agent or workfl
 - Deploying and monitoring triggers
 
 See the [Add Target to Activate Binding section](https://voltagent.dev/docs/triggers/usage/#step-3-add-target-to-activate-binding). These steps are the same for all trigger providers.
-
-## Event Types
-
-GitHub triggers support all GitHub webhook events. VoltOps configures the webhook when you create a trigger. No manual webhook setup is required.
-
-When creating a trigger in VoltOps Console, you can select which events to listen for. The trigger will only execute when the selected events occur.
-
-GitHub webhook events include:
-
-<GitHubEventTypes />
 
 ## GitHub Enterprise Support
 
