@@ -11,8 +11,8 @@ For trigger setup and usage instructions, see the [Usage Guide](https://voltagen
 - Scheduled data synchronization between systems
 - Periodic health checks and monitoring
 - Daily or weekly report generation
-- Automated cleanup and maintenance tasks
-- Regular database backups
+- Cleanup and maintenance tasks
+- Database backups
 
 ## Configuration
 
@@ -33,7 +33,7 @@ The Cron trigger requires only a schedule configuration. No credentials are need
 
 ### Cron Expression
 
-Enter a standard cron expression to define your schedule. The expression is validated in real-time and displays a human-readable description.
+Enter a standard cron expression to define your schedule. The expression is validated and displays a human-readable description.
 
 A standard cron expression with five fields:
 
