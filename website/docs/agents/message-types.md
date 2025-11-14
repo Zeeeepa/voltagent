@@ -80,8 +80,6 @@ const result = await generateText({
 });
 ```
 
----
-
 ### 2. UIMessage (AI SDK UI Format)
 
 **UIMessage** is the modern format designed for frontend applications, chat UIs, and memory systems. It includes metadata like message IDs and uses a `parts` array instead of `content`.
@@ -152,8 +150,6 @@ conversationHistory.forEach((msg) => {
   console.log(`[${msg.id}] ${msg.role}:`, msg.parts);
 });
 ```
-
----
 
 ### 3. VoltAgentTextStreamPart (Streaming Extension)
 
@@ -234,24 +230,22 @@ for await (const part of stream.fullStream) {
 }
 ```
 
----
-
 ## Message Flow Diagram
 
 Here's how messages flow through a typical VoltAgent application:
 
 ```mermaid
 graph TB
-    User[User Input] -->|string| Agent[Agent]
+    User[User Input] -->|string / UIMessage array / ModelMessage array| Agent[Agent]
 
-    Agent -->|converts to| UIMsg[UIMessage]
+    Agent -->|normalizes to| UIMsg[UIMessage]
     UIMsg -->|stored in| Memory[(Memory Storage)]
     UIMsg -->|passed to| Hooks[Agent Hooks]
 
     Hooks -->|onPrepareMessages| Transform[Message Transform]
-    Transform -->|UIMessage[]| Convert[Convert to ModelMessage]
+    Transform -->|UIMessage array| Convert[Convert to ModelMessage]
 
-    Convert -->|ModelMessage with<br/>MessageContent| LLM[Language Model]
+    Convert -->|ModelMessage with MessageContent| LLM[Language Model]
 
     LLM -->|streaming response| Stream[Stream Parts]
     Stream -->|VoltAgentTextStreamPart| UI[Real-time UI]
@@ -261,10 +255,10 @@ graph TB
 
     SubAgent[SubAgents] -.->|add metadata| Stream
 
-    style UIMsg fill:#e1f5ff
-    style Stream fill:#fff4e1
-    style Memory fill:#f0e1ff
-    style LLM fill:#e1ffe1
+    style UIMsg fill:#3b82f6,stroke:#1e40af,stroke-width:2px,color:#fff
+    style Stream fill:#f59e0b,stroke:#d97706,stroke-width:2px,color:#fff
+    style Memory fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
+    style LLM fill:#10b981,stroke:#059669,stroke-width:2px,color:#fff
 ```
 
 ## Converting Between Types
@@ -323,8 +317,6 @@ const images = extractImageParts(message); // FileUIPart[]
 ```
 
 See [Message Helpers](/docs/utils/message-helpers) for the complete API.
-
----
 
 ## Common Patterns and Use Cases
 
@@ -420,8 +412,6 @@ const agent = new Agent({
 });
 ```
 
----
-
 ## Decision Tree: Which Type Should I Use?
 
 ```
@@ -447,8 +437,6 @@ Are you working with...
 └─ Message content manipulation?
    └─> Use messageHelpers (supports both MessageContent and UIMessage!)
 ```
-
----
 
 ## FAQ
 
@@ -510,16 +498,12 @@ for await (const part of stream.fullStream) {
 
 **A**: No! **MessageContent** and **UIMessage** come from Vercel's AI SDK. Only **VoltAgentTextStreamPart** is a VoltAgent extension (adding `subAgentId` and `subAgentName` to AI SDK's `TextStreamPart`).
 
----
-
 ## Related Documentation
 
 - [Message Helpers](/docs/utils/message-helpers) - Utilities for working with both MessageContent and UIMessage
 - [Memory Guide](/docs/agents/memory) - How memory uses UIMessage format
 - [Agent Hooks](/docs/agents/hooks) - UIMessage transformation in hooks
 - [API Streaming](/docs/api/streaming) - Working with VoltAgentTextStreamPart
-
----
 
 ## Summary
 
