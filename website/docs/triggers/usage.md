@@ -1,6 +1,6 @@
 # Usage
 
-This guide walks through creating a **trigger using Airtable** that automatically executes your agent when new records are added to your Airtable base. The same workflow applies to other providers (Slack, Gmail, GitHub, Schedule).
+This guide walks through creating a **trigger using Airtable** that executes your agent when new records are added to your Airtable base. The same workflow applies to other providers (Slack, Gmail, GitHub, Schedule).
 
 :::tip To try this yourself
 You'll need [VoltOps Console](https://console.voltagent.dev/) access, a VoltAgent [example](https://voltagent.dev/examples/) or your own agent, and an [Airtable](https://airtable.com/) account with a base and Personal Access Token (we'll show you how to create one).
@@ -68,123 +68,145 @@ Click **Next** to review your settings, then create the binding with **Draft** s
 
 ## Step 3: Add Target to Activate Binding
 
-After creating your binding, you need to add targets that will execute when the trigger fires. Targets are the agents or workflows hosted on a server that will process the trigger events.
+After creating your binding, you need to add targets that will execute when the trigger fires. Click **Add Your First Target** to open the target configuration wizard.
 
-Click **Add Your First Target** to open the target configuration modal with three tabs: **Target**, **Mapping**, and **Review**.
+The target configuration is a **2-step process**:
 
-### Target
+### Step 3.1: Add Trigger Handler to Your Project
 
-We'll configure the server and destination here.
+First, you need to add a trigger handler to your VoltAgent project. This is the code that will process incoming trigger events.
 
-<video autoPlay loop muted playsInline style={{width: '100%', height: 'auto'}}>
+The wizard displays a **code snippet** that you need to copy and add to your VoltAgent project:
 
-  <source src="https://cdn.voltagent.dev/console/trigger/step-4-1.mp4" type="video/mp4" />
-  Your browser does not support the video tag.
-</video>
+```typescript
+import { VoltAgent, createTriggers } from "@voltagent/core";
 
-<br/>
-<br/>
-
-- **Agent Server**: First, click **+ New** to add a new server to host your agents and workflows. This opens the **Create Agent Server** modal with the following fields:
-  - **Server Name**: Name for your server
-    → Example: `Production server`
-  - **URL**: Your server URL where agents are hosted
-    → In this example, we're running locally via Volt Tunnel: `https://your-tunnel-address.tunnel.voltagent.dev`
-
-Click **Create Server** to save and select the server you just created.
-
-:::tip Running locally?
-Open a secure tunnel with the VoltAgent CLI:
-
-```bash
-pnpm volt tunnel 3141
+new VoltAgent({
+  //
+  triggers: createTriggers((on) => {
+    on.airtable.recordCreated(({ payload }) => {
+      console.log(payload);
+    });
+  }),
+});
 ```
 
-This prints an HTTPS forwarding URL (e.g., `https://your-tunnel-address.tunnel.voltagent.dev`). Use that value as the server URL. You can omit the `3141` argument to use the default port. [Learn more](https://voltagent.dev/docs/deployment/local-tunnel/).
-:::
+**What this code does:**
 
-- **Select an Agent**: Choose the agent or workflow you want to trigger from your available agents.
+- Creates a new VoltAgent instance with trigger handlers
+- Uses `createTriggers` to define trigger event handlers
+- `on.airtable.recordCreated` registers a handler for the Airtable record created event
+- Receives the trigger payload (Airtable record data) when the event fires
 
-Click **Next** to proceed to the Mapping tab.
+**Default endpoint path:** Based on your trigger configuration, the system generates an endpoint path like:
 
-### Mapping
+```
+POST /triggers/airtable/recordCreated
+```
 
-The Mapping tab is where you transform the Airtable trigger payload into the format your agent expects. This involves capturing sample data from Airtable and mapping it to your agent's input structure.
+VoltAgent creates this route when you add the trigger handler to your agent. The trigger sends HTTP requests to this endpoint when events occur.
 
-<video autoPlay loop muted playsInline style={{width: '100%', height: 'auto'}}>
+:::tip Important
+After adding the snippet to your project:
 
-  <source src="https://cdn.voltagent.dev/console/trigger/step-4-2.mp4" type="video/mp4" />
-  Your browser does not support the video tag.
-</video>
-
-<br/>
-<br/>
-
-The mapping flow has 3 steps:
-
-##### **1. Capture Sample Data**
-
-To create the mapping, you first need to capture a live payload from Airtable.
-
-Click **Start Test Session**. The system will start listening for Airtable event with a countdown timer.
-
-:::tip Now trigger your Airtable:
-
-1. Go to your Airtable base
-2. Add a new record to the table you configured
-3. The system automatically captures the payload
+1. Ensure your VoltAgent server is running
+2. Check the **"I've added the snippet to my project"** checkbox
+3. Click **Continue** to proceed to delivery configuration
    :::
 
-Once captured, you'll see **Sample Captured** with a green checkmark. The **Captured Payload** section displays the data structure:
+### Step 3.2: Configure Delivery Target
 
-```json
-{
-  "provider": "airtable",
-  "record": {
-    "id": "rec7Nyu70ri1UNIz",
-    "createdTime": "2025-10-31T12:52:29.000Z",
-    "fields": {
-      "Label": "Test Trigger",
-      "Created": "2025-10-31T12:52:29.000Z"
-    },
-    "pollAtAt": "2025-10-31T12:53:00.629Z"
-  }
-}
-```
+After adding the trigger handler code, configure how the trigger will deliver events to your endpoint.
 
-#### **2. Map Fields to Agent Input**
+#### General
 
-Now you'll map the captured Airtable data to your agent's expected input format.
+- **Target Name**: A descriptive name for this target
+  → Example: `Airtable trigger handler`
 
-**Captured Payload** - Shows the Airtable record data you just captured
+#### Delivery
 
-**Mapping Template** - Shows your agent's input structure
+- **Destination**
 
-:::tip How to map fields
+  Choose where VoltOps should send trigger events. You have three options:
+  - **Agent Servers**
 
-Click on any property in the Captured Payload (left side), and it will insert `{{ path }}` into the mapping template at your cursor position.
+    Registered servers appear here with their name and URL. Select a server to send trigger events to it.
 
-For example, clicking on `"Label": "Test Trigger"` in the captured payload inserts `{{record.fields.Label}}` into your template.
+    To register a new server, click **Create Agent Server** and provide:
+    - **Name**: A name for your server (e.g., `Production server`)
+    - **URL**: The root URL of your VoltAgent server (e.g., `https://your-deployed-voltagent-server.com`)
+    - **Tags** (optional): Organize your servers with tags
 
-```json
-{
-  "input": {
-    "labelValue": "{{ input.record.fields.Label }}"
-  }
-}
-```
+    :::tip
+    For local development, see the **Volt Tunnels** section below to expose your local server.
+    :::
 
+  - **Volt Tunnels**
+
+    [Volt Tunnels](https://voltagent.dev/docs/deployment/local-tunnel/) expose your local development server to the internet via a secure HTTPS connection. Use this to test triggers against your local VoltAgent instance without deploying to a remote server.
+
+    This section shows your active local tunnels. If you don't have an active tunnel yet, click **Start Local Tunnel** to open a setup modal.
+
+    The modal displays the command you need to run in your terminal: `pnpm volt tunnel 3141`. Once you run the command, the modal enters a waiting state with a loading indicator.
+
+    :::note
+    When your tunnel becomes active, it appears in the destination dropdown. Core+ users receive permanent tunnel URLs with custom usernames, while free tier users get random temporary URLs.
+    :::
+
+  - **Custom HTTPS URL**
+
+    Select **Custom HTTPS URL** to send trigger events to your own webhook endpoint.
+
+    **HTTPS URL**: Enter the URL where you want to receive trigger events (e.g., `https://your-webhook.endpoint`). VoltOps forwards the trigger payload to this address with retries and error tracking enabled.
+
+    **HTTP method**: Choose the HTTP method for the request. Select POST (default), PUT, or PATCH depending on your webhook endpoint requirements.
+
+    After selecting a destination, configure the endpoint path where your trigger handler is registered.
+
+##### **Endpoint Path**
+
+Specify the path where VoltAgent listens for this trigger:
+
+- **Default**: `/triggers/airtable/recordCreated` (generated based on provider and event)
+- You can change this if your handler uses a different path
+
+:::tip
+VoltAgent listens on this route when you add the trigger handler to your agent configuration. Keep it unless you've customized your server routing.
 :::
 
-#### **3. Preview and Test**
+:::note **Test Connection**
 
-Now you can preview and test your mapping configuration.
+After configuring your delivery destination and endpoint path, click **Test Connection** to verify your endpoint is accessible.
 
-**Preview** - Review the final transformed payload based on your captured sample data and mapping template.
+**Possible results:**
 
-**Test** - Click **Send Test Request** to send the mapped payload to your agent. The system will execute your agent and display the response.
+- **Endpoint is responding correctly**: Your endpoint is ready to receive triggers
+- **404 Not Found**: The endpoint doesn't exist. Verify you've added the trigger handler to your VoltAgent project
+- **Connection failed**: The request failed with an error message. Ensure your VoltAgent server is running and accessible
+  :::
 
-If the test succeeds, your mapping is ready to use.
+##### **Delivery Preview**
+
+Below the test connection area, you'll see a preview of the final delivery configuration showing the complete URL and HTTP method that VoltOps will use to send trigger events:
+
+```
+POST {destination-url}{endpoint-path}
+```
+
+For example: `POST http://localhost:3141/triggers/airtable/recordCreated`
+
+Verify this matches your expected endpoint before saving.
+
+#### Advanced (Optional)
+
+Click **Advanced** to add custom HTTP headers to trigger requests:
+
+- **Header Name**: Custom header key (e.g., `X-API-Key`)
+- **Header Value**: Custom header value (e.g., `your-secret-key`)
+
+Use this to add authentication headers or other custom metadata to trigger requests.
+
+After configuring all settings, click **Create target** to save the delivery target. Your binding is now ready to activate!
 
 ## Step 4: Activate Binding and Test
 
