@@ -141,7 +141,7 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
-      label: "Triggers & Actions",
+      label: "Triggers",
       customProps: {
         badge: {
           label: "New",
@@ -151,14 +151,22 @@ const sidebars: SidebarsConfig = {
       items: [
         "triggers/overview",
         "triggers/usage",
-        {
-          type: "category",
-          label: "Providers",
-          items: ["triggers/airtable", "triggers/cron", "triggers/github"],
-        },
-        "actions/overview",
-        "actions/airtable",
+        "triggers/airtable",
+        "triggers/github",
+        "triggers/gmail",
+        "triggers/cron",
       ],
+    },
+    {
+      type: "category",
+      label: "Actions",
+      customProps: {
+        badge: {
+          label: "New",
+          variant: "accent",
+        },
+      },
+      items: ["actions/overview", "actions/airtable"],
     },
     {
       type: "category",
