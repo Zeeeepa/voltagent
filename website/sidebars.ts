@@ -154,6 +154,7 @@ const sidebars: SidebarsConfig = {
         "triggers/airtable",
         "triggers/github",
         "triggers/gmail",
+        "triggers/cron",
       ],
     },
     {
