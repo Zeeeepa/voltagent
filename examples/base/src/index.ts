@@ -1,8 +1,7 @@
 import { openai } from "@ai-sdk/openai";
-import { Agent, Memory, VoltAgent, VoltAgentObservability } from "@voltagent/core";
+import { Agent, Memory, VoltAgent, createTriggers } from "@voltagent/core";
 import { createPinoLogger } from "@voltagent/logger";
 import { honoServer } from "@voltagent/server-hono";
-import { z } from "zod";
 
 // Import Memory and TelemetryStore from core
 import { AiSdkEmbeddingAdapter, InMemoryVectorAdapter } from "@voltagent/core";
@@ -32,4 +31,9 @@ new VoltAgent({
   agents: { agent },
   server: honoServer(),
   logger,
+  triggers: createTriggers((on) => {
+    on.airtable.recordCreated(({ payload }) => {
+      console.log(payload);
+    });
+  }),
 });

@@ -70,6 +70,15 @@ Click **Next** to review your settings, then create the binding with **Draft** s
 
 After creating your binding, you need to add targets that will execute when the trigger fires. Click **Add Your First Target** to open the target configuration wizard.
 
+<video autoPlay loop muted playsInline style={{width: '100%', height: 'auto'}}>
+
+  <source src="https://cdn.voltagent.dev/console/trigger/setup-target.mp4" type="video/mp4" />
+  Your browser does not support the video tag.
+</video>
+
+<br/>
+<br/>
+
 The target configuration is a **2-step process**:
 
 ### Step 3.1: Add Trigger Handler to Your Project
@@ -147,7 +156,13 @@ After adding the trigger handler code, configure how the trigger will deliver ev
 
     This section shows your active local tunnels. If you don't have an active tunnel yet, click **Start Local Tunnel** to open a setup modal.
 
-    The modal displays the command you need to run in your terminal: `pnpm volt tunnel 3141`. Once you run the command, the modal enters a waiting state with a loading indicator.
+    The modal displays the command you need to run in your terminal. Once you run the command, the modal enters a waiting state with a loading indicator.
+
+    ```bash
+    pnpm volt tunnel 3141
+    ```
+
+    This gives you a secure HTTPS URL such as `https://happy-cat-42.tunnel.voltagent.dev`. Use it as the delivery target.
 
     :::note
     When your tunnel becomes active, it appears in the destination dropdown. Core+ users receive permanent tunnel URLs with custom usernames, while free tier users get random temporary URLs.
