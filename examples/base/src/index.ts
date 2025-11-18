@@ -1,8 +1,7 @@
 import { openai } from "@ai-sdk/openai";
-import { Agent, Memory, VoltAgent, VoltAgentObservability } from "@voltagent/core";
+import { Agent, Memory, VoltAgent } from "@voltagent/core";
 import { createPinoLogger } from "@voltagent/logger";
 import { honoServer } from "@voltagent/server-hono";
-import { z } from "zod";
 
 // Import Memory and TelemetryStore from core
 import { AiSdkEmbeddingAdapter, InMemoryVectorAdapter } from "@voltagent/core";
