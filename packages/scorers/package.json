@@ -12,10 +12,6 @@
     "ai": "^5.0.76",
     "zod": "^3.25.76"
   },
-  "files": [
-    "dist"
-  ],
-  "license": "MIT",
   "exports": {
     ".": {
       "import": {
@@ -28,6 +24,10 @@
       }
     }
   },
+  "files": [
+    "dist"
+  ],
+  "license": "MIT",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "peerDependencies": {
