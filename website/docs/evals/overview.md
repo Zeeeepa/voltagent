@@ -178,6 +178,8 @@ Use cases:
 - Sample live traffic, enforce moderation, or feed LLM judges without waiting for batch runs.
 - Combine with offline evals for deterministic regression checks before deploy.
 
+> Live vs offline: Live scorer results are added to OTLP trace spans via `eval.scorer.*` and show up in VoltOps Live Scores / telemetry views. They are not persisted into Eval Runs and stay separate from dataset/experiment runs.
+
 ## What’s next?
 
 - Quick-start walkthrough: `docs/evals/quick-start` (upcoming).

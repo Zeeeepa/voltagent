@@ -40,6 +40,10 @@ const agent = new Agent({
 
 Scorers execute asynchronously after the agent response is generated. Scoring does not block the user-facing response.
 
+## Where live scores show up
+
+Live scorer results are recorded as OTLP trace spans with `eval.scorer.*` attributes. They appear in VoltOps Live Scores and telemetry views. They do not create Eval Runs, are not attached to datasets, and do not trigger annotation automation. If you need reproducible runs, pass/fail criteria, or annotations, use dataset-based evaluations with `@voltagent/evals`.
+
 ## Eval Configuration
 
 ### Required Fields

@@ -9,6 +9,10 @@ Offline evaluations run against a fixed dataset and produce deterministic result
 
 This guide walks you through building an evaluation experiment step-by-step, from a basic setup to advanced configurations.
 
+## Where offline runs show up
+
+When you run an experiment with a `voltOpsClient`, each execution is stored as an Eval Run in VoltOps. You can inspect items, scores, pass criteria, and summaries in the Console. Threshold failures also participate in annotation automation for human review. If you omit `voltOpsClient`, the run executes locally and results stay in memory/STDOUT only.
+
 ## Step 1: Create a Basic Experiment
 
 Start with the simplest possible experiment using `createExperiment`. You need three things: an `id`, a `dataset` with inline items, and a `runner` function.
