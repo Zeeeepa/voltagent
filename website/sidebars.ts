@@ -15,6 +15,7 @@ const sidebars: SidebarsConfig = {
     {
       type: "category",
       label: "Getting Started",
+      collapsed: true,
       items: [
         "getting-started/overview",
         "getting-started/quick-start",
@@ -35,6 +36,7 @@ const sidebars: SidebarsConfig = {
     {
       type: "category",
       label: "Agents",
+      collapsed: true,
       items: [
         "agents/overview",
         "agents/prompts",
@@ -60,6 +62,7 @@ const sidebars: SidebarsConfig = {
     {
       type: "category",
       label: "Guardrails",
+      collapsed: true,
       customProps: {
         badge: {
           label: "New",
@@ -71,6 +74,7 @@ const sidebars: SidebarsConfig = {
     {
       type: "category",
       label: "Workflows",
+      collapsed: true,
       items: [
         "workflows/overview",
         "workflows/suspend-resume",
@@ -89,6 +93,7 @@ const sidebars: SidebarsConfig = {
     {
       type: "category",
       label: "Evals",
+      collapsed: true,
       customProps: {
         badge: {
           label: "New",
@@ -113,6 +118,7 @@ const sidebars: SidebarsConfig = {
     {
       type: "category",
       label: "Memory",
+      collapsed: true,
       items: [
         "agents/memory/overview",
         "agents/memory/working-memory",
@@ -142,6 +148,7 @@ const sidebars: SidebarsConfig = {
     {
       type: "category",
       label: "Triggers",
+      collapsed: true,
       customProps: {
         badge: {
           label: "New",
@@ -160,6 +167,7 @@ const sidebars: SidebarsConfig = {
     {
       type: "category",
       label: "Actions",
+      collapsed: true,
       customProps: {
         badge: {
           label: "New",
@@ -171,16 +179,19 @@ const sidebars: SidebarsConfig = {
     {
       type: "category",
       label: "Tools",
+      collapsed: true,
       items: ["tools/overview", "tools/reasoning-tool"],
     },
     {
       type: "category",
       label: "RAG",
+      collapsed: true,
       items: ["rag/overview", "rag/custom-retrievers", "rag/chroma", "rag/pinecone", "rag/qdrant"],
     },
     {
       type: "category",
       label: "API",
+      collapsed: true,
       items: [
         "api/overview",
         "api/server-architecture",
@@ -198,16 +209,19 @@ const sidebars: SidebarsConfig = {
     {
       type: "category",
       label: "UI",
+      collapsed: true,
       items: ["ui/ai-sdk-integration"],
     },
     {
       type: "category",
       label: "Utils",
+      collapsed: true,
       items: ["utils/create-prompt", "utils/message-helpers"],
     },
     {
       type: "category",
       label: "Observability",
+      collapsed: true,
       items: [
         "observability/overview",
         "observability/developer-console",
@@ -218,6 +232,7 @@ const sidebars: SidebarsConfig = {
     {
       type: "category",
       label: "Deployment",
+      collapsed: true,
       items: [
         "deployment/overview",
         "deployment/cloudflare-workers",
@@ -228,12 +243,14 @@ const sidebars: SidebarsConfig = {
     {
       type: "category",
       label: "Integrations",
+      collapsed: true,
       items: ["integrations/overview", "integrations/nextjs", "integrations/vercel-ai"],
     },
 
     {
       type: "category",
       label: "Community",
+      collapsed: true,
       items: ["community/overview", "community/contributing", "community/licence"],
     },
   ],
