@@ -249,6 +249,13 @@ const sidebars: SidebarsConfig = {
 
     {
       type: "category",
+      label: "Troubleshooting",
+      collapsed: true,
+      items: ["troubleshooting/connection"],
+    },
+
+    {
+      type: "category",
       label: "Community",
       collapsed: true,
       items: ["community/overview", "community/contributing", "community/licence"],
