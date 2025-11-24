@@ -629,4 +629,4 @@ server: honoServer({
 - Learn about [Custom Endpoints](./custom-endpoints.md) with authentication
 - Explore [Streaming](./streaming.md) with authenticated connections
 - Read about [Agent Endpoints](./endpoints/agents.md) in detail
-- Set up [Observability](./observability.md) with Console authentication
+- Set up [Observability](../observability/developer-console.md) with Console authentication
