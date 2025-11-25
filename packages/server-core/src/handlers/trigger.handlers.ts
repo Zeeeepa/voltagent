@@ -4,14 +4,7 @@ import type {
   TriggerHandlerResult,
   VoltOpsTriggerEnvelope,
 } from "@voltagent/core";
-import {
-  type Span,
-  SpanKind,
-  SpanStatusCode,
-  TRIGGER_CONTEXT_KEY,
-  context as otelContext,
-  trace,
-} from "@voltagent/core";
+import { TRIGGER_CONTEXT_KEY, context as otelContext, propagation } from "@voltagent/core";
 import type { ServerProviderDeps } from "@voltagent/core";
 import type { Logger } from "@voltagent/internal";
 import { isPlainObject } from "@voltagent/internal/utils";
@@ -250,7 +243,6 @@ export async function executeTriggerHandler(
   deps: ServerProviderDeps,
   logger: Logger,
 ): Promise<TriggerHandlerHttpResponse> {
-  let triggerSpan: Span | undefined;
   try {
     const payload = extractPayload(request.body);
     const event = buildEnvelope(registration, request.body);
@@ -273,25 +265,24 @@ export async function executeTriggerHandler(
       }
     }
 
-    const tracer = deps.observability?.getTracer();
-    triggerSpan = tracer?.startSpan(
-      `Trigger ${registration.definition?.summary ?? registration.name}`,
-      {
-        kind: SpanKind.SERVER,
-        attributes: {
-          "span.type": "trigger",
-          ...triggerAttributes,
-        },
+    // Extract trace context from headers
+    const activeContext = propagation.extract(otelContext.active(), request.headers, {
+      get: (carrier: Record<string, string | string[] | undefined>, key: string) => {
+        const value = carrier[key] || carrier[key.toLowerCase()];
+        if (Array.isArray(value)) {
+          return value[0];
+        }
+        return value;
       },
-      otelContext.active(),
-    );
+      keys: (carrier: Record<string, string | string[] | undefined>) => Object.keys(carrier),
+    });
 
     const agentsWithContext = createTriggerAwareAgents(
       (registration.metadata?.agents as Record<string, Agent>) ?? {},
       triggerContext,
     );
 
-    const contextWithTrigger = otelContext.active().setValue(TRIGGER_CONTEXT_KEY, triggerContext);
+    const contextWithTrigger = activeContext.setValue(TRIGGER_CONTEXT_KEY, triggerContext);
 
     const executeHandler = () =>
       registration.handler({
@@ -308,25 +299,10 @@ export async function executeTriggerHandler(
         triggerContext,
       });
 
-    const response = triggerSpan
-      ? await otelContext.with(trace.setSpan(contextWithTrigger, triggerSpan), executeHandler)
-      : await otelContext.with(contextWithTrigger, executeHandler);
-
-    triggerSpan?.setStatus({ code: SpanStatusCode.OK });
-    triggerSpan?.end();
+    const response = await otelContext.with(contextWithTrigger, executeHandler);
 
     return normalizeResult(response);
   } catch (error) {
-    if (triggerSpan) {
-      triggerSpan.setStatus({
-        code: SpanStatusCode.ERROR,
-        message: error instanceof Error ? error.message : "Trigger handler failed",
-      });
-      if (error instanceof Error) {
-        triggerSpan.recordException(error);
-      }
-      triggerSpan.end();
-    }
     logger.error(`Trigger handler failed for ${registration.name}`, { error });
     return {
       status: 500,
