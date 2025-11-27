@@ -70,7 +70,7 @@ export class VoltOpsClient implements IVoltOpsClient {
   private readonly logger: Logger;
 
   private get fetchImpl(): typeof fetch {
-    return this.options.fetch ?? fetch;
+    return this.options.fetch ?? fetch.bind(globalThis);
   }
 
   constructor(options: VoltOpsClientOptions) {
