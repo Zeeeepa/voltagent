@@ -86,7 +86,7 @@ export const ComparisonTable = ({ rows }: ComparisonTableProps) => {
     <div className="space-y-4">
       {/* Table */}
       <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
-        <table className="w-full border-collapse">
+        <table className="w-full table-fixed border-collapse">
           <thead className="sticky top-0 bg-gray-50 dark:bg-gray-800">
             <tr>
               <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700">

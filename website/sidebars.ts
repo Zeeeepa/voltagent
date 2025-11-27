@@ -30,8 +30,8 @@ const sidebars: SidebarsConfig = {
           },
         },
         "getting-started/providers-models",
-        "getting-started/migration-guide",
         "getting-started/comparison",
+        "getting-started/migration-guide",
       ],
     },
     {
