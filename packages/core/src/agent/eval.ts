@@ -167,6 +167,26 @@ function createScorerSpanAttributes(
   if (storagePayload.conversationId) {
     attributes["conversation.id"] = storagePayload.conversationId;
   }
+  if (storagePayload.input) {
+    attributes["eval.input"] = storagePayload.input;
+  }
+  if (storagePayload.output) {
+    attributes["eval.output"] = storagePayload.output;
+  }
+  // Expected is often in metadata or payload, let's check storagePayload.metadata
+  // But wait, storagePayload doesn't have expected field directly usually, it's in metadata or derived.
+  // Let's check AgentEvalPayload definition.
+  // It has input/output/rawInput/rawOutput.
+  // Expected is usually passed via scorer payload/params.
+  // Let's check if we can get it from metrics or result.
+  // metrics has combinedMetadata.
+  // Let's check if combinedMetadata has expected.
+
+  const expected = metrics.combinedMetadata?.expected;
+  if (expected) {
+    attributes["eval.expected"] =
+      typeof expected === "string" ? expected : JSON.stringify(expected);
+  }
 
   return attributes;
 }
@@ -982,6 +1002,15 @@ function resolveThresholdFromMetadata(
   metadata: Record<string, unknown> | null | undefined,
 ): number | undefined {
   const record = isPlainRecord(metadata) ? (metadata as Record<string, unknown>) : undefined;
+
+  // Check if threshold is directly in scorer metadata
+  if (record?.scorer && isPlainRecord(record.scorer)) {
+    const scorerMetadata = record.scorer as Record<string, unknown>;
+    if (typeof scorerMetadata.threshold === "number") {
+      return scorerMetadata.threshold;
+    }
+  }
+
   const voltAgent = collectVoltAgentMetadataFromSources(record);
   if (!voltAgent) {
     return undefined;
@@ -994,6 +1023,15 @@ function resolveThresholdPassedFromMetadata(
   metadata: Record<string, unknown> | null | undefined,
 ): boolean | null {
   const record = isPlainRecord(metadata) ? (metadata as Record<string, unknown>) : undefined;
+
+  // Check if thresholdPassed is directly in scorer metadata
+  if (record?.scorer && isPlainRecord(record.scorer)) {
+    const scorerMetadata = record.scorer as Record<string, unknown>;
+    if (typeof scorerMetadata.thresholdPassed === "boolean") {
+      return scorerMetadata.thresholdPassed;
+    }
+  }
+
   const voltAgent = collectVoltAgentMetadataFromSources(record);
   if (!voltAgent) {
     return null;

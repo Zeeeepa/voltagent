@@ -226,8 +226,6 @@ export abstract class BaseServerProvider implements IServerProvider {
           description: trigger.summary ?? trigger.description ?? trigger.definition?.description,
         });
       });
-    } else {
-      this.logger.info("[volt] No trigger endpoints discovered during startup");
     }
 
     return endpoints;
