@@ -90,7 +90,7 @@ Supported fields:
 
 - `user.name`: User's full name
 - `user.email`: User's email address
-- `user.avatar`: User's avatar URL
+- `user.avatar`: User's avatar URL (optional, falls back to Gravatar using email if not provided)
 - `user.metadata`: Additional metadata object
 
 <Tabs>
