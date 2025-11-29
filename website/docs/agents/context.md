@@ -78,10 +78,9 @@ executionContext.set("language", "English");
 const response = await agent.generateText("Hello!", {
   context: executionContext,
 });
-```
-
 // Now you can access the data from the response
 console.log("Language:", response.context?.get("language"));
+```
 
 ## Sending User Information
 
@@ -91,6 +90,7 @@ Supported fields:
 
 - `user.name`: User's full name
 - `user.email`: User's email address
+- `user.avatar`: User's avatar URL
 - `user.metadata`: Additional metadata object
 
 <Tabs>
@@ -106,6 +106,7 @@ const agent = new Agent({ ... });
 const context = new Map();
 context.set("user.name", "John Doe");
 context.set("user.email", "john@example.com");
+context.set("user.avatar", "https://example.com/avatar.jpg");
 context.set("user.metadata", { plan: "pro" });
 
 await agent.generateText("Hello", { userId: "user_123", context });
@@ -126,6 +127,7 @@ When using the REST API, you can pass user information in the `context` object. 
     "user": {
       "name": "John Doe",
       "email": "john@example.com",
+      "avatar": "https://example.com/avatar.jpg",
       "metadata": { "plan": "pro" }
     }
   }
@@ -141,6 +143,7 @@ When using the REST API, you can pass user information in the `context` object. 
   "context": {
     "user.name": "John Doe",
     "user.email": "john@example.com",
+    "user.avatar": "https://example.com/avatar.jpg",
     "user.metadata": { "plan": "pro" }
   }
 }
