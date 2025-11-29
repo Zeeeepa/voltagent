@@ -83,13 +83,12 @@ const response = await agent.generateText("Hello!", {
 // Now you can access the data from the response
 console.log("Language:", response.context?.get("language"));
 
-````
-
 ## Sending User Information
 
 You can pass user information to the agent using the `context`. This information is automatically picked up by the tracing system and associated with the trace.
 
 Supported fields:
+
 - `user.name`: User's full name
 - `user.email`: User's email address
 - `user.metadata`: Additional metadata object
@@ -97,20 +96,20 @@ Supported fields:
 <Tabs>
   <TabItem value="sdk" label="SDK" default>
 
-  When using the SDK, pass user information in the `context` Map:
+When using the SDK, pass user information in the `context` Map:
 
-  ```typescript
-  import { Agent } from "@voltagent/core";
+```typescript
+import { Agent } from "@voltagent/core";
 
-  const agent = new Agent({ ... });
+const agent = new Agent({ ... });
 
-  const context = new Map();
-  context.set("user.name", "John Doe");
-  context.set("user.email", "john@example.com");
-  context.set("user.metadata", { plan: "pro" });
+const context = new Map();
+context.set("user.name", "John Doe");
+context.set("user.email", "john@example.com");
+context.set("user.metadata", { plan: "pro" });
 
-  await agent.generateText("Hello", { userId: "user_123", context });
-````
+await agent.generateText("Hello", { userId: "user_123", context });
+```
 
   </TabItem>
   <TabItem value="api" label="REST API">
