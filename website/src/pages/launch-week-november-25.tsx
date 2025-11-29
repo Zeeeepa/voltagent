@@ -181,7 +181,7 @@ const Day5 = () => (
     date="DAY 5 | NOVEMBER 9, 2025"
     title="Servers – Connect and Manage Your Deployed Agents"
     description="Register your deployed VoltAgent URLs in VoltOps to power Triggers and Evals. Instantly switch between environments from the navbar and test live agents in the playground."
-    detailsLink="https://voltagent.dev/docs/servers"
+    detailsLink="https://console.voltagent.dev/agent-servers"
   >
     <div className="rounded-md border-solid p-1 border-2 border-emerald-600 flex items-center justify-center relative overflow-hidden">
       <img
