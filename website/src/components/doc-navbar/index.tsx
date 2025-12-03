@@ -27,8 +27,8 @@ const tabs: TabConfig[] = [
   {
     id: "recipes",
     label: "Recipes & Guides",
-    href: "/recipes/",
-    match: (pathname) => pathname.startsWith("/recipes/"),
+    href: "/recipes-and-guides/",
+    match: (pathname) => pathname.startsWith("/recipes-and-guides/"),
   },
   {
     id: "voltops",
@@ -130,7 +130,7 @@ export default function DocNavbar() {
               Framework Docs
             </Link>
             <Link
-              to="/recipes/"
+              to="/recipes-and-guides/"
               className={clsx(
                 styles.mobileNavLink,
                 activeTab === "recipes" && styles.mobileNavLinkActive,

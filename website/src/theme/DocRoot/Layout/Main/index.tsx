@@ -83,10 +83,10 @@ export default function DocRootLayoutMain({
               VoltAgent Docs
             </Link>
             <Link
-              to="/recipes/"
+              to="/recipes-and-guides/"
               className={clsx(
                 styles.tab,
-                location.pathname.startsWith("/recipes/") && styles.tabActive,
+                location.pathname.startsWith("/recipes-and-guides/") && styles.tabActive,
               )}
             >
               Recipes & Guides

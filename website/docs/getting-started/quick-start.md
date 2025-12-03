@@ -17,7 +17,7 @@ import EnterpriseCard from '@site/src/components/docs-widgets/EnterpriseCard';
 
 Build your first AI agent with VoltAgent. This guide covers creating an agent, connecting it to external events, running workflows, and deploying to production.
 
-Looking for full recipes? Check out the [Recipes & Guides](/recipes/) section.
+Looking for full recipes? Check out the [Recipes & Guides](/recipes-and-guides/) section.
 
 <br/>
 

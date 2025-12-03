@@ -46,7 +46,7 @@ function NavbarContentLayout({ left, right }) {
         <Link to="/docs/overview" className={clsx(styles.navLink, styles.navLinkActive)}>
           VoltAgent Docs
         </Link>
-        <Link to="/recipes/" className={styles.navLink}>
+        <Link to="/recipes-and-guides/" className={styles.navLink}>
           Recipes & Guides
         </Link>
         <Link to="/voltops-llm-observability-docs/" className={styles.navLink}>

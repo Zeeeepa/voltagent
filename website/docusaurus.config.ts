@@ -97,7 +97,7 @@ const config: Config = {
       {
         id: "recipes",
         path: "recipes",
-        routeBasePath: "recipes",
+        routeBasePath: "recipes-and-guides",
         sidebarPath: "./sidebarsRecipes.ts",
         breadcrumbs: false,
         sidebarCollapsed: false,
@@ -197,6 +197,14 @@ const config: Config = {
           {
             to: "/",
             from: "/pricing/",
+          },
+          {
+            to: "/recipes-and-guides/",
+            from: "/recipes/",
+          },
+          {
+            to: "/recipes-and-guides/slack-agent/",
+            from: "/recipes/slack-agent/",
           },
           {
             to: "/docs/getting-started/providers-models/",
