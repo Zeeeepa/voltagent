@@ -133,7 +133,7 @@ You should see the VoltAgent server startup message:
 pnpm volt tunnel 3141
 ```
 
-Copy the tunnel URL and set it as the trigger destination in Console (Endpoint URL). See [Local tunnel docs](../docs/deployment/local-tunnel.md).  
+Copy the tunnel URL and set it as the trigger destination in Console (Endpoint URL). See [Local tunnel docs](/docs/deployment/local-tunnel/).  
 <video autoPlay loop muted playsInline style={{width: '100%', height: 'auto'}}>
 
   <source src="https://cdn.voltagent.dev/voltagent-recipes-guides/slack-2.mp4" type="video/mp4" />
