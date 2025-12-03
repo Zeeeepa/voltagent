@@ -18,7 +18,7 @@ export default function EnterpriseCard() {
             className="mb-3"
             style={{ color: "#B2B2B2", fontSize: "16px", fontFamily: "Inter, sans-serif" }}
           >
-            For teams that need to self-host VoltAgent. We also offer enterprise support:
+            For teams that need to self-host VoltAgent Console. We also offer enterprise support:
           </p>
           <div
             className="space-y-1.5"
