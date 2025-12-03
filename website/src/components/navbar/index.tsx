@@ -433,6 +433,9 @@ export default function Navbar() {
           <Link to="/docs/" className={`${styles.mobileNavLink}`}>
             VoltAgent Docs
           </Link>
+          <Link to="/recipes/" className={`${styles.mobileNavLink}`}>
+            Recipes & Guides
+          </Link>
           <Link to="/voltops-llm-observability-docs/" className={`${styles.mobileNavLink}`}>
             VoltOps Docs
           </Link>

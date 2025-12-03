@@ -15,6 +15,8 @@ import ExpandableCode from '@site/src/components/docs-widgets/ExpandableCode';
 
 Build your first AI agent with VoltAgent. This guide covers creating an agent, connecting it to external events, running workflows, and deploying to production.
 
+Looking for full recipes? Check out the [Recipes & Guides](/recipes/overview) section.
+
 <br/>
 
 <StepSection stepNumber={1}  title="Create New Project">

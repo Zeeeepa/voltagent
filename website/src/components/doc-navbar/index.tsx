@@ -25,6 +25,12 @@ const tabs: TabConfig[] = [
     match: (pathname) => pathname.startsWith("/docs/"),
   },
   {
+    id: "recipes",
+    label: "Recipes & Guides",
+    href: "/recipes/",
+    match: (pathname) => pathname.startsWith("/recipes/"),
+  },
+  {
     id: "voltops",
     label: "VoltOps Docs",
     href: "/voltops-llm-observability-docs/",
@@ -122,6 +128,16 @@ export default function DocNavbar() {
               onClick={() => setIsMenuOpen(false)}
             >
               Framework Docs
+            </Link>
+            <Link
+              to="/recipes/"
+              className={clsx(
+                styles.mobileNavLink,
+                activeTab === "recipes" && styles.mobileNavLinkActive,
+              )}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Recipes & Guides
             </Link>
             <Link
               to="/voltops-llm-observability-docs/"

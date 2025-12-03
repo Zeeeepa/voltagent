@@ -91,6 +91,18 @@ const config: Config = {
         sidebarCollapsed: false,
       },
     ],
+    // VoltAgent Recipes & Guides - Separate docs instance
+    [
+      "@docusaurus/plugin-content-docs",
+      {
+        id: "recipes",
+        path: "recipes",
+        routeBasePath: "recipes",
+        sidebarPath: "./sidebarsRecipes.ts",
+        breadcrumbs: false,
+        sidebarCollapsed: false,
+      },
+    ],
     "./plugins/fetch-tweets.js",
     "./plugins/clarity/index.js",
     "./plugins/ahrefs/index.js",

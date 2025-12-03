@@ -9,7 +9,8 @@ export default function Navbar() {
   const windowSize = useWindowSize();
   const isDocsPage =
     location.pathname.includes("/docs") ||
-    location.pathname.includes("/voltops-llm-observability-docs");
+    location.pathname.includes("/voltops-llm-observability-docs") ||
+    location.pathname.startsWith("/recipes/");
 
   const isMobile = windowSize === "mobile";
 
