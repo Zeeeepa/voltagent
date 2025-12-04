@@ -154,9 +154,6 @@ export default function Navbar() {
             <Link to="/voltops-llm-observability-docs/" className={`${styles.navLink}  `}>
               VoltOps Docs
             </Link>
-            <Link to="/customers/" className={`${styles.navLink}`}>
-              Customers
-            </Link>
 
             <div className={`${styles.navLink} group relative`}>
               <div className="flex items-center cursor-pointer">
@@ -440,9 +437,6 @@ export default function Navbar() {
             VoltOps Docs
           </Link>
 
-          <Link to="/customers/" className={`${styles.mobileNavLink}`}>
-            Customers
-          </Link>
           <div className={styles.mobileNavLink}>
             <button
               type="button"

@@ -1,15 +1,28 @@
 ---
 id: slack-agent
 title: Slack Agent
-description: Build a Slack-facing agent that listens to mentions and replies through VoltOps.
+description: Listen to Slack channel messages, process them with AI, and reply via VoltOps.
 hide_table_of_contents: true
 ---
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import ApiKeyButton from '@site/src/components/docs-widgets/ApiKeyButton';
+import StepSection from '@site/src/components/docs-widgets/StepSection';
+import SectionDivider from '@site/src/components/docs-widgets/SectionDivider';
+import ExpandableCode from '@site/src/components/docs-widgets/ExpandableCode';
 
-Build a Slack bot that listens to channel messages, fetches weather, and replies through VoltOps Slack actions. <a href="/docs/triggers/usage" target="_blank" rel="noreferrer">Triggers</a> deliver Slack events into your agent, and <a href="/docs/actions/overview" target="_blank" rel="noreferrer">Actions</a> let the agent send data back out. Follow the steps in order with your own keys and workspace. <a href="https://github.com/voltagent/voltagent/tree/main/examples/with-slack" target="_blank" rel="noreferrer">Source Code</a>
+# Slack Agent
+
+This guide shows how to build event-driven AI agents with VoltAgent and Slack using [Triggers](/docs/triggers/usage) and [Actions](/docs/actions/overview).
+
+You'll create an agent that uses Triggers to receive Slack messages, processes them (with optional weather lookup), and uses Actions to reply in the same channel.
+
+:::info
+Follow the steps with your own keys and workspace. You can get the agent source code [here](https://github.com/voltagent/voltagent/tree/main/examples/with-slack).
+:::
+
+<br/>
 
 <video controls loop muted playsInline style={{width: '100%', height: 'auto'}}>
 
@@ -20,15 +33,17 @@ Build a Slack bot that listens to channel messages, fetches weather, and replies
 <br/>
 <br/>
 
-## Step 1 - Create the project
+<StepSection stepNumber={1} title="Create the Project">
+
+Run the CLI to scaffold a new project:
 
 ```bash
 npm create voltagent-app@latest
 ```
 
-Open the generated folder. If you skipped API key entry, add it to `.env` now (e.g. `OPENAI_API_KEY=...`).
+</StepSection>
 
-## Step 2 - Configure and start
+<StepSection stepNumber={2} title="Configure and Start">
 
 If you skipped API key entry during setup, create or edit the `.env` file in your project root and add your API key:
 
@@ -121,36 +136,73 @@ You should see the VoltAgent server startup message:
 ═══════════════════════════════════════════════════
 ```
 
-## Step 3 - Set up the Slack trigger in VoltOps Console
+</StepSection>
 
-- Console → **Triggers** → **Create Trigger** (<a href="https://console.voltagent.dev/triggers" target="_blank" rel="noreferrer">open console</a>).
-- Choose **Slack → Message posted to channel**.
-- Use the managed VoltOps Slack app when prompted, and create a Slack credential. Keep the `credentialId`.
+<StepSection stepNumber={3} title="Set Up the Slack Trigger in Console">
+
 <video controls loop muted playsInline style={{width: '100%', height: 'auto'}}>
+
   <source src="https://cdn.voltagent.dev/voltagent-recipes-guides/slack-1.mp4" type="video/mp4" />
   Your browser does not support the video tag.
 </video>
 
-## Step 4 - Expose your local agent with Volt Tunnel
+<br/>
+<br/>
 
-```bash
-pnpm volt tunnel 3141
-```
+Open [VoltAgent Console](https://console.voltagent.dev/triggers) and go to **Triggers** → **Create Trigger**.
 
-Copy the tunnel URL and set it as the trigger destination in Console (Endpoint URL). See [Local tunnel docs](/docs/deployment/local-tunnel/).  
+1. Select **Slack → Message posted to channel**
+2. Use the managed Slack app when prompted
+3. Create a Slack credential and save the `credentialId`
+
+</StepSection>
+
+<StepSection stepNumber={4} title="Expose Your Local Agent with Volt Tunnel">
+
 <video controls loop muted playsInline style={{width: '100%', height: 'auto'}}>
 
   <source src="https://cdn.voltagent.dev/voltagent-recipes-guides/slack-2.mp4" type="video/mp4" />
   Your browser does not support the video tag.
 </video>
 
-## Step 5 - Update the agent (Slack trigger + weather)
+<br/>
+<br/>
 
-Wire the Slack trigger and weather tool first:
+[Volt Tunnel](/docs/deployment/local-tunnel/) exposes your local server to the internet so triggers can reach it.
+
+Run the tunnel command:
+
+```bash
+pnpm volt tunnel 3141
+```
+
+Copy the tunnel URL (e.g., `https://your-tunnel.tunnel.voltagent.dev`) and set it as the **Endpoint URL** in the trigger configuration.
+
+</StepSection>
+
+<SectionDivider>
+  The project is set up and the Slack trigger is configured. The following steps cover wiring the trigger to your agent and adding the reply action.
+</SectionDivider>
+
+<StepSection stepNumber={5} title="Wire the Slack Trigger to Your Agent">
+
+<video controls loop muted playsInline style={{width: '100%', height: 'auto'}}>
+
+  <source src="https://cdn.voltagent.dev/voltagent-recipes-guides/slack-3.mp4" type="video/mp4" />
+  Your browser does not support the video tag.
+</video>
+
+<br/>
+<br/>
+
+This code sets up a trigger handler that receives Slack messages and can call a weather tool. The reply tool is added in the next step.
+
+<ExpandableCode title="src/index.ts" previewLines={15}>
 
 ```ts
 import { openai } from "@ai-sdk/openai";
 import { Agent, VoltAgent, createTriggers } from "@voltagent/core";
+import { createPinoLogger } from "@voltagent/logger";
 import { honoServer } from "@voltagent/server-hono";
 import { weatherTool } from "./tools/weather";
 
@@ -198,7 +250,9 @@ If the user asks for weather, call getWeather.`);
 });
 ```
 
-Weather tool (mock) reference:
+</ExpandableCode>
+
+<ExpandableCode title="src/tools/weather.ts" previewLines={10}>
 
 ```ts
 import { createTool } from "@voltagent/core";
@@ -242,23 +296,29 @@ export const weatherTool = createTool({
 });
 ```
 
+</ExpandableCode>
+
+</StepSection>
+
+<StepSection stepNumber={6} title="Add the Slack Action and Reply Tool">
+
 <video controls loop muted playsInline style={{width: '100%', height: 'auto'}}>
 
-  <source src="https://cdn.voltagent.dev/voltagent-recipes-guides/slack-3.mp4" type="video/mp4" />
-  Your browser does not support the video tag.
-</video>
-
-## Step 6 - Add Slack action in VoltOps
-
-- Console → **Actions** → **Create Action** (<a href="https://console.voltagent.dev/actions" target="_blank" rel="noreferrer">open console</a>) (see [Actions overview](/docs/actions/overview))
-- Choose Slack and the same credential.
-- Save.  
-<video controls loop muted playsInline style={{width: '100%', height: 'auto'}}>
   <source src="https://cdn.voltagent.dev/voltagent-recipes-guides/slack-4.mp4" type="video/mp4" />
   Your browser does not support the video tag.
 </video>
 
-## Step 7 - Add `sendSlackMessage` to reply via VoltOps Actions
+<br/>
+<br/>
+
+Open [VoltAgent Console](https://console.voltagent.dev/actions) and go to **Actions** → **Create Action**.
+
+1. Select **Slack** and the same credential
+2. Save the action
+
+Add the VoltOps client and `sendSlackMessage` tool to your code:
+
+<ExpandableCode title="src/index.ts" previewLines={15}>
 
 ```ts
 import { openai } from "@ai-sdk/openai";
@@ -286,7 +346,7 @@ const voltOps = new VoltOpsClient({
 
 const sendSlackMessage = createTool({
   name: "sendSlackMessage",
-  description: "Send a message to a Slack channel or thread via VoltOps.",
+  description: "Send a message to a Slack channel or thread.",
   parameters: z.object({
     channelId: z.string(),
     text: z.string(),
@@ -345,23 +405,51 @@ Respond in Slack via sendSlackMessage; use getWeather for weather questions.`);
 });
 ```
 
-Ensure `SLACK_CREDENTIAL_ID` is set in `.env`.
+</ExpandableCode>
 
-## Step 8 - Test end-to-end
+</StepSection>
 
-- Tunnel running, server running.
-- Mention the bot or post a message in the channel.
-- The agent should handle the Slack event, call `getWeather` when asked, and reply via `sendSlackMessage`.  
+<StepSection stepNumber={7} title="Test End-to-End">
+
 <video controls loop muted playsInline style={{width: '100%', height: 'auto'}}>
+
   <source src="https://cdn.voltagent.dev/voltagent-recipes-guides/slack-5.mp4" type="video/mp4" />
   Your browser does not support the video tag.
 </video>
 
-## Notes
+<br/>
+<br/>
 
-- Shared Slack app Request URL: `https://api.voltagent.dev/hooks/slack` (or your host).
-- Invite the bot to the channel (`/invite @your-bot`).
-- Keep `VOLTAGENT_PUBLIC_KEY`, `VOLTAGENT_SECRET_KEY`, and `SLACK_CREDENTIAL_ID` in `.env`.
+Now test the complete flow from Slack to your agent and back.
+
+Add these environment variables to your `.env` file:
+
+```bash
+VOLTAGENT_PUBLIC_KEY=pk_...
+VOLTAGENT_SECRET_KEY=sk_...
+SLACK_CREDENTIAL_ID=cred_...
+```
+
+With the tunnel and server running:
+
+1. Mention the bot or post a message in the channel
+2. The trigger sends the event to your agent
+3. The agent processes the message (calls `getWeather` if asked)
+4. The agent replies via `sendSlackMessage`
+
+View request/response logs in **Actions → Runs** in Console.
+
+:::tip
+
+- Shared Slack app Request URL: https://api.voltagent.dev/hooks/slack (or your host).
+- Invite the bot to the channel (/invite @your-bot).
+- Keep VOLTAGENT_PUBLIC_KEY, VOLTAGENT_SECRET_KEY, and SLACK_CREDENTIAL_ID in .env.
 - Use Volt Tunnel locally; switch to your deployed URL later.
-- More on actions: [Actions overview](/docs/actions/overview)
-- More on triggers: [Triggers usage](/docs/triggers/usage)
+  :::
+
+</StepSection>
+
+## Related Documentation
+
+- [Triggers Usage](/docs/triggers/usage) - Trigger configuration reference
+- [Tools](/docs/agents/tools) - Creating agent tools

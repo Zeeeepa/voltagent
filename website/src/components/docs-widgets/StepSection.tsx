@@ -26,7 +26,7 @@ export default function StepSection({
         </div>
 
         {/* Right side - Content */}
-        <div className="flex-1  ">{children}</div>
+        <div className="flex-1 min-w-0 overflow-hidden">{children}</div>
       </div>
     </div>
   );

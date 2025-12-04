@@ -8,8 +8,21 @@ hide_table_of_contents: true
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import ApiKeyButton from '@site/src/components/docs-widgets/ApiKeyButton';
+import StepSection from '@site/src/components/docs-widgets/StepSection';
+import SectionDivider from '@site/src/components/docs-widgets/SectionDivider';
+import ExpandableCode from '@site/src/components/docs-widgets/ExpandableCode';
 
-Build an Airtable-facing agent that reacts to new records, summarizes them, and writes status/next steps back into the same row. <a href="/docs/triggers/usage" target="_blank" rel="noreferrer">Triggers</a> deliver Airtable events into your agent, and <a href="/docs/actions/overview" target="_blank" rel="noreferrer">Actions</a> let the agent push updates. Follow the steps in order with your own base, table, and credential. <a href="https://github.com/voltagent/voltagent/tree/main/examples/with-airtable" target="_blank" rel="noreferrer">Source Code</a>
+# Airtable Agent
+
+This guide shows how to build event-driven AI agents with VoltAgent and Airtable using [Triggers](/docs/triggers/usage) and [Actions](/docs/actions/overview).
+
+You'll create an agent that uses Triggers to receive new record events, summarizes them, and uses Actions to write status/next steps back into the same row.
+
+:::info
+Follow the steps with your own base, table, and credential. You can get the agent source code [here](https://github.com/voltagent/voltagent/tree/main/examples/with-airtable).
+:::
+
+<br/>
 
 <video controls loop muted playsInline style={{width: '100%', height: 'auto'}}>
 
@@ -20,23 +33,19 @@ Build an Airtable-facing agent that reacts to new records, summarizes them, and 
 <br/>
 <br/>
 
-## Step 1 - Create the project
+<StepSection stepNumber={1} title="Create the Project">
 
-<div className="recipe-step" style={{ width: "100%" }}>
+Run the CLI to scaffold a new project:
 
 ```bash
 npm create voltagent-app@latest
 ```
 
-Open the generated folder. If you skipped API key entry, add it to `.env` now.
+</StepSection>
 
-</div>
+<StepSection stepNumber={2} title="Configure and Start">
 
-## Step 2 - Configure and start
-
-<div className="recipe-step" style={{ width: "100%" }}>
-
-If you skipped API key entry during setup, create or edit the `.env` file in your project root and add your API key:
+If you skipped API key entry during setup, create or edit the `.env` file in your project root:
 
 <Tabs>
   <TabItem value="openai" label="OpenAI" default>
@@ -86,7 +95,7 @@ MISTRAL_API_KEY=your-api-key-here
   </TabItem>
 </Tabs>
 
-Now start the development server:
+Start the development server:
 
 <Tabs>
   <TabItem value="npm" label="npm" default>
@@ -112,17 +121,24 @@ pnpm dev
   </TabItem>
 </Tabs>
 
-You should see the VoltAgent server startup message (HTTP server + Swagger UI).
+You should see the VoltAgent server startup message:
 
-</div>
+```bash
+═══════════════════════════════════════════════════
+  VOLTAGENT SERVER STARTED SUCCESSFULLY
+═══════════════════════════════════════════════════
+  ✓ HTTP Server:  http://localhost:3141
+  ↪ Share it:    pnpm volt tunnel 3141 (secure HTTPS tunnel for teammates)
+     Docs: https://voltagent.dev/docs/deployment/local-tunnel/
+  ✓ Swagger UI:   http://localhost:3141/ui
 
-## Step 3 - Set up the Airtable trigger in VoltOps Console
+  Test your agents with VoltOps Console: https://console.voltagent.dev
+═══════════════════════════════════════════════════
+```
 
-<div className="recipe-step" style={{ width: "100%" }}>
+</StepSection>
 
-- Console → **Triggers** → **Create Trigger** (<a href="https://console.voltagent.dev/triggers" target="_blank" rel="noreferrer">open console</a>).
-- Choose **Airtable → Record created**.
-- Select your base + table and save the trigger.
+<StepSection stepNumber={3} title="Set Up the Airtable Trigger in Console">
 
 <video controls loop muted playsInline style={{width: '100%', height: 'auto'}}>
 
@@ -130,17 +146,18 @@ You should see the VoltAgent server startup message (HTTP server + Swagger UI).
   Your browser does not support the video tag.
 </video>
 
-</div>
+<br/>
+<br/>
 
-## Step 4 - Expose your local agent with Volt Tunnel
+Open [VoltAgent Console](https://console.voltagent.dev/triggers) and go to **Triggers** → **Create Trigger**.
 
-<div className="recipe-step" style={{ width: "100%" }}>
+1. Select **Airtable → Record created**
+2. Select your base and table
+3. Save the trigger
 
-```bash
-pnpm volt tunnel 3141
-```
+</StepSection>
 
-Copy the tunnel URL and set it as the trigger destination in Console (Endpoint URL). See [Local tunnel docs](/docs/deployment/local-tunnel/).
+<StepSection stepNumber={4} title="Expose Your Local Agent with Volt Tunnel">
 
 <video controls loop muted playsInline style={{width: '100%', height: 'auto'}}>
 
@@ -148,19 +165,39 @@ Copy the tunnel URL and set it as the trigger destination in Console (Endpoint U
   Your browser does not support the video tag.
 </video>
 
-</div>
+<br/>
+<br/>
 
-## Step 5 - Wire the Airtable trigger to your agent
+[Volt Tunnel](/docs/deployment/local-tunnel/) exposes your local server to the internet so triggers can reach it.
 
-<div className="recipe-step" style={{ width: "100%" }}>
+Run the tunnel command:
 
-Start with a trigger + agent skeleton. It listens for new rows and drafts the fields you want to update, but it doesn’t write back yet (tool comes next).
+```bash
+pnpm volt tunnel 3141
+```
+
+Copy the tunnel URL (e.g., `https://your-tunnel.tunnel.voltagent.dev`) and set it as the **Endpoint URL** in the trigger configuration.
+
+</StepSection>
+
+<SectionDivider>
+  The project is set up and the Airtable trigger is configured. The following steps cover wiring the trigger to your agent and adding the update action.
+</SectionDivider>
+
+<StepSection stepNumber={5} title="Wire the Airtable Trigger to Your Agent">
 
 <video controls loop muted playsInline style={{width: '100%', height: 'auto'}}>
 
   <source src="https://cdn.voltagent.dev/voltagent-recipes-guides/airtable-3.mp4" type="video/mp4" />
   Your browser does not support the video tag.
 </video>
+
+<br/>
+<br/>
+
+This code sets up a trigger handler that receives new Airtable rows and generates field suggestions. The write-back tool is added in the next step.
+
+<ExpandableCode title="src/index.ts" previewLines={15}>
 
 ```ts
 import { openai } from "@ai-sdk/openai";
@@ -218,18 +255,34 @@ Propose updates (no tool calls yet):
 });
 ```
 
-Make sure your Airtable table has the field names above (`Summary`, `Priority`, `Status`, `Next steps`), or change the prompt to match your schema.
+</ExpandableCode>
 
-</div>
+:::info
+Your Airtable table must include columns named `Summary`, `Priority`, `Status`, and `Next steps`. Adjust the prompt if your schema differs.
+:::
 
-## Step 6 - Add the Airtable action and update tool
+</StepSection>
 
-<div className="recipe-step" style={{ width: "100%" }}>
+<StepSection stepNumber={6} title="Add the Airtable Action and Update Tool">
 
-- Console → **Actions** → **Create Action** (<a href="https://console.voltagent.dev/actions" target="_blank" rel="noreferrer">open console</a>).
-- Choose Airtable and the same credential.
-- Select **Update record**, base, and table; save.
-- Update your code to include the VoltOps client + `updateAirtableRecord` tool, then attach it to the agent:
+<video controls loop muted playsInline style={{width: '100%', height: 'auto'}}>
+
+  <source src="https://cdn.voltagent.dev/voltagent-recipes-guides/airtable-4.mp4" type="video/mp4" />
+  Your browser does not support the video tag.
+</video>
+
+<br/>
+<br/>
+
+Open [VoltAgent Console](https://console.voltagent.dev/actions) and go to **Actions** → **Create Action**.
+
+1. Select **Airtable** and the same credential
+2. Select **Update record**, base, and table
+3. Save the action
+
+Add the VoltOps client and `updateAirtableRecord` tool to your code:
+
+<ExpandableCode title="src/index.ts" previewLines={15}>
 
 ```ts
 import { openai } from "@ai-sdk/openai";
@@ -322,22 +375,11 @@ Call updateAirtableRecord with recordId and the new fields using those exact nam
 });
 ```
 
-<video controls loop muted playsInline style={{width: '100%', height: 'auto'}}>
+</ExpandableCode>
 
-  <source src="https://cdn.voltagent.dev/voltagent-recipes-guides/airtable-4.mp4" type="video/mp4" />
-  Your browser does not support the video tag.
-</video>
+</StepSection>
 
-</div>
-
-## Step 7 - Test end-to-end
-
-<div className="recipe-step" style={{ width: "100%" }}>
-
-- Tunnel running, server running.
-- Insert a new row in the chosen Airtable table (e.g., `Title`, `Description` filled).
-- The trigger fires, the agent assigns summary/priority/status/next steps, and VoltOps writes those fields back onto the same record.
-- Check Volt → **Actions → Runs** to see the request/response and any provider errors.
+<StepSection stepNumber={7} title="Test End-to-End">
 
 <video controls loop muted playsInline style={{width: '100%', height: 'auto'}}>
 
@@ -345,9 +387,12 @@ Call updateAirtableRecord with recordId and the new fields using those exact nam
   Your browser does not support the video tag.
 </video>
 
-</div>
+<br/>
+<br/>
 
-## Environment variables to keep in `.env`
+Now test the complete flow from Airtable to your agent and back.
+
+Add these environment variables to your `.env` file:
 
 ```bash
 VOLTAGENT_PUBLIC_KEY=pk_...
@@ -355,4 +400,19 @@ VOLTAGENT_SECRET_KEY=sk_...
 AIRTABLE_CREDENTIAL_ID=cred_...
 ```
 
-Use the [Triggers usage doc](/docs/triggers/usage) and [Airtable Actions doc](/docs/actions/airtable) for deeper configuration options.
+With the tunnel and server running:
+
+1. Insert a new row in your Airtable table (fill in `Title`, `Description`, etc.)
+2. The trigger sends the event to your agent
+3. The agent generates summary/priority/status/next steps
+4. VoltOps writes the fields back to the record
+
+View request/response logs in **Actions → Runs** in Console.
+
+</StepSection>
+
+## Related Documentation
+
+- [Triggers Usage](/docs/triggers/usage) - Trigger configuration reference
+- [Airtable Actions](/docs/actions/airtable) - Airtable action types
+- [Tools](/docs/agents/tools) - Creating agent tools

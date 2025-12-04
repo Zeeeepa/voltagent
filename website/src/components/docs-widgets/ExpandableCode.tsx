@@ -30,10 +30,19 @@ export default function ExpandableCode({
         .expandable-code [class*="codeBlock"] {
           border-radius: 0 !important;
           margin: 0 !important;
+          max-width: 100% !important;
+          overflow-x: auto !important;
+        }
+        .expandable-code {
+          max-width: 100%;
+          overflow-x: hidden;
         }
       `}</style>
 
-      <div className="expandable-code my-6 rounded-lg overflow-hidden border border-solid border-gray-600/40">
+      <div
+        className="expandable-code my-6 rounded-lg overflow-hidden border border-solid border-gray-600/40"
+        style={{ maxWidth: "100%" }}
+      >
         {/* Header */}
         {title && (
           <div
