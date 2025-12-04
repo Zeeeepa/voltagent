@@ -452,5 +452,4 @@ View request/response logs in **Actions → Runs** in Console.
 ## Related Documentation
 
 - [Triggers Usage](/docs/triggers/usage) - Trigger configuration reference
-- [Slack Actions](/docs/actions/slack) - Slack action types
 - [Tools](/docs/agents/tools) - Creating agent tools
