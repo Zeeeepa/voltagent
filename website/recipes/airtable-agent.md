@@ -121,7 +121,20 @@ pnpm dev
   </TabItem>
 </Tabs>
 
-You should see the VoltAgent server startup message (HTTP server + Swagger UI).
+You should see the VoltAgent server startup message:
+
+```bash
+═══════════════════════════════════════════════════
+  VOLTAGENT SERVER STARTED SUCCESSFULLY
+═══════════════════════════════════════════════════
+  ✓ HTTP Server:  http://localhost:3141
+  ↪ Share it:    pnpm volt tunnel 3141 (secure HTTPS tunnel for teammates)
+     Docs: https://voltagent.dev/docs/deployment/local-tunnel/
+  ✓ Swagger UI:   http://localhost:3141/ui
+
+  Test your agents with VoltOps Console: https://console.voltagent.dev
+═══════════════════════════════════════════════════
+```
 
 </StepSection>
 
@@ -261,7 +274,7 @@ Your Airtable table must include columns named `Summary`, `Priority`, `Status`, 
 <br/>
 <br/>
 
-Open [VoltOps Console](https://console.voltagent.dev/actions) and go to **Actions** → **Create Action**.
+Open [VoltAgent Console](https://console.voltagent.dev/actions) and go to **Actions** → **Create Action**.
 
 1. Select **Airtable** and the same credential
 2. Select **Update record**, base, and table
