@@ -22,7 +22,7 @@ const memory = new Memory({
 
 const agent = new Agent({
   name: "Base Agent",
-  instructions: "You are a helpful assistant",
+  instructions: "You are a helpful assistant.",
   model: openai("gpt-4o-mini"),
   memory: memory,
 });

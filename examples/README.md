@@ -83,6 +83,7 @@ Create a multi-agent research workflow where different AI agents collaborate to 
 
 - [Base Starter](./base) — Minimal VoltAgent starter with a single agent, memory, and dev server.
 - [Slack](./with-slack) — Slack app mention bot that replies in the same channel/thread via VoltOps Slack actions.
+- [Airtable](./with-airtable) — React to new Airtable records and write updates back using VoltOps Airtable actions.
 - [GitHub Repo Analyzer](./github-repo-analyzer) — Agents read repository code and summarize insights/issues from GitHub projects.
 - [GitHub Star Stories](./github-star-stories) — Celebrate new GitHub stars with enriched profiles, AI-written stories, and VoltOps Discord actions.
 - [SDK Trace Example](./sdk-trace-example) — OpenTelemetry tracing wired to VoltOps so you can inspect spans and events.

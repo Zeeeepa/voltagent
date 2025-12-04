@@ -16,6 +16,11 @@ const sidebars: SidebarsConfig = {
       items: [
         {
           type: "doc",
+          id: "airtable-agent",
+          label: "Airtable Agent",
+        },
+        {
+          type: "doc",
           id: "slack-agent",
           label: "Slack Agent",
         },

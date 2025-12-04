@@ -2,19 +2,23 @@
 id: slack-agent
 title: Slack Agent
 description: Build a Slack-facing agent that listens to mentions and replies through VoltOps.
+hide_table_of_contents: true
 ---
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import ApiKeyButton from '@site/src/components/docs-widgets/ApiKeyButton';
 
-Build a Slack bot that listens to channel messages, fetches weather, and replies through VoltOps Slack actions. <a href="/docs/triggers/usage" target="_blank" rel="noreferrer">Triggers</a> deliver Slack events into your agent, and <a href="/docs/actions/overview" target="_blank" rel="noreferrer">Actions</a> let the agent send data back out. Follow the steps in order with your own keys and workspace.
+Build a Slack bot that listens to channel messages, fetches weather, and replies through VoltOps Slack actions. <a href="/docs/triggers/usage" target="_blank" rel="noreferrer">Triggers</a> deliver Slack events into your agent, and <a href="/docs/actions/overview" target="_blank" rel="noreferrer">Actions</a> let the agent send data back out. Follow the steps in order with your own keys and workspace. <a href="https://github.com/voltagent/voltagent/tree/main/examples/with-slack" target="_blank" rel="noreferrer">Source Code</a>
 
-<video autoPlay loop muted playsInline style={{width: '100%', height: 'auto'}}>
+<video controls loop muted playsInline style={{width: '100%', height: 'auto'}}>
 
   <source src="https://cdn.voltagent.dev/voltagent-recipes-guides/slack-5.mp4" type="video/mp4" />
   Your browser does not support the video tag.
 </video>
+
+<br/>
+<br/>
 
 ## Step 1 - Create the project
 
@@ -122,7 +126,7 @@ You should see the VoltAgent server startup message:
 - Console → **Triggers** → **Create Trigger** (<a href="https://console.voltagent.dev/triggers" target="_blank" rel="noreferrer">open console</a>).
 - Choose **Slack → Message posted to channel**.
 - Use the managed VoltOps Slack app when prompted, and create a Slack credential. Keep the `credentialId`.
-<video autoPlay loop muted playsInline style={{width: '100%', height: 'auto'}}>
+<video controls loop muted playsInline style={{width: '100%', height: 'auto'}}>
   <source src="https://cdn.voltagent.dev/voltagent-recipes-guides/slack-1.mp4" type="video/mp4" />
   Your browser does not support the video tag.
 </video>
@@ -134,7 +138,7 @@ pnpm volt tunnel 3141
 ```
 
 Copy the tunnel URL and set it as the trigger destination in Console (Endpoint URL). See [Local tunnel docs](/docs/deployment/local-tunnel/).  
-<video autoPlay loop muted playsInline style={{width: '100%', height: 'auto'}}>
+<video controls loop muted playsInline style={{width: '100%', height: 'auto'}}>
 
   <source src="https://cdn.voltagent.dev/voltagent-recipes-guides/slack-2.mp4" type="video/mp4" />
   Your browser does not support the video tag.
@@ -238,7 +242,7 @@ export const weatherTool = createTool({
 });
 ```
 
-<video autoPlay loop muted playsInline style={{width: '100%', height: 'auto'}}>
+<video controls loop muted playsInline style={{width: '100%', height: 'auto'}}>
 
   <source src="https://cdn.voltagent.dev/voltagent-recipes-guides/slack-3.mp4" type="video/mp4" />
   Your browser does not support the video tag.
@@ -249,7 +253,7 @@ export const weatherTool = createTool({
 - Console → **Actions** → **Create Action** (<a href="https://console.voltagent.dev/actions" target="_blank" rel="noreferrer">open console</a>) (see [Actions overview](/docs/actions/overview))
 - Choose Slack and the same credential.
 - Save.  
-<video autoPlay loop muted playsInline style={{width: '100%', height: 'auto'}}>
+<video controls loop muted playsInline style={{width: '100%', height: 'auto'}}>
   <source src="https://cdn.voltagent.dev/voltagent-recipes-guides/slack-4.mp4" type="video/mp4" />
   Your browser does not support the video tag.
 </video>
@@ -348,7 +352,7 @@ Ensure `SLACK_CREDENTIAL_ID` is set in `.env`.
 - Tunnel running, server running.
 - Mention the bot or post a message in the channel.
 - The agent should handle the Slack event, call `getWeather` when asked, and reply via `sendSlackMessage`.  
-<video autoPlay loop muted playsInline style={{width: '100%', height: 'auto'}}>
+<video controls loop muted playsInline style={{width: '100%', height: 'auto'}}>
   <source src="https://cdn.voltagent.dev/voltagent-recipes-guides/slack-5.mp4" type="video/mp4" />
   Your browser does not support the video tag.
 </video>
