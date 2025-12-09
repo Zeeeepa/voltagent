@@ -9,6 +9,7 @@ import type { Logger } from "@voltagent/internal";
 import type { WebSocketServer } from "ws";
 import { A2A_ROUTES, MCP_ROUTES } from "../routes/definitions";
 import type { ServerEndpointSummary } from "../types/server";
+import { showAnnouncements } from "../utils/announcements";
 import { portManager } from "../utils/port-manager";
 import { printServerStartup } from "../utils/server-utils";
 import { createWebSocketServer, setupWebSocketUpgrade } from "../websocket/setup";
@@ -86,6 +87,9 @@ export abstract class BaseServerProvider implements IServerProvider {
       }
 
       this.running = true;
+
+      // Show announcements (non-blocking)
+      showAnnouncements();
 
       // Print startup message
       const customEndpoints = this.collectFeatureEndpoints();

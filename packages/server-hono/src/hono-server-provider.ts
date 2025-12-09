@@ -14,6 +14,7 @@ import {
   portManager,
   printServerStartup,
   setupWebSocketUpgrade,
+  showAnnouncements,
 } from "@voltagent/server-core";
 import { createApp } from "./app-factory";
 import type { HonoServerConfig } from "./types";
@@ -120,6 +121,9 @@ export class HonoServerProvider extends BaseServerProvider {
       }
 
       this.running = true;
+
+      // Show announcements (non-blocking)
+      showAnnouncements();
 
       // Collect all endpoints (feature + custom)
       let allEndpoints = this.collectFeatureEndpoints();
