@@ -22,6 +22,12 @@ import type {
   VoltOpsDiscordSendMessageParams,
   VoltOpsDiscordSendWebhookMessageParams,
   VoltOpsDiscordUpdateChannelParams,
+  VoltOpsGmailCredential,
+  VoltOpsGmailGetEmailParams,
+  VoltOpsGmailGetThreadParams,
+  VoltOpsGmailReplyParams,
+  VoltOpsGmailSearchParams,
+  VoltOpsGmailSendEmailParams,
   VoltOpsSlackCredential,
   VoltOpsSlackDeleteMessageParams,
   VoltOpsSlackPostMessageParams,
@@ -128,6 +134,13 @@ export class VoltOpsActionsClient {
       params: VoltOpsDiscordMemberRoleParams,
     ) => Promise<VoltOpsActionExecutionResult>;
   };
+  public readonly gmail: {
+    sendEmail: (params: VoltOpsGmailSendEmailParams) => Promise<VoltOpsActionExecutionResult>;
+    replyToEmail: (params: VoltOpsGmailReplyParams) => Promise<VoltOpsActionExecutionResult>;
+    searchEmail: (params: VoltOpsGmailSearchParams) => Promise<VoltOpsActionExecutionResult>;
+    getEmail: (params: VoltOpsGmailGetEmailParams) => Promise<VoltOpsActionExecutionResult>;
+    getThread: (params: VoltOpsGmailGetThreadParams) => Promise<VoltOpsActionExecutionResult>;
+  };
 
   constructor(
     private readonly transport: VoltOpsActionsTransport,
@@ -162,6 +175,13 @@ export class VoltOpsActionsClient {
       listMembers: this.listDiscordMembers.bind(this),
       addMemberRole: this.addDiscordMemberRole.bind(this),
       removeMemberRole: this.removeDiscordMemberRole.bind(this),
+    };
+    this.gmail = {
+      sendEmail: this.sendGmailEmail.bind(this),
+      replyToEmail: this.replyGmailEmail.bind(this),
+      searchEmail: this.searchGmailEmails.bind(this),
+      getEmail: this.getGmailEmail.bind(this),
+      getThread: this.getGmailThread.bind(this),
     };
   }
 
@@ -591,6 +611,159 @@ export class VoltOpsActionsClient {
 
     const response = await this.postActionExecution(this.actionExecutionPath, payload);
     return this.mapActionExecution(response);
+  }
+
+  private async sendGmailEmail(
+    params: VoltOpsGmailSendEmailParams,
+  ): Promise<VoltOpsActionExecutionResult> {
+    if (!params || typeof params !== "object") {
+      throw new VoltOpsActionError("params must be provided", 400);
+    }
+
+    const credential = this.ensureGmailCredential(params.credential);
+    const input = this.buildGmailSendInput(params, { requireThreadAnchor: false });
+
+    return this.executeGmailAction({
+      actionId: params.actionId ?? "gmail.sendEmail",
+      credential,
+      catalogId: params.catalogId,
+      projectId: params.projectId,
+      input,
+    });
+  }
+
+  private async replyGmailEmail(
+    params: VoltOpsGmailReplyParams,
+  ): Promise<VoltOpsActionExecutionResult> {
+    if (!params || typeof params !== "object") {
+      throw new VoltOpsActionError("params must be provided", 400);
+    }
+
+    const credential = this.ensureGmailCredential(params.credential);
+    const input = this.buildGmailSendInput(params, { requireThreadAnchor: true });
+
+    return this.executeGmailAction({
+      actionId: params.actionId ?? "gmail.replyToEmail",
+      credential,
+      catalogId: params.catalogId,
+      projectId: params.projectId,
+      input,
+    });
+  }
+
+  private async searchGmailEmails(
+    params: VoltOpsGmailSearchParams,
+  ): Promise<VoltOpsActionExecutionResult> {
+    if (!params || typeof params !== "object") {
+      throw new VoltOpsActionError("params must be provided", 400);
+    }
+
+    const credential = this.ensureGmailCredential(params.credential);
+
+    const input: Record<string, unknown> = {};
+    const from = this.trimString(params.from);
+    if (from) {
+      input.from = from;
+    }
+    const to = this.trimString(params.to);
+    if (to) {
+      input.to = to;
+    }
+    const subject = this.trimString(params.subject);
+    if (subject) {
+      input.subject = subject;
+    }
+    const label = this.trimString(params.label);
+    if (label) {
+      input.label = label;
+    }
+    const category = this.trimString(params.category);
+    if (category) {
+      input.category = category;
+    }
+    const after = this.normalizePositiveInteger(params.after, "after");
+    if (after !== undefined) {
+      input.after = after;
+    }
+    const before = this.normalizePositiveInteger(params.before, "before");
+    if (before !== undefined) {
+      input.before = before;
+    }
+    const maxResults = this.normalizePositiveInteger(
+      params.maxResults ?? (params as Record<string, unknown>).max_results,
+      "maxResults",
+    );
+    if (maxResults !== undefined) {
+      input.maxResults = maxResults;
+    }
+    const pageToken = this.trimString(
+      params.pageToken ?? (params as Record<string, unknown>).page_token,
+    );
+    if (pageToken) {
+      input.pageToken = pageToken;
+    }
+    const query = this.trimString(params.query);
+    if (query) {
+      input.query = query;
+    }
+
+    return this.executeGmailAction({
+      actionId: params.actionId ?? "gmail.searchEmail",
+      credential,
+      catalogId: params.catalogId,
+      projectId: params.projectId,
+      input,
+    });
+  }
+
+  private async getGmailEmail(
+    params: VoltOpsGmailGetEmailParams,
+  ): Promise<VoltOpsActionExecutionResult> {
+    if (!params || typeof params !== "object") {
+      throw new VoltOpsActionError("params must be provided", 400);
+    }
+
+    const credential = this.ensureGmailCredential(params.credential);
+    const messageId = this.normalizeIdentifier(params.messageId, "messageId");
+    const format = this.normalizeGmailFormat(params.format);
+
+    const input: Record<string, unknown> = { messageId };
+    if (format) {
+      input.format = format;
+    }
+
+    return this.executeGmailAction({
+      actionId: params.actionId ?? "gmail.getEmail",
+      credential,
+      catalogId: params.catalogId,
+      projectId: params.projectId,
+      input,
+    });
+  }
+
+  private async getGmailThread(
+    params: VoltOpsGmailGetThreadParams,
+  ): Promise<VoltOpsActionExecutionResult> {
+    if (!params || typeof params !== "object") {
+      throw new VoltOpsActionError("params must be provided", 400);
+    }
+
+    const credential = this.ensureGmailCredential(params.credential);
+    const threadId = this.normalizeIdentifier(params.threadId, "threadId");
+    const format = this.normalizeGmailFormat(params.format);
+
+    const input: Record<string, unknown> = { threadId };
+    if (format) {
+      input.format = format;
+    }
+
+    return this.executeGmailAction({
+      actionId: params.actionId ?? "gmail.getThread",
+      credential,
+      catalogId: params.catalogId,
+      projectId: params.projectId,
+      input,
+    });
   }
 
   private async sendDiscordMessage(
@@ -1289,6 +1462,92 @@ export class VoltOpsActionsClient {
     );
   }
 
+  private ensureGmailCredential(
+    value: VoltOpsGmailCredential | null | undefined,
+  ): VoltOpsGmailCredential {
+    if (!value || typeof value !== "object" || Array.isArray(value)) {
+      throw new VoltOpsActionError("credential must be an object", 400);
+    }
+
+    const record = value as Record<string, unknown>;
+    const metadata = this.normalizeCredentialMetadata(record.metadata);
+    const storedId = this.trimString(
+      typeof (record as any).credentialId === "string"
+        ? ((record as any).credentialId as string)
+        : typeof (record as any).id === "string"
+          ? ((record as any).id as string)
+          : undefined,
+    );
+    if (storedId) {
+      return metadata ? { credentialId: storedId, metadata } : { credentialId: storedId };
+    }
+
+    const clientEmail = this.trimString(record.clientEmail);
+    const privateKey = this.trimString(record.privateKey);
+    if (clientEmail && privateKey) {
+      const subject = this.trimString(record.subject ?? (record as any).userEmail);
+      const payload: Record<string, unknown> = {
+        clientEmail,
+        privateKey,
+      };
+      if (subject) {
+        payload.subject = subject;
+      }
+      if (metadata) {
+        payload.metadata = metadata;
+      }
+      return payload as VoltOpsGmailCredential;
+    }
+
+    const accessToken = this.trimString(
+      record.accessToken ?? (record as any).token ?? (record as any).access_token,
+    );
+    const refreshToken = this.trimString(record.refreshToken);
+    const clientId = this.trimString(record.clientId);
+    const clientSecret = this.trimString(record.clientSecret);
+    const tokenType = this.trimString(record.tokenType);
+    const expiresAt = this.trimString(record.expiresAt);
+
+    if (!accessToken && !refreshToken) {
+      throw new VoltOpsActionError(
+        "credential must include credentialId, accessToken, or refreshToken for Gmail actions",
+        400,
+      );
+    }
+
+    if (refreshToken && (!clientId || !clientSecret) && !accessToken) {
+      throw new VoltOpsActionError(
+        "refreshToken requires clientId and clientSecret (or provide an accessToken) for Gmail actions",
+        400,
+      );
+    }
+
+    const payload: Record<string, unknown> = {};
+    if (accessToken) {
+      payload.accessToken = accessToken;
+    }
+    if (refreshToken) {
+      payload.refreshToken = refreshToken;
+    }
+    if (clientId) {
+      payload.clientId = clientId;
+    }
+    if (clientSecret) {
+      payload.clientSecret = clientSecret;
+    }
+    if (tokenType) {
+      payload.tokenType = tokenType;
+    }
+    if (expiresAt) {
+      payload.expiresAt = expiresAt;
+    }
+    if (metadata) {
+      payload.metadata = metadata;
+    }
+
+    return payload as VoltOpsGmailCredential;
+  }
+
   private normalizeCredentialMetadata(metadata: unknown): Record<string, unknown> | undefined {
     if (metadata === undefined || metadata === null) {
       return undefined;
@@ -1383,6 +1642,249 @@ export class VoltOpsActionsClient {
     }
     const trimmed = value.trim();
     return trimmed.length > 0 ? trimmed : null;
+  }
+
+  private normalizeEmailList(
+    value: unknown,
+    field: string,
+    options?: { optional?: boolean },
+  ): string[] | undefined {
+    if (value === undefined || value === null) {
+      if (options?.optional) {
+        return undefined;
+      }
+      throw new VoltOpsActionError(`${field} must be provided`, 400);
+    }
+
+    const entries: string[] = [];
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        const normalized = this.trimString(item);
+        if (normalized) {
+          entries.push(normalized);
+        }
+      }
+    } else if (typeof value === "string") {
+      const parts = value.split(",").map((part) => part.trim());
+      parts.forEach((part) => {
+        if (part.length > 0) {
+          entries.push(part);
+        }
+      });
+    } else {
+      throw new VoltOpsActionError(`${field} must be a string or string[]`, 400);
+    }
+
+    if (entries.length === 0) {
+      if (options?.optional) {
+        return undefined;
+      }
+      throw new VoltOpsActionError(`${field} must include at least one email`, 400);
+    }
+
+    return entries;
+  }
+
+  private normalizeGmailBodyType(value: unknown): "text" | "html" {
+    const normalized = this.trimString(value);
+    return normalized === "html" ? "html" : "text";
+  }
+
+  private normalizeGmailFormat(
+    value: unknown,
+  ): "full" | "minimal" | "raw" | "metadata" | undefined {
+    const normalized = this.trimString(value);
+    if (!normalized) {
+      return undefined;
+    }
+    const allowed = ["full", "minimal", "raw", "metadata"];
+    if (allowed.includes(normalized)) {
+      return normalized as "full" | "minimal" | "raw" | "metadata";
+    }
+    throw new VoltOpsActionError(
+      "format must be one of full, minimal, raw, or metadata for Gmail actions",
+      400,
+    );
+  }
+
+  private normalizeGmailAttachments(
+    attachments: unknown,
+  ): Array<Record<string, unknown>> | undefined {
+    if (attachments === undefined || attachments === null) {
+      return undefined;
+    }
+    if (!Array.isArray(attachments)) {
+      throw new VoltOpsActionError("attachments must be an array", 400);
+    }
+
+    const entries: Array<Record<string, unknown>> = [];
+    for (const attachment of attachments) {
+      if (!attachment || typeof attachment !== "object" || Array.isArray(attachment)) {
+        throw new VoltOpsActionError("each attachment must be an object", 400);
+      }
+      const record = attachment as Record<string, unknown>;
+      const filename =
+        this.trimString(
+          record.filename ?? (record as any).name ?? (record as any).file?.filename,
+        ) ?? undefined;
+      const content =
+        this.trimString(record.content ?? (record as any).base64 ?? (record as any).data) ??
+        undefined;
+      if (!content) {
+        throw new VoltOpsActionError("attachment.content must be provided (base64 string)", 400);
+      }
+      const contentType =
+        this.trimString(record.contentType ?? (record as any).mimeType) ?? undefined;
+
+      const sanitized: Record<string, unknown> = {
+        content,
+      };
+      if (filename) {
+        sanitized.filename = filename;
+      }
+      if (contentType) {
+        sanitized.contentType = contentType;
+      }
+      entries.push(sanitized);
+    }
+
+    return entries.length > 0 ? entries : undefined;
+  }
+
+  private buildGmailSendInput(
+    params: VoltOpsGmailSendEmailParams,
+    options: { requireThreadAnchor: boolean },
+  ): Record<string, unknown> {
+    const rawParams = params as Record<string, unknown>;
+    const toList = this.normalizeEmailList(params.to, "to");
+    const ccList = this.normalizeEmailList(params.cc, "cc", { optional: true });
+    const bccList = this.normalizeEmailList(params.bcc, "bcc", { optional: true });
+    const replyToList = this.normalizeEmailList(
+      params.replyTo ?? (rawParams as Record<string, unknown>).reply_to,
+      "replyTo",
+      {
+        optional: true,
+      },
+    );
+
+    const subject = this.trimString(params.subject);
+    if (!subject) {
+      throw new VoltOpsActionError("subject must be provided for Gmail actions", 400);
+    }
+
+    const bodyType = this.normalizeGmailBodyType(params.bodyType ?? rawParams.body_type);
+    const htmlBody =
+      bodyType === "html"
+        ? this.trimString(
+            rawParams.html ?? params.body ?? params.htmlBody ?? rawParams.html_body ?? undefined,
+          )
+        : this.trimString(params.htmlBody ?? rawParams.html_body ?? undefined);
+    const textBody =
+      bodyType === "text"
+        ? this.trimString(
+            rawParams.text ?? params.body ?? params.textBody ?? rawParams.text_body ?? undefined,
+          )
+        : this.trimString(params.textBody ?? rawParams.text_body ?? undefined);
+
+    if (!htmlBody && !textBody) {
+      throw new VoltOpsActionError("body or htmlBody must be provided for Gmail actions", 400);
+    }
+
+    const threadId = this.trimString(params.threadId ?? rawParams.thread_id);
+    const inReplyTo = this.trimString(params.inReplyTo ?? rawParams.in_reply_to);
+
+    if (options.requireThreadAnchor && !threadId && !inReplyTo) {
+      throw new VoltOpsActionError(
+        "threadId or inReplyTo must be provided for Gmail reply action",
+        400,
+      );
+    }
+
+    const attachments = this.normalizeGmailAttachments(params.attachments);
+
+    const input: Record<string, unknown> = {
+      to: toList,
+      subject,
+      bodyType,
+    };
+
+    if (ccList?.length) {
+      input.cc = ccList;
+    }
+    if (bccList?.length) {
+      input.bcc = bccList;
+    }
+    if (replyToList?.length) {
+      input.replyTo = replyToList;
+    }
+    if (params.from) {
+      const from = this.trimString(params.from);
+      if (from) {
+        input.from = from;
+      }
+    }
+    if (params.senderName) {
+      const senderName = this.trimString(params.senderName);
+      if (senderName) {
+        input.senderName = senderName;
+      }
+    }
+    if (inReplyTo) {
+      input.inReplyTo = inReplyTo;
+    }
+    if (threadId) {
+      input.threadId = threadId;
+    }
+    if (attachments) {
+      input.attachments = attachments;
+    }
+    if (bodyType === "html") {
+      if (htmlBody) {
+        input.htmlBody = htmlBody;
+      }
+      if (textBody) {
+        input.textBody = textBody;
+      }
+    } else {
+      if (textBody) {
+        input.textBody = textBody;
+      }
+      if (htmlBody) {
+        input.htmlBody = htmlBody;
+      }
+    }
+
+    const primaryBody = bodyType === "html" ? (htmlBody ?? textBody) : (textBody ?? htmlBody);
+    if (primaryBody) {
+      input.body = primaryBody;
+    }
+
+    if (typeof params.draft === "boolean") {
+      input.draft = params.draft;
+    }
+
+    return input;
+  }
+
+  private async executeGmailAction(options: {
+    actionId: string;
+    credential: VoltOpsGmailCredential;
+    catalogId?: string;
+    projectId?: string | null;
+    input?: Record<string, unknown>;
+  }): Promise<VoltOpsActionExecutionResult> {
+    const payload: Record<string, unknown> = {
+      credential: options.credential,
+      catalogId: options.catalogId ?? undefined,
+      actionId: options.actionId,
+      projectId: options.projectId ?? undefined,
+      payload: {
+        input: options.input ?? {},
+      },
+    };
+
+    const response = await this.postActionExecution(this.actionExecutionPath, payload);
+    return this.mapActionExecution(response);
   }
 
   private async postActionExecution(

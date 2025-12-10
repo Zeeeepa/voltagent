@@ -163,6 +163,28 @@ export type VoltOpsDiscordCredential =
   | WithCredentialMetadata<{ botToken: string }>
   | WithCredentialMetadata<{ webhookUrl: string }>;
 
+export type VoltOpsGmailCredential =
+  | VoltOpsStoredCredentialRef
+  | WithCredentialMetadata<{
+      accessToken?: string;
+      refreshToken?: string;
+      clientId?: string;
+      clientSecret?: string;
+      tokenType?: string;
+      expiresAt?: string;
+    }>
+  | WithCredentialMetadata<{
+      clientEmail: string;
+      privateKey: string;
+      subject?: string | null;
+    }>;
+
+export interface VoltOpsGmailAttachment {
+  filename?: string;
+  content: string;
+  contentType?: string;
+}
+
 export interface VoltOpsAirtableCreateRecordParams {
   credential: VoltOpsAirtableCredential;
   baseId: string;
@@ -357,6 +379,56 @@ export interface VoltOpsDiscordMemberRoleParams extends VoltOpsDiscordBaseParams
   roleId: string;
 }
 
+export interface VoltOpsGmailBaseParams {
+  credential: VoltOpsGmailCredential;
+  actionId?: string;
+  catalogId?: string;
+  projectId?: string | null;
+}
+
+export interface VoltOpsGmailSendEmailParams extends VoltOpsGmailBaseParams {
+  to: string | string[];
+  cc?: string | string[];
+  bcc?: string | string[];
+  subject: string;
+  body?: string;
+  bodyType?: "text" | "html";
+  htmlBody?: string;
+  textBody?: string;
+  replyTo?: string | string[];
+  from?: string;
+  senderName?: string;
+  inReplyTo?: string;
+  threadId?: string;
+  attachments?: VoltOpsGmailAttachment[];
+  draft?: boolean;
+}
+
+export interface VoltOpsGmailReplyParams extends VoltOpsGmailSendEmailParams {}
+
+export interface VoltOpsGmailSearchParams extends VoltOpsGmailBaseParams {
+  from?: string;
+  to?: string;
+  subject?: string;
+  label?: string;
+  category?: string;
+  after?: number;
+  before?: number;
+  maxResults?: number;
+  pageToken?: string;
+  query?: string;
+}
+
+export interface VoltOpsGmailGetEmailParams extends VoltOpsGmailBaseParams {
+  messageId: string;
+  format?: "full" | "minimal" | "raw" | "metadata";
+}
+
+export interface VoltOpsGmailGetThreadParams extends VoltOpsGmailBaseParams {
+  threadId: string;
+  format?: "full" | "minimal" | "raw" | "metadata";
+}
+
 export type VoltOpsActionsApi = {
   airtable: {
     createRecord: (
@@ -418,6 +490,13 @@ export type VoltOpsActionsApi = {
     removeMemberRole: (
       params: VoltOpsDiscordMemberRoleParams,
     ) => Promise<VoltOpsActionExecutionResult>;
+  };
+  gmail: {
+    sendEmail: (params: VoltOpsGmailSendEmailParams) => Promise<VoltOpsActionExecutionResult>;
+    replyToEmail: (params: VoltOpsGmailReplyParams) => Promise<VoltOpsActionExecutionResult>;
+    searchEmail: (params: VoltOpsGmailSearchParams) => Promise<VoltOpsActionExecutionResult>;
+    getEmail: (params: VoltOpsGmailGetEmailParams) => Promise<VoltOpsActionExecutionResult>;
+    getThread: (params: VoltOpsGmailGetThreadParams) => Promise<VoltOpsActionExecutionResult>;
   };
 };
 
