@@ -98,6 +98,11 @@ describe("Auth Defaults", () => {
         expect(requiresAuth("POST", "/agents/test/stream-object")).toBe(true);
       });
 
+      it("should require auth for direct tool execution", () => {
+        expect(requiresAuth("GET", "/tools")).toBe(true);
+        expect(requiresAuth("POST", "/tools/example/execute")).toBe(true);
+      });
+
       it("should require auth for workflow execution endpoints", () => {
         expect(requiresAuth("POST", "/workflows/my-workflow/run")).toBe(true);
         expect(requiresAuth("POST", "/workflows/123/stream")).toBe(true);
