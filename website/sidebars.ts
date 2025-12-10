@@ -183,7 +183,13 @@ const sidebars: SidebarsConfig = {
           variant: "accent",
         },
       },
-      items: ["actions/overview", "actions/airtable"],
+      items: [
+        "actions/overview",
+        "actions/airtable",
+        "actions/slack",
+        "actions/discord",
+        "actions/gmail",
+      ],
     },
     {
       type: "category",
