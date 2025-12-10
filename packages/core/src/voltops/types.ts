@@ -163,6 +163,18 @@ export type VoltOpsDiscordCredential =
   | WithCredentialMetadata<{ botToken: string }>
   | WithCredentialMetadata<{ webhookUrl: string }>;
 
+export type VoltOpsPostgresCredential =
+  | VoltOpsStoredCredentialRef
+  | WithCredentialMetadata<{
+      host: string;
+      port?: number;
+      user: string;
+      password: string;
+      database: string;
+      ssl?: boolean;
+      rejectUnauthorized?: boolean;
+    }>;
+
 export type VoltOpsGmailCredential =
   | VoltOpsStoredCredentialRef
   | WithCredentialMetadata<{
@@ -379,6 +391,24 @@ export interface VoltOpsDiscordMemberRoleParams extends VoltOpsDiscordBaseParams
   roleId: string;
 }
 
+export interface VoltOpsPostgresBaseParams {
+  credential: VoltOpsPostgresCredential;
+  actionId?: string;
+  catalogId?: string;
+  projectId?: string | null;
+}
+
+export interface VoltOpsPostgresExecuteParams extends VoltOpsPostgresBaseParams {
+  query: string;
+  parameters?: unknown[];
+  applicationName?: string;
+  statementTimeoutMs?: number;
+  connectionTimeoutMs?: number;
+  ssl?: {
+    rejectUnauthorized?: boolean;
+  };
+}
+
 export interface VoltOpsGmailBaseParams {
   credential: VoltOpsGmailCredential;
   actionId?: string;
@@ -497,6 +527,9 @@ export type VoltOpsActionsApi = {
     searchEmail: (params: VoltOpsGmailSearchParams) => Promise<VoltOpsActionExecutionResult>;
     getEmail: (params: VoltOpsGmailGetEmailParams) => Promise<VoltOpsActionExecutionResult>;
     getThread: (params: VoltOpsGmailGetThreadParams) => Promise<VoltOpsActionExecutionResult>;
+  };
+  postgres: {
+    executeQuery: (params: VoltOpsPostgresExecuteParams) => Promise<VoltOpsActionExecutionResult>;
   };
 };
 

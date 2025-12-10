@@ -28,6 +28,8 @@ import type {
   VoltOpsGmailReplyParams,
   VoltOpsGmailSearchParams,
   VoltOpsGmailSendEmailParams,
+  VoltOpsPostgresCredential,
+  VoltOpsPostgresExecuteParams,
   VoltOpsSlackCredential,
   VoltOpsSlackDeleteMessageParams,
   VoltOpsSlackPostMessageParams,
@@ -141,6 +143,9 @@ export class VoltOpsActionsClient {
     getEmail: (params: VoltOpsGmailGetEmailParams) => Promise<VoltOpsActionExecutionResult>;
     getThread: (params: VoltOpsGmailGetThreadParams) => Promise<VoltOpsActionExecutionResult>;
   };
+  public readonly postgres: {
+    executeQuery: (params: VoltOpsPostgresExecuteParams) => Promise<VoltOpsActionExecutionResult>;
+  };
 
   constructor(
     private readonly transport: VoltOpsActionsTransport,
@@ -182,6 +187,9 @@ export class VoltOpsActionsClient {
       searchEmail: this.searchGmailEmails.bind(this),
       getEmail: this.getGmailEmail.bind(this),
       getThread: this.getGmailThread.bind(this),
+    };
+    this.postgres = {
+      executeQuery: this.executePostgresQuery.bind(this),
     };
   }
 
@@ -763,6 +771,74 @@ export class VoltOpsActionsClient {
       projectId: params.projectId,
       input,
     });
+  }
+
+  private async executePostgresQuery(
+    params: VoltOpsPostgresExecuteParams,
+  ): Promise<VoltOpsActionExecutionResult> {
+    if (!params || typeof params !== "object") {
+      throw new VoltOpsActionError("params must be provided", 400);
+    }
+
+    const credential = this.ensurePostgresCredential(params.credential);
+    const query = this.trimString(params.query);
+    if (!query) {
+      throw new VoltOpsActionError("query must be provided", 400);
+    }
+
+    const parameters = Array.isArray(params.parameters) ? params.parameters : [];
+    const applicationName = this.trimString(params.applicationName);
+    const statementTimeoutMs = this.normalizePositiveInteger(
+      params.statementTimeoutMs,
+      "statementTimeoutMs",
+      { allowZero: false },
+    );
+    const connectionTimeoutMs = this.normalizePositiveInteger(
+      params.connectionTimeoutMs,
+      "connectionTimeoutMs",
+      { allowZero: false },
+    );
+    const ssl =
+      params.ssl && typeof params.ssl === "object" && !Array.isArray(params.ssl)
+        ? {
+            rejectUnauthorized:
+              typeof (params.ssl as any).rejectUnauthorized === "boolean"
+                ? (params.ssl as any).rejectUnauthorized
+                : undefined,
+          }
+        : undefined;
+
+    const input: Record<string, unknown> = {
+      query,
+    };
+    if (parameters.length) {
+      input.parameters = parameters;
+    }
+    if (applicationName) {
+      input.applicationName = applicationName;
+    }
+    if (typeof statementTimeoutMs === "number") {
+      input.statementTimeoutMs = statementTimeoutMs;
+    }
+    if (typeof connectionTimeoutMs === "number") {
+      input.connectionTimeoutMs = connectionTimeoutMs;
+    }
+    if (ssl) {
+      input.ssl = ssl;
+    }
+
+    const payload: Record<string, unknown> = {
+      credential,
+      catalogId: params.catalogId ?? undefined,
+      actionId: params.actionId ?? "postgres.executeQuery",
+      projectId: params.projectId ?? undefined,
+      payload: {
+        input,
+      },
+    };
+
+    const response = await this.postActionExecution(this.actionExecutionPath, payload);
+    return this.mapActionExecution(response);
   }
 
   private async sendDiscordMessage(
@@ -1547,6 +1623,69 @@ export class VoltOpsActionsClient {
     return payload as VoltOpsGmailCredential;
   }
 
+  private ensurePostgresCredential(
+    value: VoltOpsPostgresCredential | null | undefined,
+  ): VoltOpsPostgresCredential {
+    if (!value || typeof value !== "object" || Array.isArray(value)) {
+      throw new VoltOpsActionError("credential must be an object", 400);
+    }
+
+    const record = value as Record<string, unknown>;
+    const metadata = this.normalizeCredentialMetadata(record.metadata);
+    const storedId = this.trimString(
+      typeof (record as any).credentialId === "string"
+        ? ((record as any).credentialId as string)
+        : typeof (record as any).id === "string"
+          ? ((record as any).id as string)
+          : undefined,
+    );
+    if (storedId) {
+      return metadata ? { credentialId: storedId, metadata } : { credentialId: storedId };
+    }
+
+    const host = this.trimString(record.host);
+    const user = this.trimString(record.user);
+    const password = this.trimString(record.password);
+    const database = this.trimString(record.database);
+    if (!host || !user || !password || !database) {
+      throw new VoltOpsActionError(
+        "credential must include host, user, password, and database for Postgres actions",
+        400,
+      );
+    }
+
+    const port =
+      typeof record.port === "number" && Number.isFinite(record.port)
+        ? Math.trunc(record.port)
+        : undefined;
+    const ssl = typeof record.ssl === "boolean" ? record.ssl : undefined;
+    const rejectUnauthorized =
+      typeof (record as any).rejectUnauthorized === "boolean"
+        ? (record as any).rejectUnauthorized
+        : undefined;
+
+    const payload: Record<string, unknown> = {
+      host,
+      user,
+      password,
+      database,
+    };
+    if (port !== undefined) {
+      payload.port = port;
+    }
+    if (ssl !== undefined) {
+      payload.ssl = ssl;
+    }
+    if (rejectUnauthorized !== undefined) {
+      payload.rejectUnauthorized = rejectUnauthorized;
+    }
+    if (metadata) {
+      payload.metadata = metadata;
+    }
+
+    return payload as VoltOpsPostgresCredential;
+  }
+
   private normalizeCredentialMetadata(metadata: unknown): Record<string, unknown> | undefined {
     if (metadata === undefined || metadata === null) {
       return undefined;
@@ -1621,7 +1760,11 @@ export class VoltOpsActionsClient {
     return entries.length > 0 ? entries : undefined;
   }
 
-  private normalizePositiveInteger(value: unknown, field: string): number | undefined {
+  private normalizePositiveInteger(
+    value: unknown,
+    field: string,
+    options?: { allowZero?: boolean },
+  ): number | undefined {
     if (value === undefined || value === null) {
       return undefined;
     }
@@ -1629,8 +1772,9 @@ export class VoltOpsActionsClient {
       throw new VoltOpsActionError(`${field} must be a finite number`, 400);
     }
     const normalized = Math.floor(value);
-    if (normalized <= 0) {
-      throw new VoltOpsActionError(`${field} must be greater than 0`, 400);
+    const allowZero = options?.allowZero ?? false;
+    if (normalized < 0 || (!allowZero && normalized === 0)) {
+      throw new VoltOpsActionError(`${field} must be greater than ${allowZero ? "-1" : "0"}`, 400);
     }
     return normalized;
   }
