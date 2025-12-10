@@ -660,6 +660,7 @@ export class VoltOpsActionsClient {
 
     const credential = this.ensureGmailCredential(params.credential);
 
+    const rawParams = params as unknown as Record<string, unknown>;
     const input: Record<string, unknown> = {};
     const from = this.trimString(params.from);
     if (from) {
@@ -690,15 +691,13 @@ export class VoltOpsActionsClient {
       input.before = before;
     }
     const maxResults = this.normalizePositiveInteger(
-      params.maxResults ?? (params as Record<string, unknown>).max_results,
+      params.maxResults ?? rawParams.max_results,
       "maxResults",
     );
     if (maxResults !== undefined) {
       input.maxResults = maxResults;
     }
-    const pageToken = this.trimString(
-      params.pageToken ?? (params as Record<string, unknown>).page_token,
-    );
+    const pageToken = this.trimString(params.pageToken ?? rawParams.page_token);
     if (pageToken) {
       input.pageToken = pageToken;
     }
@@ -1755,17 +1754,13 @@ export class VoltOpsActionsClient {
     params: VoltOpsGmailSendEmailParams,
     options: { requireThreadAnchor: boolean },
   ): Record<string, unknown> {
-    const rawParams = params as Record<string, unknown>;
+    const rawParams = params as unknown as Record<string, unknown>;
     const toList = this.normalizeEmailList(params.to, "to");
     const ccList = this.normalizeEmailList(params.cc, "cc", { optional: true });
     const bccList = this.normalizeEmailList(params.bcc, "bcc", { optional: true });
-    const replyToList = this.normalizeEmailList(
-      params.replyTo ?? (rawParams as Record<string, unknown>).reply_to,
-      "replyTo",
-      {
-        optional: true,
-      },
-    );
+    const replyToList = this.normalizeEmailList(params.replyTo ?? rawParams.reply_to, "replyTo", {
+      optional: true,
+    });
 
     const subject = this.trimString(params.subject);
     if (!subject) {
