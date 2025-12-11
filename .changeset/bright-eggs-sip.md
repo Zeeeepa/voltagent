@@ -1,7 +1,5 @@
 ---
 "@voltagent/core": patch
-"@voltagent/api": patch
-"@voltagent/console": patch
 ---
 
 feat: add postgres action
