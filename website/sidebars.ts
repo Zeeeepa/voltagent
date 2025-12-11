@@ -189,6 +189,7 @@ const sidebars: SidebarsConfig = {
         "actions/slack",
         "actions/discord",
         "actions/gmail",
+        "actions/postgres",
       ],
     },
     {
