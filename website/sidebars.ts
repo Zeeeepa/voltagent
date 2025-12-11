@@ -218,7 +218,7 @@ const sidebars: SidebarsConfig = {
         {
           type: "category",
           label: "Endpoints",
-          items: ["api/endpoints/agents", "api/endpoints/workflows"],
+          items: ["api/endpoints/agents", "api/endpoints/workflows", "api/endpoints/tools"],
         },
       ],
     },
