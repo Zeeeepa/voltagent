@@ -1,5 +1,5 @@
 import Head from "@docusaurus/Head";
-import { ArrowRightIcon, ChartBarIcon } from "@heroicons/react/24/outline";
+import { ArrowPathIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 import { DotPattern } from "@site/src/components/ui/dot-pattern";
 import { Button } from "@site/src/components/voltops/Button";
 import Layout from "@theme/Layout";
@@ -21,112 +21,54 @@ const Container = ({
   <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${className}`}>{children}</div>
 );
 
-/* FAQ Component
-const FAQItem = ({
-  question,
-  answer,
-  isOpen,
-  onClick,
-}: {
-  question: string;
-  answer: string;
-  isOpen: boolean;
-  onClick: () => void;
-}) => (
-  <div className="border-b border-gray-800/50 last:border-b-0">
-    <button
-      type="button"
-      onClick={onClick}
-      className="w-full py-5 flex items-center justify-between text-left bg-transparent border-none cursor-pointer"
-    >
-      <span className="text-base md:text-lg font-medium text-white">{question}</span>
-      <ChevronDownIcon
-        className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${
-          isOpen ? "rotate-180" : ""
-        }`}
-      />
-    </button>
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          initial={{ height: 0, opacity: 0 }}
-          animate={{ height: "auto", opacity: 1 }}
-          exit={{ height: 0, opacity: 0 }}
-          transition={{ duration: 0.2 }}
-          className="overflow-hidden"
-        >
-          <p className="pb-5 text-lg text-gray-400 mb-0 leading-relaxed">{answer}</p>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  </div>
-); */
-
-// FAQ data
-/* const faqData = [
-  {
-    question: "Can I use VoltOps with any AI framework?",
-    answer:
-      "Yes! VoltOps LLM Observability works with any AI framework including VoltAgent, LangChain, LlamaIndex, and custom implementations. Our SDK integrates seamlessly with your existing codebase.",
-  },
-  {
-    question: "How does VoltOps differ from general observability tools?",
-    answer:
-      "VoltOps is purpose-built for AI agents and LLM applications. It understands agent hierarchies, tool calls, memory operations, and LLM-specific metrics that general observability tools don't capture.",
-  },
-  {
-    question: "Is there a self-hosted option?",
-    answer:
-      "Yes, VoltOps offers a self-hosted version for teams that need to keep data on their own infrastructure. You get the same powerful observability features with full control over your data.",
-  },
-]; */
-
 const features = [
   {
-    title: "Visual Agent Execution",
+    title: "Built-in Actions",
     description:
-      "Visualize your agent's execution as an interactive flow diagram. Instantly spot bottlenecks, failed steps, and unexpected behaviors.",
-    image: "https://cdn.voltagent.dev/website/observability/framework.png",
+      "Let your agent take action. Pre-built integrations with Airtable, Discord, Gmail that work as agent tools out of the box.",
+    image: "https://cdn.voltagent.dev/website/triggers-actions/actions.png",
   },
   {
-    title: "Alerts & Notifications",
+    title: "Event-Driven Triggers",
     description:
-      "Get notified when things break. Set up alerts for latency, errors, and token usage. Receive notifications via Slack, email, or webhooks.",
-    image: "https://cdn.voltagent.dev/website/observability/alerts.png",
+      "Wake up your agents when it matters. Listen for Slack messages, Gmail emails, GitHub webhooks, Airtable updates, and more. All with managed authentication.",
+    image: "https://cdn.voltagent.dev/website/triggers-actions/target.png",
   },
+
   {
-    title: "Detailed Tracing & Logs",
+    title: "Automation Analytics",
     description:
-      "Trace every LLM call, tool execution, and agent interaction. Replay sessions, inspect payloads, and find the root cause fast.",
-    image: "https://cdn.voltagent.dev/website/observability/logs.png",
+      "Track every trigger and action. See success rates, execution counts, failure rates, and response times. Know exactly what your automations are doing.",
+    image: "https://cdn.voltagent.dev/website/triggers-actions/dashboard.png",
   },
 ];
 
-export default function ObservabilityPage(): JSX.Element {
-  // const [openFAQ, setOpenFAQ] = useState<number | null>(null);
-
+export default function ActionsTriggersPage(): JSX.Element {
   return (
     <Layout>
       <Head>
-        <title>VoltOps LLM Observability - Monitor & Debug AI Agents | VoltAgent</title>
+        <title>VoltOps Actions & Triggers - Automate AI Agent Workflows | VoltAgent</title>
         <meta
           name="description"
-          content="Real-time LLM observability for AI agents. Monitor, debug, and optimize your AI agents from any framework with VoltOps."
+          content="Automate your AI agent workflows with powerful triggers and actions. Build event-driven pipelines and complex automation without code."
         />
-        <meta property="og:title" content="VoltOps LLM Observability - Monitor & Debug AI Agents" />
+        <meta
+          property="og:title"
+          content="VoltOps Actions & Triggers - Automate AI Agent Workflows"
+        />
         <meta
           property="og:description"
-          content="Real-time LLM observability for AI agents. Monitor, debug, and optimize your AI agents from any framework with VoltOps."
+          content="Automate your AI agent workflows with powerful triggers and actions. Build event-driven pipelines and complex automation without code."
         />
         <meta property="og:type" content="website" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta
           name="twitter:title"
-          content="VoltOps LLM Observability - Monitor & Debug AI Agents"
+          content="VoltOps Actions & Triggers - Automate AI Agent Workflows"
         />
         <meta
           name="twitter:description"
-          content="Real-time LLM observability for AI agents. Monitor, debug, and optimize your AI agents from any framework with VoltOps."
+          content="Automate your AI agent workflows with powerful triggers and actions. Build event-driven pipelines and complex automation without code."
         />
       </Head>
 
@@ -158,29 +100,24 @@ export default function ObservabilityPage(): JSX.Element {
                 transition={{ duration: 0.5 }}
               >
                 <div className="mb-4">
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium  text-emerald-400 border-solid border-emerald-500/20">
-                    <ChartBarIcon className="w-4 h-4 mr-2" />
-                    VoltOps Observability
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium text-emerald-400 border-solid border-emerald-500/20">
+                    <ArrowPathIcon className="w-4 h-4 mr-2" />
+                    VoltOps Actions & Triggers
                   </span>
                 </div>
                 <h1 className="text-3xl sm:text-4xl md:text-5xl tracking-[-0.025em] font-normal text-white mb-4 sm:mb-6 leading-tight">
-                  Real-time <span className="text-emerald-400">LLM Observability</span> for AI
-                  Agents
+                  Automate Your <span className="text-emerald-400">AI Agent Workflows</span>
                 </h1>
                 <p className="text-base sm:text-lg md:text-xl text-gray-400 mb-6 sm:mb-8 leading-relaxed">
-                  Catch AI agent failures before they reach production. Get full visibility into
-                  every step, from input to output.
+                  Build event-driven automation for your agents. Define triggers, create actions,
+                  and let your workflows run on autopilot.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4">
-                  <Button
-                    href="https://console.voltagent.dev/demo"
-                    variant="primary"
-                    target="_blank"
-                  >
-                    Try Live Demo
+                  <Button href="https://console.voltagent.dev" variant="primary" target="_blank">
+                    Get Started
                     <ArrowRightIcon className="w-5 h-5 ml-2" />
                   </Button>
-                  <Button href="/observability-docs/" variant="secondary">
+                  <Button href="/actions-triggers-docs/" variant="secondary">
                     View Documentation
                   </Button>
                 </div>
@@ -194,8 +131,8 @@ export default function ObservabilityPage(): JSX.Element {
                 className="relative"
               >
                 <img
-                  src="https://cdn.voltagent.dev/website/observability/dashboard.png"
-                  alt="VoltOps Observability Dashboard"
+                  src="https://cdn.voltagent.dev/website/triggers-actions/hero.png"
+                  alt="VoltOps Actions & Triggers Dashboard"
                   className="w-full h-auto rounded-xl object-cover"
                 />
               </motion.div>
@@ -250,34 +187,6 @@ export default function ObservabilityPage(): JSX.Element {
             </div>
           </Container>
         </Section>
-
-        {/* FAQ Section */}
-        {/*    <Section className="relative">
-          <Container className="relative z-10">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-              className="flex flex-col items-center"
-            >
-              <h2 className="text-2xl md:text-4xl font-bold text-white mb-8">F.A.Q</h2>
-
-              <div className="w-full max-w-4xl">
-                <div className="bg-gradient-to-br from-gray-900/90 to-gray-950/90 backdrop-blur-xl border border-solid border-gray-700/50 rounded-2xl p-6 md:p-8">
-                  {faqData.map((faq, index) => (
-                    <FAQItem
-                      key={faq.question}
-                      question={faq.question}
-                      answer={faq.answer}
-                      isOpen={openFAQ === index}
-                      onClick={() => setOpenFAQ(openFAQ === index ? null : index)}
-                    />
-                  ))}
-                </div>
-              </div>
-            </motion.div>
-          </Container>
-        </Section> */}
       </main>
     </Layout>
   );
