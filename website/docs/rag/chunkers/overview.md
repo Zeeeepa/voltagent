@@ -11,7 +11,7 @@ Chunkers split raw content into smaller units with metadata so you can index and
 - [Token](./token-chunker.md), [Sentence](./sentence-chunker.md), [Recursive](./recursive-chunker.md): general-purpose text chunking.
 - [Table](./table-chunker.md), [Code](./code-chunker.md), [Markdown](./markdown-chunker.md), [Semantic Markdown](./semantic-markdown-chunker.md), [HTML](./html-chunker.md), [JSON](./json-chunker.md), [LaTeX](./latex-chunker.md): format-aware chunkers.
 - [Semantic](./semantic-chunker.md), [Late](./late-chunker.md), [Neural](./neural-chunker.md), [Slumber](./slumber-chunker.md): semantic or post-processing chunkers.
-- [Parser Registry](./code-chunker.md#parser-registry): register tree-sitter parsers for language-aware code chunking.
+- [Parser Registry](./code-chunker.md#parser-registry): register parsers for language-aware code chunking.
 
 Each chunker returns an array of chunks with `content`, positional metadata, and optional labels. Pass configuration through constructor options or per-call options.
 

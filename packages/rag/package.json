@@ -3,8 +3,7 @@
   "description": "Chunking and RAG utilities for VoltAgent",
   "version": "0.0.1",
   "dependencies": {
-    "js-tiktoken": "^1.0.14",
-    "tree-sitter": "^0.25.0"
+    "js-tiktoken": "^1.0.14"
   },
   "devDependencies": {
     "vitest": "^3.2.4"

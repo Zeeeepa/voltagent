@@ -10,7 +10,7 @@ Splits fenced code blocks and surrounding prose. For code blocks, it uses a plug
 ## Usage
 
 ````typescript
-import { CodeChunker, registerCodeParser } from "@voltagent/rag";
+import { CodeChunker } from "@voltagent/rag";
 
 const input = `
 Intro sentence before the code.
@@ -31,11 +31,10 @@ Trailing note.
 
 const chunks = new CodeChunker().chunk(input, { maxTokens: 120 });
 
-// Output:
+// Output (shape):
 // [
 //   { content: "Intro sentence before the code.", metadata: { sourceType: "text" } },
-//   { content: "function add(a: number, b: number) { ... }", metadata: { sourceType: "code", blockKind: "function", blockName: "add", language: "ts", position: { start: { line: 4, column: 1 }, end: { line: 6, column: 2 } }, fencePosition: { start: { line: 3, column: 1 }, end: { line: 11, column: 4 } } } },
-//   { content: "class Calc { ... }", metadata: { sourceType: "code", blockKind: "class", blockName: "Calc", blockPath: ["Calc"], blockParent: [], language: "ts", position: {...}, fencePosition: {...} } },
+//   { content: "...code...", metadata: { sourceType: "code", language: "ts", position: {...}, fencePosition: {...} } },
 //   { content: "Trailing note.", metadata: { sourceType: "text" } },
 // ]
 ````
@@ -82,25 +81,18 @@ CodeChunker uses a pluggable parser registry. Register any `(source) => CodeBloc
 - No default parsers are registered; add the languages you need.
 - Built-in aliases: `js` → `javascript`, `ts` → `typescript`, `py` → `python`, `c++` → `cpp`.
 
-### Register Tree-Sitter Parsers
+### Register Parsers
 
 ```typescript
-import Parser from "tree-sitter";
-import Python from "tree-sitter-python";
-import JavaScript from "tree-sitter-javascript";
-import { createTreeSitterParser, registerCodeParser } from "@voltagent/rag";
+import { registerCodeParser } from "@voltagent/rag";
 
-// Python
-const pythonParser = createTreeSitterParser(Python as unknown as Parser.Language);
-registerCodeParser("python", pythonParser);
-
-// JavaScript / TypeScript
-const jsParser = createTreeSitterParser(JavaScript as unknown as Parser.Language);
-registerCodeParser("javascript", jsParser);
-registerCodeParser("typescript", jsParser);
+registerCodeParser("python", (source) => {
+  // Return CodeBlock[] from your preferred parser (AST, regex, etc).
+  return [];
+});
 ```
 
-Tree-sitter language bindings are listed at [tree-sitter.github.io](https://tree-sitter.github.io/tree-sitter/index.html). Install language packages yourself; @voltagent/rag does not register any language by default.
+@voltagent/rag does not bundle any language parsers; register the languages you need.
 
 ### Limitations
 

@@ -1,7 +1,6 @@
-import Parser from "tree-sitter";
 import { describe, expect, it } from "vitest";
 import { CodeChunker } from "../chunkers/code-chunker";
-import { createTreeSitterParser, registerCodeParser } from "../utils/code-parser-registry";
+import { registerCodeParser } from "../utils/code-parser-registry";
 
 describe("CodeChunker", () => {
   it("keeps fenced code blocks intact", () => {
