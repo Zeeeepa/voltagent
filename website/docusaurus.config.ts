@@ -58,10 +58,10 @@ const config: Config = {
             "./src/css/font.css",
           ],
         },
-        /*  gtag: {
+        gtag: {
           trackingID: "G-V4GFZ8WQ7D",
           anonymizeIP: true,
-        }, */
+        },
       } satisfies Preset.Options,
     ],
   ],
