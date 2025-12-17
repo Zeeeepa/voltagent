@@ -8,7 +8,7 @@ import type { Props } from "@theme/DocRoot/Layout/Main";
 import clsx from "clsx";
 import React, { useMemo } from "react";
 
-import { ArrowRightIcon, ArrowTopRightOnSquareIcon, HomeIcon } from "@heroicons/react/24/outline";
+import { ArrowRightIcon, HomeIcon } from "@heroicons/react/24/outline";
 import styles from "./styles.module.css";
 
 export default function DocRootLayoutMain({
@@ -83,6 +83,51 @@ export default function DocRootLayoutMain({
               VoltAgent Docs
             </Link>
             <Link
+              to="/observability-docs/"
+              className={clsx(
+                styles.tab,
+                location.pathname.startsWith("/observability-docs/") && styles.tabActive,
+              )}
+            >
+              Observability
+            </Link>
+            <Link
+              to="/actions-triggers-docs/"
+              className={clsx(
+                styles.tab,
+                location.pathname.startsWith("/actions-triggers-docs/") && styles.tabActive,
+              )}
+            >
+              Actions & Triggers
+            </Link>
+            <Link
+              to="/evaluation-docs/"
+              className={clsx(
+                styles.tab,
+                location.pathname.startsWith("/evaluation-docs/") && styles.tabActive,
+              )}
+            >
+              Evaluation
+            </Link>
+            <Link
+              to="/prompt-engineering-docs/"
+              className={clsx(
+                styles.tab,
+                location.pathname.startsWith("/prompt-engineering-docs/") && styles.tabActive,
+              )}
+            >
+              Prompt Engineering
+            </Link>
+            <Link
+              to="/deployment-docs/"
+              className={clsx(
+                styles.tab,
+                location.pathname.startsWith("/deployment-docs/") && styles.tabActive,
+              )}
+            >
+              Deployment
+            </Link>
+            <Link
               to="/recipes-and-guides/"
               className={clsx(
                 styles.tab,
@@ -90,37 +135,6 @@ export default function DocRootLayoutMain({
               )}
             >
               Recipes & Guides
-            </Link>
-            <Link
-              to="/voltops-llm-observability-docs/"
-              className={clsx(
-                styles.tab,
-                location.pathname.startsWith("/voltops-llm-observability-docs/") &&
-                  styles.tabActive,
-              )}
-            >
-              VoltOps Docs
-            </Link>
-            <Link
-              to="/examples/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={clsx(
-                styles.tab,
-                location.pathname.startsWith("/examples/") && styles.tabActive,
-              )}
-            >
-              <span>Examples</span>
-              <ArrowTopRightOnSquareIcon className="w-4 h-4 ml-1" />
-            </Link>
-            <Link
-              to="https://github.com/voltagent/voltagent/blob/main/CHANGELOG.md"
-              className={styles.tab}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <span>Changelog</span>
-              <ArrowTopRightOnSquareIcon className="w-4 h-4 ml-1" />
             </Link>
           </div>
         </div>
