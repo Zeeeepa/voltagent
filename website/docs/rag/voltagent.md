@@ -5,6 +5,14 @@ slug: /rag/voltagent
 
 # VoltAgent Knowledge Base
 
+<video controls loop muted playsInline style={{width: '100%', height: 'auto'}}>
+
+  <source src="https://cdn.voltagent.dev/docs/rag-demo.mp4" type="video/mp4" />
+  Your browser does not support the video tag.
+</video>
+
+<br/>
+
 VoltAgent Knowledge Base is a **fully managed RAG service** that handles document ingestion, chunking, embedding, and semantic search - so you can focus on building your AI agent instead of managing infrastructure.
 
 ## Why Use VoltAgent Knowledge Base?

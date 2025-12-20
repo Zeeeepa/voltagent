@@ -123,6 +123,12 @@ const agent = new Agent({
 
 The fastest way to add RAG to your agent. Fully managed - just upload documents and start searching.
 
+<video controls loop muted playsInline style={{width: '100%', height: 'auto'}}>
+
+  <source src="https://cdn.voltagent.dev/docs/rag-demo.mp4" type="video/mp4" />
+  Your browser does not support the video tag.
+</video>
+
 ```typescript
 import { Agent, VoltAgentRagRetriever } from "@voltagent/core";
 
