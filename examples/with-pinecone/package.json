@@ -2,14 +2,14 @@
   "name": "voltagent-example-with-pinecone",
   "author": "",
   "dependencies": {
-    "@ai-sdk/openai": "^2.0.52",
+    "@ai-sdk/openai": "^3.0.0",
     "@pinecone-database/pinecone": "^6.1.1",
     "@voltagent/cli": "^0.1.17",
     "@voltagent/core": "^1.5.2",
     "@voltagent/libsql": "^1.1.0",
     "@voltagent/logger": "^1.0.4",
     "@voltagent/server-hono": "^1.2.11",
-    "ai": "^5.0.76",
+    "ai": "^6.0.0",
     "openai": "^4.91.0",
     "zod": "^3.25.76"
   },
@@ -27,16 +27,16 @@
   ],
   "license": "MIT",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/VoltAgent/voltagent.git",
+    "directory": "examples/with-pinecone"
+  },
   "scripts": {
     "build": "tsc",
     "dev": "tsx watch --env-file=.env ./src",
     "start": "node dist/index.js",
     "volt": "volt"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/VoltAgent/voltagent.git",
-    "directory": "examples/with-pinecone"
   },
   "type": "module"
 }

@@ -10,7 +10,7 @@
     "@types/pg": "^8.15.2",
     "@vitest/coverage-v8": "^3.2.4",
     "@voltagent/core": "^1.2.17",
-    "ai": "^5.0.76"
+    "ai": "^6.0.0"
   },
   "exports": {
     ".": {
@@ -32,7 +32,12 @@
   "module": "dist/index.mjs",
   "peerDependencies": {
     "@voltagent/core": "^1.0.0",
-    "ai": "^5.0.76"
+    "ai": "^6.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/VoltAgent/voltagent.git",
+    "directory": "packages/postgres"
   },
   "scripts": {
     "attw": "attw --pack",
@@ -47,11 +52,6 @@
     "test:integration:ci": "vitest run --config vitest.integration.config.mts",
     "test:integration:setup": "docker compose -f docker-compose.test.yaml up -d && sleep 10",
     "test:integration:teardown": "docker compose -f docker-compose.test.yaml down -v"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/VoltAgent/voltagent.git",
-    "directory": "packages/postgres"
   },
   "types": "dist/index.d.ts"
 }

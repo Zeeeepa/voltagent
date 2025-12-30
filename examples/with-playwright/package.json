@@ -2,7 +2,7 @@
   "name": "voltagent-example-with-playwright",
   "author": "",
   "dependencies": {
-    "@ai-sdk/mistral": "^2.0.0",
+    "@ai-sdk/mistral": "^3.0.0",
     "@playwright/browser-chromium": "1.51.1",
     "@playwright/browser-firefox": "1.51.1",
     "@playwright/browser-webkit": "1.51.1",
@@ -12,7 +12,7 @@
     "@voltagent/libsql": "^1.1.0",
     "@voltagent/logger": "^1.0.4",
     "@voltagent/server-hono": "^1.2.11",
-    "ai": "^5.0.76",
+    "ai": "^6.0.0",
     "axios": "^1.5.0",
     "playwright": "1.51.1",
     "uuid": "^9.0.1",
@@ -31,16 +31,16 @@
   ],
   "license": "MIT",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/VoltAgent/voltagent.git",
+    "directory": "examples/with-playwright"
+  },
   "scripts": {
     "build": "tsc",
     "dev": "tsx watch --env-file=.env ./src ",
     "start": "node dist/index.js",
     "volt": "volt"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/VoltAgent/voltagent.git",
-    "directory": "examples/with-playwright"
   },
   "type": "module"
 }

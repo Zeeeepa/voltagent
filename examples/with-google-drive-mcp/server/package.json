@@ -2,7 +2,7 @@
   "name": "voltagent-example-with-google-drive-mcp-server",
   "author": "",
   "dependencies": {
-    "@ai-sdk/openai": "^2.0.52",
+    "@ai-sdk/openai": "^3.0.0",
     "@hono/node-server": "^1.14.0",
     "@libsql/client": "^0.15.0",
     "@voltagent/cli": "^0.1.10",
@@ -27,6 +27,11 @@
   ],
   "license": "MIT",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/VoltAgent/voltagent.git",
+    "directory": "examples/with-google-drive-mcp/server"
+  },
   "scripts": {
     "build": "tsc",
     "dev": "tsx watch --env-file=.env ./src",
@@ -34,11 +39,6 @@
     "lint:fix": "biome check . --write",
     "start": "node dist/index.js",
     "volt": "volt"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/VoltAgent/voltagent.git",
-    "directory": "examples/with-google-drive-mcp/server"
   },
   "type": "module"
 }
