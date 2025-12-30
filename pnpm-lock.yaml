@@ -2078,9 +2078,9 @@ importers:
       '@ai-sdk/openai':
         specifier: ^3.0.0
         version: 3.0.1(zod@3.25.76)
-      '@langchain/tavily':
-        specifier: ^0.1.0
-        version: 0.1.5(@langchain/core@0.3.70)
+      '@tavily/core':
+        specifier: ^0.6.3
+        version: 0.6.3
       '@voltagent/cli':
         specifier: ^0.1.20
         version: link:../../packages/cli
@@ -10393,16 +10393,6 @@ packages:
       - ws
     dev: false
 
-  /@langchain/tavily@0.1.5(@langchain/core@0.3.70):
-    resolution: {integrity: sha512-6C8hb3d6YjlGJPdPFfaNlrUS0h6blQx4cRzCKeDdCvixcghzV8llAmuzvJSmAyALprFfvKtj+1NJb4ttj1iZ/A==}
-    engines: {node: '>=18'}
-    peerDependencies:
-      '@langchain/core': '>=0.3.58 <0.4.0'
-    dependencies:
-      '@langchain/core': 0.3.70(openai@4.104.0)
-      zod: 3.25.76
-    dev: false
-
   /@langchain/textsplitters@0.1.0(@langchain/core@0.3.70):
     resolution: {integrity: sha512-djI4uw9rlkAb5iMhtLED+xJebDdAG935AdP4eRTB02R7OB/act55Bj9wsskhZsvuyQRpO4O1wQOp85s6T6GWmw==}
     engines: {node: '>=18'}
@@ -18136,6 +18126,17 @@ packages:
     dependencies:
       '@tanstack/virtual-core': 3.13.12
       vue: 3.5.22(typescript@5.9.2)
+    dev: false
+
+  /@tavily/core@0.6.3:
+    resolution: {integrity: sha512-U6SYth0IodrfJ2nWZaZ0LpxGv8aWEdeJ2/754qIc/f/Dcu2DKyX3oKg4X1lj5g2Ss7+XwedrulYQSvdgoRh62w==}
+    dependencies:
+      axios: 1.11.0
+      https-proxy-agent: 7.0.6(supports-color@10.2.2)
+      js-tiktoken: 1.0.21
+    transitivePeerDependencies:
+      - debug
+      - supports-color
     dev: false
 
   /@tokenizer/inflate@0.2.7:
