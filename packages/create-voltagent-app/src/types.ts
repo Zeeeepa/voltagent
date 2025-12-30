@@ -1,4 +1,5 @@
 export type AIProvider = "openai" | "anthropic" | "google" | "groq" | "mistral" | "ollama";
+export type ServerProvider = "hono" | "elysia";
 
 export type ProjectOptions = {
   projectName: string;
@@ -7,6 +8,7 @@ export type ProjectOptions = {
   ide?: "cursor" | "windsurf" | "vscode" | "none";
   aiProvider?: AIProvider;
   apiKey?: string;
+  server?: ServerProvider;
 };
 
 export type Feature = "voice" | "chat" | "ui" | "vision";
@@ -84,5 +86,20 @@ export const AI_PROVIDER_CONFIG = {
     extraCode: '\nconst ollama = ollama("llama3.2");',
     extraPackages: ["ai@^6"],
     apiKeyUrl: "https://ollama.com/download",
+  },
+} as const;
+
+export const SERVER_CONFIG = {
+  hono: {
+    name: "Hono",
+    package: "@voltagent/server-hono",
+    packageVersion: "^2.0.0",
+    factory: "honoServer",
+  },
+  elysia: {
+    name: "Elysia",
+    package: "@voltagent/server-elysia",
+    packageVersion: "^2.0.0",
+    factory: "elysiaServer",
   },
 } as const;
