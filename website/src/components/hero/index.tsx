@@ -121,7 +121,7 @@ export function Hero() {
               href="https://github.com/voltagent/voltagent/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-main-emerald no-underline hover:no-underline"
+              className="text-main-emerald no-underline font-semibold hover:no-underline"
             >
               <span
                 className="inline-block relative"
@@ -139,7 +139,7 @@ export function Hero() {
           </h2>
 
           <h1
-            className={`text-4xl sm:text-5xl text-neutral-100 md:text-6xl font-semibold text-left mb-6 transition-all duration-1000 tracking-[-0.025em] ${
+            className={`text-4xl sm:text-5xl text-neutral-100 md:text-6xl font-semibold tracking-[-0.65px] text-left mb-6 transition-all duration-1000 tracking-[-0.025em] ${
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
             }`}
           >
@@ -158,55 +158,58 @@ export function Hero() {
             }`}
           >
             <div className="flex flex-col gap-4 mb-6">
-              <div className="flex flex-col gap-1">
+              <div className="flex flex-col gap-2 p-4 rounded-lg border border-solid border-white/10 bg-white/[0.02]">
                 <div className="flex flex-wrap items-center gap-3">
                   <span className="text-white font-semibold">Core Framework</span>
                   <span className="text-white/40">→</span>
                   <div className="flex flex-wrap gap-2 text-sm">
-                    <span className="px-2 py-1 rounded-full border border-white/10 text-white/80 bg-white/5">
+                    <span className="px-3 py-1.5 rounded-md border border-solid border-white/20 text-white/90 bg-white/5 font-medium">
                       Memory
                     </span>
-                    <span className="px-2 py-1 rounded-full border border-white/10 text-white/80 bg-white/5">
+                    <span className="px-3 py-1.5 rounded-md border border-solid border-white/20 text-white/90 bg-white/5 font-medium">
                       RAG
                     </span>
-                    <span className="px-2 py-1 rounded-full border border-white/10 text-white/80 bg-white/5">
+                    <span className="px-3 py-1.5 rounded-md border border-solid border-white/20 text-white/90 bg-white/5 font-medium">
                       Guardrails
                     </span>
-                    <span className="px-2 py-1 rounded-full border border-white/10 text-white/80 bg-white/5">
+                    <span className="px-3 py-1.5 rounded-md border border-solid border-white/20 text-white/90 bg-white/5 font-medium">
                       Tools
                     </span>
                   </div>
                 </div>
-                <span className="text-gray-400 text-base ml-0">
+                <span className="text-gray-300 mt-1 text-base">
                   Build agents with open-source TypeScript framework.
                 </span>
               </div>
-              <div className="flex flex-col gap-1">
+              <div className="flex flex-col gap-2 p-4 rounded-lg border border-solid border-white/10 bg-white/[0.02]">
                 <div className="flex flex-wrap items-center gap-3">
                   <span className="text-white font-semibold">VoltOps</span>
                   <span className="text-white/40">→</span>
                   <div className="flex flex-wrap gap-2 text-sm">
-                    <span className="px-2 py-1 rounded-full border border-white/10 text-white/80 bg-white/5">
+                    <span className="px-3 py-1.5 rounded-md border border-solid border-white/20 text-white/90 bg-white/5 font-medium">
                       Observability
                     </span>
-                    <span className="px-2 py-1 rounded-full border border-white/10 text-white/80 bg-white/5">
+                    <span className="px-3 py-1.5 rounded-md border border-solid border-white/20 text-white/90 bg-white/5 font-medium">
                       Automation
                     </span>
-                    <span className="px-2 py-1 rounded-full border border-white/10 text-white/80 bg-white/5">
+                    <span className="px-3 py-1.5 rounded-md border border-solid border-white/20 text-white/90 bg-white/5 font-medium">
                       Deployment
                     </span>
-                    <span className="px-2 py-1 rounded-full border border-white/10 text-white/80 bg-white/5">
+                    <span className="px-3 py-1.5 rounded-md border border-solid border-white/20 text-white/90 bg-white/5 font-medium">
                       Evals
                     </span>
                   </div>
                 </div>
-                <span className="text-gray-400 text-base ml-0">
+                <span className="text-gray-300 mt-1 text-base">
                   Automate, debug, and deploy your agents with integrated console.
                 </span>
               </div>
             </div>
             <span className="text-white text-base sm:text-lg md:text-xl">
-              Ship enterprise multi-agent systems, all in one place.
+              Ship enterprise multi-agent systems —{" "}
+              <span className="text-main-emerald">development</span>,{" "}
+              <span className="text-main-emerald">observability</span>, and{" "}
+              <span className="text-main-emerald">deployment</span> in one platform.
             </span>
           </div>
 
@@ -240,7 +243,7 @@ export function Hero() {
           </div>
         </div>
 
-        <div className="landing-xs:pl-0 landing-md:pl-12 h-full items-center">
+        <div className="landing-xs:pl-0 landing-md:pl-12 h-full flex items-center justify-center">
           <AgentsAnimation />
         </div>
       </div>
