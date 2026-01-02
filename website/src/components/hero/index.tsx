@@ -121,7 +121,7 @@ export function Hero() {
               href="https://github.com/voltagent/voltagent/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-main-emerald no-underline font-semibold hover:no-underline"
+              className="text-[#00d992] no-underline font-semibold hover:no-underline"
             >
               <span
                 className="inline-block relative"
@@ -160,56 +160,54 @@ export function Hero() {
             <div className="flex flex-col gap-4 mb-6">
               <div className="flex flex-col gap-2 p-4 rounded-lg border border-solid border-white/10 bg-white/[0.02]">
                 <div className="flex flex-wrap items-center gap-3">
-                  <span className="text-white font-semibold">Core Framework</span>
-                  <span className="text-white/40">→</span>
-                  <div className="flex flex-wrap gap-2 text-sm">
-                    <span className="px-3 py-1.5 rounded-md border border-solid border-white/20 text-white/90 bg-white/5 font-medium">
-                      Memory
-                    </span>
-                    <span className="px-3 py-1.5 rounded-md border border-solid border-white/20 text-white/90 bg-white/5 font-medium">
-                      RAG
-                    </span>
-                    <span className="px-3 py-1.5 rounded-md border border-solid border-white/20 text-white/90 bg-white/5 font-medium">
-                      Guardrails
-                    </span>
-                    <span className="px-3 py-1.5 rounded-md border border-solid border-white/20 text-white/90 bg-white/5 font-medium">
-                      Tools
-                    </span>
+                  <span className="text-[#00d992] font-semibold">Core Framework</span>
+                  <div className="flex flex-wrap items-center gap-1 text-sm">
+                    <span className="text-white/90 font-medium">Memory</span>
+                    <span className="text-white/30">|</span>
+                    <span className="text-white/90 font-medium">RAG</span>
+                    <span className="text-white/30">|</span>
+                    <span className="text-white/90 font-medium">Guardrails</span>
+                    <span className="text-white/30">|</span>
+                    <span className="text-white/90 font-medium">Tools</span>
+                    <span className="text-white/30">|</span>
+                    <span className="text-white/90 font-medium">MCP</span>
+                    <span className="text-white/30">|</span>
+                    <span className="text-white/90 font-medium">Voice</span>
+                    <span className="text-white/30">|</span>
+                    <span className="text-white/90 font-medium">Workflow</span>
                   </div>
                 </div>
-                <span className="text-gray-300 mt-1 text-base">
+                <span className="text-white mt-1 text-lg">
                   Build agents with open-source TypeScript framework.
                 </span>
               </div>
               <div className="flex flex-col gap-2 p-4 rounded-lg border border-solid border-white/10 bg-white/[0.02]">
                 <div className="flex flex-wrap items-center gap-3">
-                  <span className="text-white font-semibold">VoltOps</span>
-                  <span className="text-white/40">→</span>
-                  <div className="flex flex-wrap gap-2 text-sm">
-                    <span className="px-3 py-1.5 rounded-md border border-solid border-white/20 text-white/90 bg-white/5 font-medium">
-                      Observability
-                    </span>
-                    <span className="px-3 py-1.5 rounded-md border border-solid border-white/20 text-white/90 bg-white/5 font-medium">
-                      Automation
-                    </span>
-                    <span className="px-3 py-1.5 rounded-md border border-solid border-white/20 text-white/90 bg-white/5 font-medium">
-                      Deployment
-                    </span>
-                    <span className="px-3 py-1.5 rounded-md border border-solid border-white/20 text-white/90 bg-white/5 font-medium">
-                      Evals
-                    </span>
+                  <span className="text-[#00d992] font-semibold">VoltOps Console</span>
+                  <div className="flex flex-wrap items-center gap-1 text-sm">
+                    <span className="text-white/90 font-medium">Observability</span>
+                    <span className="text-white/30">|</span>
+                    <span className="text-white/90 font-medium">Automation</span>
+                    <span className="text-white/30">|</span>
+                    <span className="text-white/90 font-medium">Deployment</span>
+                    <span className="text-white/30">|</span>
+                    <span className="text-white/90 font-medium">Evals</span>
+                    <span className="text-white/30">|</span>
+                    <span className="text-white/90 font-medium">Guardrails</span>
+                    <span className="text-white/30">|</span>
+                    <span className="text-white/90 font-medium">Prompts</span>
                   </div>
                 </div>
-                <span className="text-gray-300 mt-1 text-base">
-                  Automate, debug, and deploy your agents with integrated console.
+                <span className="text-white mt-1 text-lg">
+                  Automate, debug, and deploy your agents with console.
                 </span>
               </div>
             </div>
             <span className="text-white text-base sm:text-lg md:text-xl">
               Ship enterprise multi-agent systems —{" "}
-              <span className="text-main-emerald">development</span>,{" "}
-              <span className="text-main-emerald">observability</span>, and{" "}
-              <span className="text-main-emerald">deployment</span> in one platform.
+              <span className="text-[#00d992]">development</span>,{" "}
+              <span className="text-[#00d992]">observability</span>, and{" "}
+              <span className="text-[#00d992]">deployment</span> in one platform.
             </span>
           </div>
 
