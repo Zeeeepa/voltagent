@@ -128,7 +128,7 @@ export function Hero() {
                 onMouseEnter={() => setShowHeart(true)}
                 onMouseLeave={() => setShowHeart(false)}
               >
-                Event-Driven
+                The end-to-end
                 {showHeart && (
                   <span className="absolute -right-8 top-1 animate-[zap_1.5s_ease-in-out_infinite]">
                     <BoltIcon className="w-6 h-6 text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.8)]" />
@@ -139,41 +139,76 @@ export function Hero() {
           </h2>
 
           <h1
-            className={`text-4xl sm:text-5xl text-neutral-100 md:text-6xl font-bold text-left mb-6 transition-all duration-1000 tracking-[-0.025em] ${
+            className={`text-4xl sm:text-5xl text-neutral-100 md:text-6xl font-semibold text-left mb-6 transition-all duration-1000 tracking-[-0.025em] ${
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
             }`}
           >
-            TypeScript AI Agent
+            AI Agent Engineering
             <LineShadowText
               className="text-main-emerald landing-md:mt-4 landing-xs:mt-2 ml-2 landing-sm:ml-0 italic"
               shadowColor={"#00d992"}
             >
-              Framework
+              Platform
             </LineShadowText>
           </h1>
 
-          <p
+          <div
             className={`text-base sm:text-lg md:text-xl text-gray-400 text-left mb-12 transition-all duration-1000 delay-300 ${
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
             }`}
           >
-            <span className="text-white font-semibold">Build</span> agents with open-source
-            <span className="text-white font-semibold"> TypeScript </span>framework.
-            <br className="mb-1" />
-            <span className="text-white font-semibold">Debug</span> with complete{" "}
-            <span className="text-white ">LLM observability</span>,{" "}
-            <span className="text-white ">traces</span>, and{" "}
-            <span className="text-white ">evals</span>.
-            <br className="mb-1" />
-            <span className="text-white ">Automate</span> agents with{" "}
-            <span className="text-white ">triggers</span> and{" "}
-            <span className="text-white ">actions</span>.
-            <br />
-            <br />
+            <div className="flex flex-col gap-4 mb-6">
+              <div className="flex flex-col gap-1">
+                <div className="flex flex-wrap items-center gap-3">
+                  <span className="text-white font-semibold">Core Framework</span>
+                  <span className="text-white/40">→</span>
+                  <div className="flex flex-wrap gap-2 text-sm">
+                    <span className="px-2 py-1 rounded-full border border-white/10 text-white/80 bg-white/5">
+                      Memory
+                    </span>
+                    <span className="px-2 py-1 rounded-full border border-white/10 text-white/80 bg-white/5">
+                      RAG
+                    </span>
+                    <span className="px-2 py-1 rounded-full border border-white/10 text-white/80 bg-white/5">
+                      Guardrails
+                    </span>
+                    <span className="px-2 py-1 rounded-full border border-white/10 text-white/80 bg-white/5">
+                      Tools
+                    </span>
+                  </div>
+                </div>
+                <span className="text-gray-400 text-base ml-0">
+                  Build agents with open-source TypeScript framework.
+                </span>
+              </div>
+              <div className="flex flex-col gap-1">
+                <div className="flex flex-wrap items-center gap-3">
+                  <span className="text-white font-semibold">VoltOps</span>
+                  <span className="text-white/40">→</span>
+                  <div className="flex flex-wrap gap-2 text-sm">
+                    <span className="px-2 py-1 rounded-full border border-white/10 text-white/80 bg-white/5">
+                      Observability
+                    </span>
+                    <span className="px-2 py-1 rounded-full border border-white/10 text-white/80 bg-white/5">
+                      Automation
+                    </span>
+                    <span className="px-2 py-1 rounded-full border border-white/10 text-white/80 bg-white/5">
+                      Deployment
+                    </span>
+                    <span className="px-2 py-1 rounded-full border border-white/10 text-white/80 bg-white/5">
+                      Evals
+                    </span>
+                  </div>
+                </div>
+                <span className="text-gray-400 text-base ml-0">
+                  Automate, debug, and deploy your agents with integrated console.
+                </span>
+              </div>
+            </div>
             <span className="text-white text-base sm:text-lg md:text-xl">
-              Ship enterprise-grade multi-agents end-to-end, full code control, no black boxes.
+              Ship enterprise multi-agent systems, all in one place.
             </span>
-          </p>
+          </div>
 
           <div
             className={`flex flex-col sm:flex-row items-center sm:items-start justify-center sm:justify-start gap-4 mb-12 transition-all duration-1000 delay-500 ${
