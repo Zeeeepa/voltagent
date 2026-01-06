@@ -275,6 +275,7 @@ VoltAgent comes with VoltOps, a LLM observability platform built-in to help you 
 Deep dive into agent execution flow with detailed traces and performance metrics.
 
 <br/>
+<img width="1277" height="599" alt="Screenshot 2026-01-06 at 17 40 24" src="https://github.com/user-attachments/assets/dd21d565-5f1e-434a-8826-225a099a1d8d" />
 
 ![VoltOps Observability Overview](https://cdn.voltagent.dev/console/observability.png)
 
