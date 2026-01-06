@@ -165,8 +165,6 @@ Your agent is now running! To interact with it:
 
 [![VoltAgent Demo](thumbnail.png)](https://github.com/user-attachments/assets/26340c6a-be34-48a5-9006-e822bf6098a7)
 
-![VoltAgent VoltOps Platform Demo](https://github.com/user-attachments/assets/0adbec33-1373-4cf4-b67d-825f7baf1cb4)
-
 ### Running Your First Workflow
 
 Your new project also includes a powerful workflow engine.
@@ -248,10 +246,6 @@ You can test the pre-built `expenseApprovalWorkflow` directly from the VoltOps c
 
 [![expense-approval](thumbnail.png)](https://github.com/user-attachments/assets/3d3ea67b-4ab5-4dc0-932d-cedd92894b18)
 
-
-
-
-
 1.  **Go to the Workflows Page:** After starting your server, go directly to the [Workflows page](https://console.voltagent.dev/workflows).
 2.  **Select Your Project:** Use the project selector to choose your project (e.g., "my-agent-app").
 3.  **Find and Run:** You will see **"Expense Approval Workflow"** listed. Click it, then click the **"Run"** button.
@@ -286,14 +280,11 @@ Deep dive into agent execution flow with detailed traces and performance metrics
 
 Get a comprehensive overview of all your agents, workflows, and system performance metrics.
 
-<br/>
-
 <img alt="dashboar" src="https://github.com/user-attachments/assets/c88a5543-219e-4cf0-8f41-14a68ca297fb" />
 
 ### Logs
 
 Track detailed execution logs for every agent interaction and workflow step.
-<br/>
 
 ![VoltOps Logs](https://cdn.voltagent.dev/console/logs.png)
 
@@ -301,15 +292,11 @@ Track detailed execution logs for every agent interaction and workflow step.
 
 Inspect and manage agent memory, context, and conversation history.
 
-<br/>
-
 ![VoltOps Memory Overview](https://cdn.voltagent.dev/console/memory.png)
 
 ### Traces
 
 Analyze complete execution traces to understand agent behavior and optimize performance.
-
-<br/>
 
 ![VoltOps Traces](https://cdn.voltagent.dev/console/traces.png)
 
@@ -317,17 +304,11 @@ Analyze complete execution traces to understand agent behavior and optimize perf
 
 Design, test, and refine prompts directly in the console.
 
-<br/>
-
 <img  alt="prompts" src="https://github.com/user-attachments/assets/fb6d71eb-8f81-4443-a494-08c33ec9bcc4" />
 
 ### Deployment
 
 Deploy your agents to production with one-click GitHub integration and managed infrastructure.
-
-<br/>
-
-![VoltOps Deploy](https://cdn.voltagent.dev/website/feature-showcase/deployment.png)
 
 <img alt="deployment" src="https://github.com/user-attachments/assets/e329ab4b-7464-435a-96cc-90214e8a3cfa" />
 
@@ -337,15 +318,11 @@ Deploy your agents to production with one-click GitHub integration and managed i
 
 Automate agent workflows with webhooks, schedules, and custom triggers to react to external events.
 
-<br/>
-
 <img width="1277"  alt="triggers" src="https://github.com/user-attachments/assets/67e36934-2eb5-4cf1-94f8-3057d805ef65" />
 
 ### Monitoring
 
 Monitor agent health, performance metrics, and resource usage across your entire system.
-
-<br/>
 
 <img  alt="monitoring" src="https://github.com/user-attachments/assets/1fd1151f-5ee4-4c7c-8ec7-29874e37c48f" />
 
@@ -353,23 +330,17 @@ Monitor agent health, performance metrics, and resource usage across your entire
 
 Set up safety boundaries and content filters to ensure agents operate within defined parameters.
 
-<br/>
-
 <img  alt="guardrails" src="https://github.com/user-attachments/assets/52bd51f0-944e-4202-9f54-7bb2e0e2d1f6" />
 
 ### Evals
 
 Run evaluation suites to test agent behavior, accuracy, and performance against benchmarks.
 
-<br/>
-
 <img  alt="evals" src="https://github.com/user-attachments/assets/510cc180-2661-4973-a48f-074d4703d90b" />
 
 ### RAG (Knowledge Base)
 
 Connect your agents to knowledge sources with built-in retrieval-augmented generation capabilities.
-
-<br/>
 
 <img  alt="rag" src="https://github.com/user-attachments/assets/a6c2f668-7ad1-4fb6-b67f-654335285f1e" />
 
@@ -403,9 +374,7 @@ Big thanks to everyone who's been part of the VoltAgent journey, whether you've 
 
 VoltAgent is a community effort, and it keeps getting better because of people like you.
 
-![Contributors](https://contrib.rocks/image?repo=voltagent/voltagent&max=200)
-
-Your stars help us reach more developers! If you find VoltAgent useful, please consider giving us a star on GitHub to support the project and help others discover it.
+![Contributors](https://contrib.rocks/image?repo=voltagent/voltagent&max=500&columns=20&anon=1)
 
 ## License
 
