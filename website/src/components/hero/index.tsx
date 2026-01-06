@@ -107,7 +107,7 @@ export function Hero() {
   }, []);
 
   return (
-    <div className="relative max-w-7xl xs:px-4 lg:px-8 mx-auto landing-xs:mb-16 landing-md:mb-36">
+    <div className="relative max-w-7xl xs:px-4 lg:px-8 mx-auto landing-xs:mb-16 landing-md:mb-18">
       <div className="mt-16 md:mt-24" />
       <div className="grid xs:grid-cols-1 mx-4 lg:mx-0 lg:grid-cols-2 gap-8 items-center">
         <div>
@@ -145,7 +145,7 @@ export function Hero() {
           >
             AI Agent Engineering
             <LineShadowText
-              className="text-main-emerald landing-md:mt-4 landing-xs:mt-2 ml-2 landing-sm:ml-0 italic"
+              className="text-[#00d992] landing-md:mt-4 landing-xs:mt-2 ml-2 landing-sm:ml-0 italic"
               shadowColor={"#00d992"}
             >
               Platform
@@ -157,57 +157,11 @@ export function Hero() {
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
             }`}
           >
-            <div className="flex flex-col gap-4 mb-6">
-              <div className="flex flex-col gap-2 p-4 rounded-lg border border-solid border-white/10 bg-white/[0.02]">
-                <div className="flex flex-wrap items-center gap-3">
-                  <span className="text-[#00d992] font-semibold">Core Framework</span>
-                  <div className="flex flex-wrap items-center gap-1 text-sm">
-                    <span className="text-white/90 font-medium">Memory</span>
-                    <span className="text-white/30">|</span>
-                    <span className="text-white/90 font-medium">RAG</span>
-                    <span className="text-white/30">|</span>
-                    <span className="text-white/90 font-medium">Guardrails</span>
-                    <span className="text-white/30">|</span>
-                    <span className="text-white/90 font-medium">Tools</span>
-                    <span className="text-white/30">|</span>
-                    <span className="text-white/90 font-medium">MCP</span>
-                    <span className="text-white/30">|</span>
-                    <span className="text-white/90 font-medium">Voice</span>
-                    <span className="text-white/30">|</span>
-                    <span className="text-white/90 font-medium">Workflow</span>
-                  </div>
-                </div>
-                <span className="text-white mt-1 text-lg">
-                  Build agents with open-source TypeScript framework.
-                </span>
-              </div>
-              <div className="flex flex-col gap-2 p-4 rounded-lg border border-solid border-white/10 bg-white/[0.02]">
-                <div className="flex flex-wrap items-center gap-3">
-                  <span className="text-[#00d992] font-semibold">VoltOps Console</span>
-                  <div className="flex flex-wrap items-center gap-1 text-sm">
-                    <span className="text-white/90 font-medium">Observability</span>
-                    <span className="text-white/30">|</span>
-                    <span className="text-white/90 font-medium">Automation</span>
-                    <span className="text-white/30">|</span>
-                    <span className="text-white/90 font-medium">Deployment</span>
-                    <span className="text-white/30">|</span>
-                    <span className="text-white/90 font-medium">Evals</span>
-                    <span className="text-white/30">|</span>
-                    <span className="text-white/90 font-medium">Guardrails</span>
-                    <span className="text-white/30">|</span>
-                    <span className="text-white/90 font-medium">Prompts</span>
-                  </div>
-                </div>
-                <span className="text-white mt-1 text-lg">
-                  Automate, debug, and deploy your agents with console.
-                </span>
-              </div>
-            </div>
             <span className="text-white text-base sm:text-lg md:text-xl">
-              Ship enterprise multi-agent systems —{" "}
-              <span className="text-[#00d992]">development</span>,{" "}
-              <span className="text-[#00d992]">observability</span>, and{" "}
-              <span className="text-[#00d992]">deployment</span> in one platform.
+              Build enterprise multi-agent systems —{" "}
+              <span className="text-white/50">development</span>,{" "}
+              <span className="text-white/50">observability</span>, and{" "}
+              <span className="text-white/50">deployment</span> in one platform.
             </span>
           </div>
 
@@ -243,6 +197,80 @@ export function Hero() {
 
         <div className="landing-xs:pl-0 landing-md:pl-12 h-full flex items-center justify-center">
           <AgentsAnimation />
+        </div>
+      </div>
+      {/* Platform Container */}
+      <div className="relative border border-solid border-white/10 rounded-xl md:rounded-2xl p-4 pt-6 md:p-6 mx-4 lg:mx-0 mt-16 md:mt-36">
+        {/* Badge */}
+        <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#0d1117] px-3 py-0.5 text-white/70 text-xs md:text-sm font-medium border border-solid border-white/20 rounded-full">
+          The Platform
+        </span>
+
+        {/* Two boxes with connector */}
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-2 md:gap-4 items-stretch">
+          {/* Core Framework Box */}
+          <div className="flex flex-col gap-3 p-4 md:p-6 rounded-xl border border-solid border-white/10 bg-zinc-800/60 transition-colors">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+              <span className="text-white font-semibold text-lg md:text-xl">Core Framework</span>
+              <span className="text-xs px-2 py-0.5 rounded-full border border-solid border-white/20 text-white/50 w-fit">
+                Open Source
+              </span>
+            </div>
+            <div className="flex flex-wrap items-center gap-1.5 md:gap-2 text-xs md:text-sm text-white/50">
+              <span>Memory</span>
+              <span className="text-white/20">|</span>
+              <span>RAG</span>
+              <span className="text-white/20">|</span>
+              <span>Guardrails</span>
+              <span className="text-white/20">|</span>
+              <span>Tools</span>
+              <span className="text-white/20">|</span>
+              <span>MCP</span>
+              <span className="text-white/20">|</span>
+              <span>Voice</span>
+              <span className="text-white/20">|</span>
+              <span>Workflow</span>
+            </div>
+            <span className="text-white text-sm md:text-base">
+              Build agents with open-source TypeScript framework.
+            </span>
+          </div>
+
+          {/* Plus Connector */}
+          <div className="flex items-center justify-center py-1 md:py-0">
+            <span className="text-white/30 text-lg md:text-2xl font-light">+</span>
+          </div>
+
+          {/* VoltOps Console Box */}
+          <div className="flex flex-col gap-3 p-4 md:p-6 rounded-xl border border-solid border-white/10 bg-zinc-800/60 transition-colors">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+              <span className="text-white font-semibold text-lg md:text-xl">VoltOps Console</span>
+              <div className="flex gap-2">
+                <span className="text-xs px-2 py-0.5 rounded-full border border-solid border-white/20 text-white/50">
+                  Cloud
+                </span>
+                <span className="text-xs px-2 py-0.5 rounded-full border border-solid border-white/20 text-white/50">
+                  Self-Hosted
+                </span>
+              </div>
+            </div>
+            <div className="flex flex-wrap items-center gap-1.5 md:gap-2 text-xs md:text-sm text-white/50">
+              <span>Observability</span>
+              <span className="text-white/20">|</span>
+              <span>Automation</span>
+              <span className="text-white/20">|</span>
+              <span>Deployment</span>
+              <span className="text-white/20">|</span>
+              <span>Evals</span>
+              <span className="text-white/20">|</span>
+              <span>Guardrails</span>
+              <span className="text-white/20">|</span>
+              <span>Prompts</span>
+            </div>
+            <span className="text-white text-sm md:text-base">
+              Automate, debug, and deploy your agents with console.
+            </span>
+          </div>
         </div>
       </div>
     </div>

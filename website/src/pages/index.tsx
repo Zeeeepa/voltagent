@@ -30,7 +30,7 @@ export default function Home(): JSX.Element {
       <Layout>
         <main className="flex-1 relative overflow-hidden">
           <div className="fixed inset-0 pointer-events-none">
-            {/*  <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/3 via-transparent to-cyan-500/3" />
+            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/3 via-transparent to-cyan-500/3" />
 
             <div className="absolute top-[10%] left-[15%] w-[500px] h-[500px] bg-emerald-500/10 rounded-full blur-[120px] animate-pulse" />
             <div
@@ -54,7 +54,7 @@ export default function Home(): JSX.Element {
                     "radial-gradient(circle at 20% 50%, rgba(0, 217, 146, 0.15) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(6, 182, 212, 0.15) 0%, transparent 50%), radial-gradient(circle at 40% 20%, rgba(16, 185, 129, 0.1) 0%, transparent 50%)",
                 }}
               />
-            </div> */}
+            </div>
           </div>
 
           <DotPattern dotColor="#94a3b8" dotSize={1.2} spacing={20} />
