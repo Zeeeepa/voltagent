@@ -25,6 +25,7 @@ export type {
 export {
   Agent,
   type BaseGenerationOptions,
+  type OutputSpec,
   type GenerateTextOptions,
   type StreamTextOptions,
   type GenerateObjectOptions,

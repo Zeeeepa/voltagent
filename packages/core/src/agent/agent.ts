@@ -138,7 +138,7 @@ const STEP_PERSIST_COUNT_KEY = Symbol("persistedStepCount");
 // Types
 // ============================================================================
 
-type OutputSpec = Output.Output<unknown, unknown>;
+export type OutputSpec = Output.Output<unknown, unknown>;
 type OutputValue<OUTPUT extends OutputSpec> = InferGenerateOutput<OUTPUT>;
 
 /**
