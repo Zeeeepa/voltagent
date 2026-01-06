@@ -340,23 +340,6 @@ For more examples, visit our [examples repository](https://github.com/VoltAgent/
 - **[AI Recipe Generator Agent](https://voltagent.dev/examples/agents/recipe-generator)** - Create personalized cooking suggestions based on ingredients and preferences. ([Source](https://github.com/VoltAgent/voltagent/tree/main/examples/with-recipe-generator) | [Video](https://youtu.be/KjV1c6AhlfY))
 - **[AI Research Assistant Agent](https://voltagent.dev/examples/agents/research-assistant)** - Multi-agent research workflow for generating comprehensive reports. ([Source](https://github.com/VoltAgent/voltagent/tree/main/examples/with-research-assistant) | [Video](https://youtu.be/j6KAUaoZMy4))
 
-## Use Cases
-
-Build AI agents for real-world business needs across different industries:
-
-- **[HR Agent](https://voltagent.dev/use-cases/hr-agent/)** - Automate recruiting, employee onboarding, and HR support tasks.
-- **[Customer Support Agent](https://voltagent.dev/use-cases/customer-support-agent/)** - Build support agents that handle customer questions and issues.
-- **[Sales Teams](https://voltagent.dev/use-cases/sales-teams/)** - Qualify leads, gather customer data, and personalize sales outreach.
-- **[Finance Agent](https://voltagent.dev/use-cases/finance-agent/)** - Manage invoices, track expenses, and generate financial reports.
-- **[Development Agent](https://voltagent.dev/use-cases/development-agent/)** - Review code, manage deployments, and help development teams.
-- **[Marketing Agent](https://voltagent.dev/use-cases/marketing-agent/)** - Plan campaigns, create content, and analyze marketing performance.
-- **[Legal Agent](https://voltagent.dev/use-cases/legal-agent/)** - Review contracts, check compliance, and handle legal tasks.
-- **[Insurance Agent](https://voltagent.dev/use-cases/insurance-agent/)** - Process claims, evaluate risks, and manage policies.
-- **[Industrial Agent](https://voltagent.dev/use-cases/industrial-agent/)** - Monitor equipment, predict maintenance needs, and ensure safety.
-- **[Education Agent](https://voltagent.dev/use-cases/education-agent/)** - Provide personalized tutoring, track student progress, and support learning.
-- **[Government Agent](https://voltagent.dev/use-cases/government-agent/)** - Handle permit applications, process benefits, and serve citizens.
-- **[Documentation Agent](https://voltagent.dev/use-cases/documentation-agent/)** - Create API docs, write changelogs, and generate tutorials from code.
-
 ## Learning VoltAgent
 
 - 📖 **[Start with interactive tutorial](https://voltagent.dev/tutorial/introduction/)** to learn the fundamentals building AI Agents.
