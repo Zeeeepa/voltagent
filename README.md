@@ -260,9 +260,9 @@ You can test the pre-built `expenseApprovalWorkflow` directly from the VoltOps c
     ```
 5.  **View the Results:** After execution, you can inspect the detailed logs for each step and see the final output directly in the console.
 
-## Built-in LLM Observability with VoltOps
+## VoltOps Console
 
-VoltAgent comes with VoltOps, a LLM observability platform built-in to help you monitor, debug, and optimize your agents in real-time.
+VoltOps Console is the platform side of VoltAgent where you get comprehensive observability, automation, and deployment for your agents in production.
 
 🎬 [Try Live Demo](https://console.voltagent.dev/demo)
 
@@ -274,28 +274,15 @@ VoltAgent comes with VoltOps, a LLM observability platform built-in to help you 
 
 Deep dive into agent execution flow with detailed traces and performance metrics.
 
-<br/>
-<img width="1277" height="599" alt="Screenshot 2026-01-06 at 17 40 24" src="https://github.com/user-attachments/assets/dd21d565-5f1e-434a-8826-225a099a1d8d" />
-
-![VoltOps Observability Overview](https://cdn.voltagent.dev/console/observability.png)
+<img alt="1" src="https://github.com/user-attachments/assets/21c6d05d-f333-4c61-9218-8862d16110fd" />
 
 ### Dashboard
-<img width="3422" height="1750" alt="triggers" src="https://github.com/user-attachments/assets/67e36934-2eb5-4cf1-94f8-3057d805ef65" />
-<img width="3416" height="1744" alt="rag" src="https://github.com/user-attachments/assets/a6c2f668-7ad1-4fb6-b67f-654335285f1e" />
-<img width="3412" height="1746" alt="prompts" src="https://github.com/user-attachments/assets/fb6d71eb-8f81-4443-a494-08c33ec9bcc4" />
-<img width="3418" height="1754" alt="monitoring" src="https://github.com/user-attachments/assets/1fd1151f-5ee4-4c7c-8ec7-29874e37c48f" />
-<img width="3406" height="1752" alt="guardrails" src="https://github.com/user-attachments/assets/52bd51f0-944e-4202-9f54-7bb2e0e2d1f6" />
-<img width="3424" height="1742" alt="evals" src="https://github.com/user-attachments/assets/510cc180-2661-4973-a48f-074d4703d90b" />
-<img width="3408" height="1752" alt="deployment" src="https://github.com/user-attachments/assets/e329ab4b-7464-435a-96cc-90214e8a3cfa" />
-<img width="3436" height="1618" alt="dashboar" src="https://github.com/user-attachments/assets/c88a5543-219e-4cf0-8f41-14a68ca297fb" />
-<img width="3422" height="1758" alt="1" src="https://github.com/user-attachments/assets/21c6d05d-f333-4c61-9218-8862d16110fd" />
-
 
 Get a comprehensive overview of all your agents, workflows, and system performance metrics.
 
 <br/>
 
-![VoltOps Dashboard](https://cdn.voltagent.dev/console/dashboard.png)
+<img alt="dashboar" src="https://github.com/user-attachments/assets/c88a5543-219e-4cf0-8f41-14a68ca297fb" />
 
 ### Logs
 
@@ -326,7 +313,7 @@ Design, test, and refine prompts directly in the console.
 
 <br/>
 
-![VoltOps Prompt Builder](https://cdn.voltagent.dev/console/prompt.png)
+<img  alt="prompts" src="https://github.com/user-attachments/assets/fb6d71eb-8f81-4443-a494-08c33ec9bcc4" />
 
 ### Deployment
 
@@ -336,7 +323,49 @@ Deploy your agents to production with one-click GitHub integration and managed i
 
 ![VoltOps Deploy](https://cdn.voltagent.dev/website/feature-showcase/deployment.png)
 
+<img alt="deployment" src="https://github.com/user-attachments/assets/e329ab4b-7464-435a-96cc-90214e8a3cfa" />
+
 📖 [VoltOps Deploy Documentation](https://voltagent.dev/docs/deployment/voltops/)
+
+### Triggers & Actions
+
+Automate agent workflows with webhooks, schedules, and custom triggers to react to external events.
+
+<br/>
+
+<img width="1277"  alt="triggers" src="https://github.com/user-attachments/assets/67e36934-2eb5-4cf1-94f8-3057d805ef65" />
+
+### Monitoring
+
+Monitor agent health, performance metrics, and resource usage across your entire system.
+
+<br/>
+
+<img  alt="monitoring" src="https://github.com/user-attachments/assets/1fd1151f-5ee4-4c7c-8ec7-29874e37c48f" />
+
+### Guardrails
+
+Set up safety boundaries and content filters to ensure agents operate within defined parameters.
+
+<br/>
+
+<img  alt="guardrails" src="https://github.com/user-attachments/assets/52bd51f0-944e-4202-9f54-7bb2e0e2d1f6" />
+
+### Evals
+
+Run evaluation suites to test agent behavior, accuracy, and performance against benchmarks.
+
+<br/>
+
+<img  alt="evals" src="https://github.com/user-attachments/assets/510cc180-2661-4973-a48f-074d4703d90b" />
+
+### RAG (Knowledge Base)
+
+Connect your agents to knowledge sources with built-in retrieval-augmented generation capabilities.
+
+<br/>
+
+<img  alt="rag" src="https://github.com/user-attachments/assets/a6c2f668-7ad1-4fb6-b67f-654335285f1e" />
 
 ## Examples
 
