@@ -22,7 +22,6 @@ English | <a href="i18n/README-cn-traditional.md">繁體中文</a> | <a href="i1
 
 <div align="center">
 
-[![GitHub stars](https://img.shields.io/github/stars/voltagent/voltagent?style=social)](https://github.com/voltagent/voltagent)
 [![GitHub issues](https://img.shields.io/github/issues/voltagent/voltagent)](https://github.com/voltagent/voltagent/issues)
 [![GitHub pull requests](https://img.shields.io/github/issues-pr/voltagent/voltagent)](https://github.com/voltagent/voltagent/pulls)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -43,23 +42,23 @@ English | <a href="i18n/README-cn-traditional.md">繁體中文</a> | <a href="i1
 
 <br/>
 
-**VoltAgent** is an open source TypeScript framework for building and orchestrating AI agents.
-You can build production-ready agents with memory, workflows, tools, and built-in LLM observability.
+VoltAgent is a complete AI Agent Engineering Platform. The open-source TypeScript framework handles Memory, RAG, tools, and agent runtime; VoltOps delivers observability, automation, and deployment for production. (This repository contains the core framework.)
+
+Together, you can build agents with full code control and ship them with production-ready visibility and operations.
 
 ## Why VoltAgent?
 
+- **End-to-End Development Platform**: Everything you need to build, observe, and deploy production-ready multi-agent systems in one place.
 - **Production-Ready from Day One**: Ship agents with built-in memory, workflows, and observability instead of building infrastructure from scratch.
 - **Code with Confidence**: Full TypeScript support with type-safe tools, automatic inference, and compile time safety across your entire agent system.
 - **Debug Like a Pro**: Built-in VoltOps observability lets you trace every decision, monitor performance, and optimize workflows in real-time without external tools.
 - **Build Complex Systems Simply**: Orchestrate multi-agent teams with supervisor coordination, declarative workflows, and modular architecture that scales from prototypes to production.
 
-## Agent Development Platform
-
 VoltAgent provides a complete platform for developing and monitoring AI agents through two complementary tools.
 
 ### Core Framework
 
-With the core framework, you can build intelligent agents with memory, tools, and multi-step workflows while connecting to any AI provider. Create sophisticated multi-agent systems where specialized agents work together under supervisor coordination.
+With the open-source framework, you can build intelligent agents with memory, tools, and multi-step workflows while connecting to any AI provider. Create sophisticated multi-agent systems where specialized agents work together under supervisor coordination.
 
 - **[Core Runtime](https://voltagent.dev/docs/agents/overview/) (`@voltagent/core`)**: Define agents with typed roles, tools, memory, and model providers in one place so everything stays organized.
 - **[Workflow Engine](https://voltagent.dev/docs/workflows/overview/)**: Describe multi-step automations declaratively rather than stitching together custom control flow.
@@ -71,9 +70,11 @@ With the core framework, you can build intelligent agents with memory, tools, an
 - **[VoltAgent Knowledge Base](https://voltagent.dev/docs/rag/voltagent/)**: Use the managed RAG service for document ingestion, chunking, embeddings, and search.
 - **[Evals](https://voltagent.dev/docs/evals/overview/)**: Ship guardrails faster by running agent eval suites alongside your workflows.
 
-### VoltOps LLM Observability Platform
+### VoltOps Console - LLM Observability
 
-VoltAgent comes with built-in [VoltOps](#built-in-llm-observability-with-voltops) LLM observability to monitor and debug your agents in real-time with detailed execution traces, performance metrics, and visual dashboards. Inspect every decision your agents make, track tool usage, and optimize your workflows with built-in OpenTelemetry-based observability.
+VoltOps provides observability, automation, and deployment so you can monitor and debug agents in real-time with detailed execution traces, performance metrics, and visual dashboards. Inspect every decision your agents make, track tool usage, and optimize workflows with built-in OpenTelemetry-based observability.
+
+[More info](https://voltagent.dev/observability-docs/).
 
 #### MCP Server (@voltagent/mcp-docs-server)
 
