@@ -42,7 +42,7 @@ English | <a href="i18n/README-cn-traditional.md">繁體中文</a> | <a href="i1
 
 <br/>
 
-VoltAgent is a complete AI Agent Engineering Platform. The open-source TypeScript framework handles Memory, RAG, tools, and agent runtime; VoltOps delivers observability, automation, and deployment for production. (This repository contains the core framework.)
+VoltAgent is a end-to-end AI Agent Engineering Platform. The open-source TypeScript framework handles Memory, RAG, tools, and agent runtime; VoltOps delivers observability, automation, and deployment for production. (This repository contains the core framework.)
 
 Together, you can build agents with full code control and ship them with production-ready visibility and operations.
 
@@ -53,6 +53,7 @@ Together, you can build agents with full code control and ship them with product
 - **Code with Confidence**: Full TypeScript support with type-safe tools, automatic inference, and compile time safety across your entire agent system.
 - **Debug Like a Pro**: Built-in VoltOps observability lets you trace every decision, monitor performance, and optimize workflows in real-time without external tools.
 - **Build Complex Systems Simply**: Orchestrate multi-agent teams with supervisor coordination, declarative workflows, and modular architecture that scales from prototypes to production.
+- **Automate with Actions & Triggers**: Connect agents to external events like webhooks, schedules, or custom triggers to run workflows automatically without manual intervention.
 
 VoltAgent provides a complete platform for developing and monitoring AI agents through two complementary tools.
 
@@ -70,9 +71,9 @@ With the open-source framework, you can build intelligent agents with memory, to
 - **[VoltAgent Knowledge Base](https://voltagent.dev/docs/rag/voltagent/)**: Use the managed RAG service for document ingestion, chunking, embeddings, and search.
 - **[Evals](https://voltagent.dev/docs/evals/overview/)**: Ship guardrails faster by running agent eval suites alongside your workflows.
 
-### VoltOps Console - LLM Observability
+### VoltOps Console: LLM Observability - Automation - Deployment
 
-VoltOps provides observability, automation, and deployment so you can monitor and debug agents in real-time with detailed execution traces, performance metrics, and visual dashboards. Inspect every decision your agents make, track tool usage, and optimize workflows with built-in OpenTelemetry-based observability.
+VoltOps provides observability, automation, and deployment so you can monitor and debug agents in real-time with detailed execution traces, performance metrics, and visual dashboards.
 
 [More info](https://voltagent.dev/observability-docs/).
 
@@ -328,87 +329,16 @@ Deploy your agents to production with one-click GitHub integration and managed i
 
 ## Examples
 
-Explore real-world implementations of VoltAgent with complete source code and video tutorials.
+Explore real-world implementations of VoltAgent with complete source code and video tutorials. For more examples, visit our [examples repository](https://github.com/VoltAgent/voltagent/tree/main/examples).
 
-For more examples and use cases, visit our [examples repository](https://github.com/VoltAgent/voltagent/tree/main/examples).
-
-### WhatsApp Order Agent
-
-Build a WhatsApp chatbot that handles food orders through natural conversation, manages menu items from a database, and processes orders with full conversation context.
-
-<br/>
-
-<img width="1111" height="347" alt="whatsapp" src="https://github.com/user-attachments/assets/dc9c4986-3e68-42f8-a450-ecd79b4dbd99" />
-
-<br/>
-<br/>
-
-- 📖 [Tutorial](https://voltagent.dev/examples/agents/whatsapp-ai-agent)
-- 💻 [Source Code](https://github.com/VoltAgent/voltagent/tree/main/examples/with-whatsapp)
-
-### YouTube to Blog Agent
-
-Convert YouTube videos into Markdown blog posts using a supervisor agent that coordinates subagents with MCP tools, shared working memory, and VoltOps observability.
-
-<br/>
-
-<img width="1113" height="363" alt="youtube" src="https://github.com/user-attachments/assets/f9c944cf-8a9a-4ac5-a5f9-860ce08f058b" />
-
-<br/>
-<br/>
-
-- 📖 [Tutorial](https://voltagent.dev/examples/agents/youtube-blog-agent)
-- 💻 [Source Code](https://github.com/VoltAgent/voltagent/tree/main/examples/with-youtube-to-blog)
-
-### AI Ads Generator Agent
-
-Implement an Instagram ad generator that uses BrowserBase Stagehand to analyze landing pages, extract brand data, and generate visuals through Google Gemini AI.
-
-<br/>
-
-<a href="https://github.com/VoltAgent/voltagent/tree/main/examples/with-ad-creator">
-<img width="1115" height="363" alt="instagram" src="https://github.com/user-attachments/assets/973e79c7-34ec-4f8e-8a41-9273d44234c6" />
-</a>
-
-<br/>
-<br/>
-
-- 📖 [Tutorial](https://voltagent.dev/examples/agents/ai-instagram-ad-agent)
-- 💻 [Source Code](https://github.com/VoltAgent/voltagent/tree/main/examples/with-ad-creator)
-
-### AI Recipe Generator Agent
-
-Build an intelligent recipe recommendation system that creates personalized cooking suggestions based on available ingredients, dietary preferences, and time constraints.
-
-<br/>
-
-<a href="https://github.com/VoltAgent/voltagent/tree/main/examples/with-recipe-generator">
-<img width="1111" height="363" alt="cook" src="https://github.com/user-attachments/assets/dde6ce2f-c963-4075-9825-f216bc6e3467" />
-</a>
-
-<br/>
-<br/>
-
-- 📖 [Tutorial](https://voltagent.dev/examples/agents/recipe-generator)
-- 📹 [Watch Video](https://youtu.be/KjV1c6AhlfY)
-- 💻 [Source Code](https://github.com/VoltAgent/voltagent/tree/main/examples/with-recipe-generator)
-
-### AI Research Assistant Agent
-
-Create a multi-agent research workflow where different AI agents collaborate to research topics and generate comprehensive reports with type-safe data flow.
-
-<br/>
-
-<a href="https://github.com/VoltAgent/voltagent/tree/main/examples/with-research-assistant">
-<img width="2228" height="678" alt="research" src="https://github.com/user-attachments/assets/8f459748-132e-4ff3-9afe-0561fa5075c2" />
-</a>
-
-<br/>
-<br/>
-
-- 📖 [Tutorial](https://voltagent.dev/examples/agents/research-assistant)
-- 📹 [Watch Video](https://youtu.be/j6KAUaoZMy4)
-- 💻 [Source Code](https://github.com/VoltAgent/voltagent/tree/main/examples/with-research-assistant)
+- **[Airtable Agent](https://voltagent.dev/examples/guides/airtable-agent)** - React to new records and write updates back into Airtable with VoltOps actions.
+- **[Slack Agent](https://voltagent.dev/examples/guides/slack-agent)** - Respond to channel messages and reply via VoltOps Slack actions.
+- **[ChatGPT App With VoltAgent](https://voltagent.dev/examples/agents/chatgpt-app)** - Deploy VoltAgent over MCP and connect to ChatGPT Apps.
+- **[WhatsApp Order Agent](https://voltagent.dev/examples/agents/whatsapp-ai-agent)** - Build a WhatsApp chatbot that handles food orders through natural conversation. ([Source](https://github.com/VoltAgent/voltagent/tree/main/examples/with-whatsapp))
+- **[YouTube to Blog Agent](https://voltagent.dev/examples/agents/youtube-blog-agent)** - Convert YouTube videos into Markdown blog posts using a supervisor agent with MCP tools. ([Source](https://github.com/VoltAgent/voltagent/tree/main/examples/with-youtube-to-blog))
+- **[AI Ads Generator Agent](https://voltagent.dev/examples/agents/ai-instagram-ad-agent)** - Generate Instagram ads using BrowserBase Stagehand and Google Gemini AI. ([Source](https://github.com/VoltAgent/voltagent/tree/main/examples/with-ad-creator))
+- **[AI Recipe Generator Agent](https://voltagent.dev/examples/agents/recipe-generator)** - Create personalized cooking suggestions based on ingredients and preferences. ([Source](https://github.com/VoltAgent/voltagent/tree/main/examples/with-recipe-generator) | [Video](https://youtu.be/KjV1c6AhlfY))
+- **[AI Research Assistant Agent](https://voltagent.dev/examples/agents/research-assistant)** - Multi-agent research workflow for generating comprehensive reports. ([Source](https://github.com/VoltAgent/voltagent/tree/main/examples/with-research-assistant) | [Video](https://youtu.be/j6KAUaoZMy4))
 
 ## Use Cases
 
