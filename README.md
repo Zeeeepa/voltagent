@@ -246,7 +246,11 @@ export const expenseApprovalWorkflow = createWorkflowChain({
 
 You can test the pre-built `expenseApprovalWorkflow` directly from the VoltOps console:
 
-[![expense-approval](thumbnail.png)](https://cdn.voltagent.dev/docs/media/get-started/step-5-workflow.mp4)
+[![expense-approval](thumbnail.png)](https://github.com/user-attachments/assets/3d3ea67b-4ab5-4dc0-932d-cedd92894b18)
+
+
+
+
 
 1.  **Go to the Workflows Page:** After starting your server, go directly to the [Workflows page](https://console.voltagent.dev/workflows).
 2.  **Select Your Project:** Use the project selector to choose your project (e.g., "my-agent-app").
