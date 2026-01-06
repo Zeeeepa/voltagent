@@ -329,7 +329,7 @@ Deploy your agents to production with one-click GitHub integration and managed i
 
 ## Examples
 
-Explore real-world implementations of VoltAgent with complete source code and video tutorials. For more examples, visit our [examples repository](https://github.com/VoltAgent/voltagent/tree/main/examples).
+For more examples, visit our [examples repository](https://github.com/VoltAgent/voltagent/tree/main/examples).
 
 - **[Airtable Agent](https://voltagent.dev/examples/guides/airtable-agent)** - React to new records and write updates back into Airtable with VoltOps actions.
 - **[Slack Agent](https://voltagent.dev/examples/guides/slack-agent)** - Respond to channel messages and reply via VoltOps Slack actions.
@@ -374,7 +374,7 @@ Big thanks to everyone who's been part of the VoltAgent journey, whether you've 
 
 VoltAgent is a community effort, and it keeps getting better because of people like you.
 
-![Contributors](https://contrib.rocks/image?repo=voltagent/voltagent&max=100)
+![Contributors](https://contrib.rocks/image?repo=voltagent/voltagent&max=200)
 
 Your stars help us reach more developers! If you find VoltAgent useful, please consider giving us a star on GitHub to support the project and help others discover it.
 
