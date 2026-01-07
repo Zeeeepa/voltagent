@@ -36,7 +36,6 @@ English | <a href="i18n/README-cn-traditional.md">繁體中文</a> | <a href="i1
 
 </div>
 
-<br/>
 
 <h3 align="center">
 ⭐ Like what we're doing? Give us a star ⬆️
