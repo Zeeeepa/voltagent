@@ -50,7 +50,7 @@ Together, you can build agents with full code control and ship them with product
 
 - **End-to-End Development Platform**: Everything you need to build, observe, and deploy production-ready multi-agent systems in one place.
 - **Production-Ready from Day One**: Ship agents with built-in memory, workflows, and observability instead of building infrastructure from scratch.
-- **Code with Confidence**: Full TypeScript support with type-safe tools, automatic inference, and compile time safety across your entire agent system.
+- **Code with Confidence**: Full TypeScript support with type-safe tools, automatic inference, and compile-time safety across your entire agent system.
 - **Debug Like a Pro**: Built-in VoltOps observability lets you trace every decision, monitor performance, and optimize workflows in real-time without external tools.
 - **Build Complex Systems Simply**: Orchestrate multi-agent teams with supervisor coordination, declarative workflows, and modular architecture that scales from prototypes to production.
 - **Automate with Actions & Triggers**: Connect agents to external events like webhooks, schedules, or custom triggers to run workflows automatically without manual intervention.
