@@ -1,7 +1,8 @@
 <div align="center">
 <a href="https://voltagent.dev/">
-<img width="1800" alt="435380213-b6253409-8741-462b-a346-834cd18565a9" src="https://github.com/user-attachments/assets/9259e833-0f5c-4eb6-8cc7-4e6930cc27e1" />
+<img width="1500" height="276" alt="voltagent" src="https://github.com/user-attachments/assets/d9ad69bd-b905-42a3-81af-99a0581348c0" />
 </a>
+
 
 <br/>
 <br/>
