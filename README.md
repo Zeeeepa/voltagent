@@ -36,7 +36,6 @@ English | <a href="i18n/README-cn-traditional.md">繁體中文</a> | <a href="i1
 
 </div>
 
-
 <h3 align="center">
 ⭐ Like what we're doing? Give us a star ⬆️
 </h3>
@@ -50,18 +49,7 @@ VoltAgent is an end-to-end AI Agent Engineering Platform that consists of two ma
 
 Build agents with full code control and ship them with production-ready visibility and operations.
 
-## Why VoltAgent?
-
-- **End-to-End Development Platform**: Everything you need to build, observe, and deploy production-ready multi-agent systems in one place.
-- **Production-Ready from Day One**: Ship agents with built-in memory, workflows, and observability instead of building infrastructure from scratch.
-- **Code with Confidence**: Full TypeScript support with type-safe tools, automatic inference, and compile-time safety across your entire agent system.
-- **Debug Like a Pro**: Built-in VoltOps observability lets you trace every decision, monitor performance, and optimize workflows in real-time without external tools.
-- **Build Complex Systems Simply**: Orchestrate multi-agent teams with supervisor coordination, declarative workflows, and modular architecture that scales from prototypes to production.
-- **Automate with Actions & Triggers**: Connect agents to external events like webhooks, schedules, or custom triggers to run workflows automatically without manual intervention.
-
-VoltAgent provides a complete platform for developing and monitoring AI agents through two complementary tools.
-
-### Core TypeScript Framework
+<h3 id="core-framework">Core TypeScript Framework</h3>
 
 With the open-source framework, you can build intelligent agents with memory, tools, and multi-step workflows while connecting to any AI provider. Create sophisticated multi-agent systems where specialized agents work together under supervisor coordination.
 
@@ -73,13 +61,9 @@ With the open-source framework, you can build intelligent agents with memory, to
 - **[Memory](https://voltagent.dev/docs/agents/memory/overview/)**: Attach durable memory adapters so agents remember important context across runs.
 - **[Retrieval & RAG](https://voltagent.dev/docs/rag/overview/)**: Plug in retriever agents to pull facts from your data sources and ground responses (RAG) before the model answers.
 - **[VoltAgent Knowledge Base](https://voltagent.dev/docs/rag/voltagent/)**: Use the managed RAG service for document ingestion, chunking, embeddings, and search.
-- **[Evals](https://voltagent.dev/docs/evals/overview/)**: Ship guardrails faster by running agent eval suites alongside your workflows.
-
-### VoltOps Console: LLM Observability - Automation - Deployment
-
-VoltOps provides observability, automation, and deployment so you can monitor and debug agents in real-time with detailed execution traces, performance metrics, and visual dashboards.
-
-[More info](https://voltagent.dev/observability-docs/).
+- **[Voice](https://voltagent.dev/docs/agents/voice/)**: Add text-to-speech and speech-to-text capabilities with OpenAI, ElevenLabs, or custom voice providers.
+- **[Guardrails](https://voltagent.dev/docs/guardrails/overview/)**: Intercept and validate agent input or output at runtime to enforce content policies and safety rules.
+- **[Evals](https://voltagent.dev/docs/evals/overview/)**: Run agent eval suites alongside your workflows to measure and improve agent behavior.
 
 #### MCP Server (@voltagent/mcp-docs-server)
 
@@ -277,9 +261,9 @@ For more examples, visit our [examples repository](https://github.com/VoltAgent/
 - **[AI Recipe Generator Agent](https://voltagent.dev/examples/agents/recipe-generator)** - Create personalized cooking suggestions based on ingredients and preferences. ([Source](https://github.com/VoltAgent/voltagent/tree/main/examples/with-recipe-generator) | [Video](https://youtu.be/KjV1c6AhlfY))
 - **[AI Research Assistant Agent](https://voltagent.dev/examples/agents/research-assistant)** - Multi-agent research workflow for generating comprehensive reports. ([Source](https://github.com/VoltAgent/voltagent/tree/main/examples/with-research-assistant) | [Video](https://youtu.be/j6KAUaoZMy4))
 
-## VoltOps Console
+<h3 id="voltops-console">VoltOps Console: LLM Observability - Automation - Deployment</h3>
 
-VoltOps Console is the platform side of VoltAgent where you get comprehensive observability, automation, and deployment for your agents in production.
+VoltOps Console is the platform side of VoltAgent, providing observability, automation, and deployment so you can monitor and debug agents in production with real-time execution traces, performance metrics, and visual dashboards.
 
 🎬 [Try Live Demo](https://console.voltagent.dev/demo)
 
