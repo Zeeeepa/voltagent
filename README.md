@@ -7,8 +7,6 @@
 AI Agent Engineering Platform
 </h3>
 
-<br/>
-<br/>
 <div align="center">
 English | <a href="i18n/README-cn-traditional.md">繁體中文</a> | <a href="i18n/README-cn-bsc.md">简体中文</a> | <a href="i18n/README-jp.md">日本語</a> | <a href="i18n/README-kr.md">한국어</a>
 </div>
@@ -40,15 +38,15 @@ English | <a href="i18n/README-cn-traditional.md">繁體中文</a> | <a href="i1
 
 <br/>
 
-<div align="center">
+<h3 align="center">
 ⭐ Like what we're doing? Give us a star ⬆️
-</div>
+</h3>
 
 <br/>
 
 VoltAgent is an end-to-end AI Agent Engineering Platform that consists of two main parts:
 
-- **[Open-Source TypeScript Framework](#core-framework)** `Open Source` – Memory, RAG, Guardrails, Tools, MCP, Voice, Workflow, and more.
+- **[Open-Source TypeScript Framework](#core-framework)** – Memory, RAG, Guardrails, Tools, MCP, Voice, Workflow, and more.
 - **[VoltOps Console](#voltops-console)** `Cloud` `Self-Hosted` – Observability, Automation, Deployment, Evals, Guardrails, Prompts, and more.
 
 Build agents with full code control and ship them with production-ready visibility and operations.
@@ -64,7 +62,7 @@ Build agents with full code control and ship them with production-ready visibili
 
 VoltAgent provides a complete platform for developing and monitoring AI agents through two complementary tools.
 
-### Core Framework
+### Core TypeScript Framework
 
 With the open-source framework, you can build intelligent agents with memory, tools, and multi-step workflows while connecting to any AI provider. Create sophisticated multi-agent systems where specialized agents work together under supervisor coordination.
 
