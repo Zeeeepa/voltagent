@@ -149,7 +149,7 @@ Test your agents with VoltOps Console: https://console.voltagent.dev
 4. 开始聊天：在代理详情页面上，点击右下角的聊天图标以打开聊天窗口。
 5. 发送消息：输入"你好"之类的消息并按 Enter。
 
-[![VoltAgent Demo](thumbnail.png)](https://github.com/user-attachments/assets/26340c6a-be34-48a5-9006-e822bf6098a7)
+[![VoltAgent Demo](https://github.com/user-attachments/assets/26340c6a-be34-48a5-9006-e822bf6098a7)](https://github.com/user-attachments/assets/26340c6a-be34-48a5-9006-e822bf6098a7)
 
 ### 运行您的第一个工作流
 
@@ -230,7 +230,7 @@ export const expenseApprovalWorkflow = createWorkflowChain({
 
 您可以直接从 VoltOps 控制台测试预建的 `expenseApprovalWorkflow`：
 
-[![expense-approval](thumbnail.png)](https://github.com/user-attachments/assets/3d3ea67b-4ab5-4dc0-932d-cedd92894b18)
+[![expense-approval](https://github.com/user-attachments/assets/3d3ea67b-4ab5-4dc0-932d-cedd92894b18)](https://github.com/user-attachments/assets/3d3ea67b-4ab5-4dc0-932d-cedd92894b18)
 
 1.  **前往工作流页面**：启动服务器后，直接前往[工作流页面](https://console.voltagent.dev/workflows)。
 2.  **选择您的项目**：使用项目选择器选择您的项目（例如"my-agent-app"）。

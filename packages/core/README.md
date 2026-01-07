@@ -139,7 +139,7 @@ Your agent is now running! To interact with it:
 4. Start Chatting: On the agent detail page, click the chat icon in the bottom right corner to open the chat window.
 5. Send a Message: Type a message like "Hello" and press Enter.
 
-[![VoltAgent Demo](thumbnail.png)](https://github.com/user-attachments/assets/26340c6a-be34-48a5-9006-e822bf6098a7)
+[![VoltAgent Demo](https://github.com/user-attachments/assets/26340c6a-be34-48a5-9006-e822bf6098a7)](https://github.com/user-attachments/assets/26340c6a-be34-48a5-9006-e822bf6098a7)
 
 ### Running Your First Workflow
 
@@ -220,7 +220,7 @@ export const expenseApprovalWorkflow = createWorkflowChain({
 
 You can test the pre-built `expenseApprovalWorkflow` directly from the VoltOps console:
 
-[![expense-approval](thumbnail.png)](https://github.com/user-attachments/assets/3d3ea67b-4ab5-4dc0-932d-cedd92894b18)
+[![expense-approval](https://github.com/user-attachments/assets/3d3ea67b-4ab5-4dc0-932d-cedd92894b18)](https://github.com/user-attachments/assets/3d3ea67b-4ab5-4dc0-932d-cedd92894b18)
 
 1.  **Go to the Workflows Page:** After starting your server, go directly to the [Workflows page](https://console.voltagent.dev/workflows).
 2.  **Select Your Project:** Use the project selector to choose your project (e.g., "my-agent-app").

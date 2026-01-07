@@ -149,7 +149,7 @@ Test your agents with VoltOps Console: https://console.voltagent.dev
 4. チャットを開始：エージェント詳細ページで、右下のチャットアイコンをクリックしてチャットウィンドウを開きます。
 5. メッセージを送信：「こんにちは」のようなメッセージを入力してEnterキーを押します。
 
-[![VoltAgent Demo](thumbnail.png)](https://github.com/user-attachments/assets/26340c6a-be34-48a5-9006-e822bf6098a7)
+[![VoltAgent Demo](https://github.com/user-attachments/assets/26340c6a-be34-48a5-9006-e822bf6098a7)](https://github.com/user-attachments/assets/26340c6a-be34-48a5-9006-e822bf6098a7)
 
 ### 最初のワークフローの実行
 
@@ -230,7 +230,7 @@ export const expenseApprovalWorkflow = createWorkflowChain({
 
 VoltOpsコンソールから直接、事前構築された`expenseApprovalWorkflow`をテストできます：
 
-[![expense-approval](thumbnail.png)](https://github.com/user-attachments/assets/3d3ea67b-4ab5-4dc0-932d-cedd92894b18)
+[![expense-approval](https://github.com/user-attachments/assets/3d3ea67b-4ab5-4dc0-932d-cedd92894b18)](https://github.com/user-attachments/assets/3d3ea67b-4ab5-4dc0-932d-cedd92894b18)
 
 1.  **ワークフローページに移動**：サーバーを起動した後、[ワークフローページ](https://console.voltagent.dev/workflows)に直接移動します。
 2.  **プロジェクトを選択**：プロジェクトセレクターを使用してプロジェクトを選択します（例：「my-agent-app」）。
