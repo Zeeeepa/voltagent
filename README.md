@@ -40,8 +40,6 @@ English | <a href="i18n/README-cn-traditional.md">繁體中文</a> | <a href="i1
 ⭐ Like what we're doing? Give us a star ⬆️
 </h3>
 
-<br/>
-
 VoltAgent is an end-to-end AI Agent Engineering Platform that consists of two main parts:
 
 - **[Open-Source TypeScript Framework](#core-framework)** – Memory, RAG, Guardrails, Tools, MCP, Voice, Workflow, and more.
