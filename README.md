@@ -3,6 +3,9 @@
 <img width="1500" height="276" alt="voltagent" src="https://github.com/user-attachments/assets/d9ad69bd-b905-42a3-81af-99a0581348c0" />
 </a>
 
+<h3 align="center">
+AI Agent Engineering Platform
+</h3>
 
 <br/>
 <br/>
@@ -43,9 +46,12 @@ English | <a href="i18n/README-cn-traditional.md">繁體中文</a> | <a href="i1
 
 <br/>
 
-VoltAgent is an end-to-end AI Agent Engineering Platform. The open-source TypeScript framework handles Memory, RAG, tools, and agent runtime; VoltOps delivers observability, automation, and deployment for production. (This repository contains the core framework.)
+VoltAgent is an end-to-end AI Agent Engineering Platform that consists of two main parts:
 
-Together, you can build agents with full code control and ship them with production-ready visibility and operations.
+- **[Open-Source TypeScript Framework](#core-framework)** `Open Source` – Memory, RAG, Guardrails, Tools, MCP, Voice, Workflow, and more.
+- **[VoltOps Console](#voltops-console)** `Cloud` `Self-Hosted` – Observability, Automation, Deployment, Evals, Guardrails, Prompts, and more.
+
+Build agents with full code control and ship them with production-ready visibility and operations.
 
 ## Why VoltAgent?
 
