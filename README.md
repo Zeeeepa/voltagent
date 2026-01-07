@@ -49,7 +49,7 @@ VoltAgent is an end-to-end AI Agent Engineering Platform that consists of two ma
 
 Build agents with full code control and ship them with production-ready visibility and operations.
 
-<h3 id="core-framework">Core TypeScript Framework</h3>
+<h2 id="core-framework">Core TypeScript Framework</h2>
 
 With the open-source framework, you can build intelligent agents with memory, tools, and multi-step workflows while connecting to any AI provider. Create sophisticated multi-agent systems where specialized agents work together under supervisor coordination.
 
@@ -261,7 +261,7 @@ For more examples, visit our [examples repository](https://github.com/VoltAgent/
 - **[AI Recipe Generator Agent](https://voltagent.dev/examples/agents/recipe-generator)** - Create personalized cooking suggestions based on ingredients and preferences. ([Source](https://github.com/VoltAgent/voltagent/tree/main/examples/with-recipe-generator) | [Video](https://youtu.be/KjV1c6AhlfY))
 - **[AI Research Assistant Agent](https://voltagent.dev/examples/agents/research-assistant)** - Multi-agent research workflow for generating comprehensive reports. ([Source](https://github.com/VoltAgent/voltagent/tree/main/examples/with-research-assistant) | [Video](https://youtu.be/j6KAUaoZMy4))
 
-<h3 id="voltops-console">VoltOps Console: LLM Observability - Automation - Deployment</h3>
+<h2 id="voltops-console">VoltOps Console: LLM Observability - Automation - Deployment</h2>
 
 VoltOps Console is the platform side of VoltAgent, providing observability, automation, and deployment so you can monitor and debug agents in production with real-time execution traces, performance metrics, and visual dashboards.
 
