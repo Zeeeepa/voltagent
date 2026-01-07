@@ -107,7 +107,7 @@ export function Hero() {
   }, []);
 
   return (
-    <div className="relative max-w-7xl xs:px-4 lg:px-8 mx-auto landing-xs:mb-16 landing-md:mb-18">
+    <div className="relative max-w-7xl xs:px-4 lg:px-8 mx-auto landing-xs:mb-16 landing-md:mb-20">
       <div className="mt-16 md:mt-24" />
       <div className="grid xs:grid-cols-1 mx-4 lg:mx-0 lg:grid-cols-2 gap-8 items-center">
         <div>
