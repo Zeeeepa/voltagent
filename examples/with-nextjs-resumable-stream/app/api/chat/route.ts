@@ -1,5 +1,5 @@
 import { getResumableStreamAdapter } from "@/lib/resumable-stream";
-import { supervisorAgent } from "@/voltagent";
+import { agent } from "@/voltagent";
 import { setWaitUntil } from "@voltagent/core";
 import { safeStringify } from "@voltagent/internal/utils";
 import { createResumableChatSession } from "@voltagent/resumable-streams";
@@ -42,7 +42,7 @@ export async function POST(req: Request) {
     // This ensures spans are flushed in the background without blocking the response
     setWaitUntil(after);
 
-    const agentId = supervisorAgent.id;
+    const agentId = agent.id;
     const resumableStream = await getResumableStreamAdapter();
     const session = createResumableChatSession({
       adapter: resumableStream,
@@ -59,7 +59,7 @@ export async function POST(req: Request) {
 
     // Stream text from the supervisor agent with proper context
     // The agent accepts UIMessage[] directly
-    const result = await supervisorAgent.streamText(input, {
+    const result = await agent.streamText(input, {
       userId,
       conversationId,
     });

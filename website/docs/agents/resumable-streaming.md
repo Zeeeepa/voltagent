@@ -10,6 +10,12 @@ import TabItem from '@theme/TabItem';
 
 Resumable streaming lets a client reconnect to an in-flight stream (for example after a refresh) and continue receiving the same response. VoltAgent provides this via `@voltagent/resumable-streams`.
 
+<video controls loop muted playsInline style={{width: '100%', height: 'auto'}}>
+
+  <source src="https://cdn.voltagent.dev/docs/resumable-stream.mp4" type="video/mp4" />
+  Your browser does not support the video tag.
+</video>
+
 ## Install
 
 <Tabs groupId="package-manager">
@@ -279,7 +285,7 @@ export function getResumableStreamAdapter() {
 ```ts
 // app/api/chat/route.ts
 import { getResumableStreamAdapter } from "@/lib/resumable-stream";
-import { supervisorAgent } from "@/voltagent";
+import { agent } from "@/voltagent";
 import { createResumableChatSession } from "@voltagent/resumable-streams";
 import { setWaitUntil } from "@voltagent/core";
 import { after } from "next/server";
@@ -298,12 +304,12 @@ export async function POST(req: Request) {
     adapter,
     conversationId,
     userId,
-    agentId: supervisorAgent.id,
+    agentId: agent.id,
   });
 
   await session.clearActiveStream();
 
-  const result = await supervisorAgent.streamText(input, {
+  const result = await agent.streamText(input, {
     userId,
     conversationId,
   });
@@ -320,7 +326,7 @@ export async function POST(req: Request) {
 ```ts
 // app/api/chat/[id]/stream/route.ts
 import { getResumableStreamAdapter } from "@/lib/resumable-stream";
-import { supervisorAgent } from "@/voltagent";
+import { agent } from "@/voltagent";
 import { createResumableChatSession } from "@voltagent/resumable-streams";
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -332,7 +338,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     adapter,
     conversationId: id,
     userId,
-    agentId: supervisorAgent.id,
+    agentId: agent.id,
   });
 
   return session.resumeResponse();

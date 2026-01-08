@@ -1,5 +1,5 @@
 import { getResumableStreamAdapter } from "@/lib/resumable-stream";
-import { supervisorAgent } from "@/voltagent";
+import { agent } from "@/voltagent";
 import { safeStringify } from "@voltagent/internal/utils";
 import { createResumableChatSession } from "@voltagent/resumable-streams";
 
@@ -19,7 +19,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   if (!userId) {
     return jsonError(400, "userId is required");
   }
-  const agentId = supervisorAgent.id;
+  const agentId = agent.id;
   const resumableStream = await getResumableStreamAdapter();
   const session = createResumableChatSession({
     adapter: resumableStream,

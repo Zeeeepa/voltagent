@@ -1926,6 +1926,9 @@ importers:
       '@radix-ui/react-use-controllable-state':
         specifier: ^1.2.2
         version: 1.2.2(@types/react@19.2.7)(react@19.2.3)
+      '@tavily/core':
+        specifier: ^0.6.3
+        version: 0.6.3
       '@voltagent/cli':
         specifier: ^0.1.20
         version: link:../../packages/cli
