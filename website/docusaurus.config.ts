@@ -575,7 +575,7 @@ const config: Config = {
     // ],
   ],
   themeConfig: {
-    image: "img/social3.png",
+    image: "img/social4.png",
     announcementBar: {
       id: "support_us",
       content:
