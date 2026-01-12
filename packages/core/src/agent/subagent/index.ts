@@ -33,7 +33,21 @@ import type {
 export { createSubagent } from "./types";
 
 // Import stream utilities
-import { createMetadataEnrichedStream, shouldForwardChunk } from "./stream-metadata-enricher";
+import {
+  type StreamMetadata,
+  createMetadataEnrichedStream,
+  shouldForwardChunk,
+} from "./stream-metadata-enricher";
+
+type SubAgentForwardingMetadata = StreamMetadata & {
+  subAgentId: string;
+  subAgentName: string;
+  executingAgentId: string;
+  executingAgentName: string;
+  parentAgentId?: string;
+  parentAgentName?: string;
+  agentPath: string[];
+};
 
 /**
  * SubAgentManager - Manages sub-agents and delegation functionality for an Agent
@@ -588,7 +602,7 @@ ${task}\n\nContext: ${safeStringify(contextObj, { indentation: 2 })}`;
 
   private forwardStreamEvents(
     response: Awaited<ReturnType<Agent["streamText"]>>,
-    forwardingMetadata: AgentMetadataContextValue,
+    forwardingMetadata: SubAgentForwardingMetadata,
     parentOperationContext: OperationContext | undefined,
     targetAgent: Agent,
   ): void {
@@ -627,7 +641,7 @@ ${task}\n\nContext: ${safeStringify(contextObj, { indentation: 2 })}`;
 
   private writeFullStream(
     response: Awaited<ReturnType<Agent["streamText"]>>,
-    forwardingMetadata: AgentMetadataContextValue,
+    forwardingMetadata: SubAgentForwardingMetadata,
     parentOperationContext: OperationContext | undefined,
     targetAgent: Agent,
     fullStreamWriter: WritableStreamDefaultWriter<any>,
@@ -898,7 +912,7 @@ ${task}\n\nContext: ${safeStringify(contextObj, { indentation: 2 })}`;
     });
   }
 
-  private buildForwardingMetadata(agent: Agent, oc?: OperationContext) {
+  private buildForwardingMetadata(agent: Agent, oc?: OperationContext): SubAgentForwardingMetadata {
     const parentMetadata = oc?.systemContext?.get(AGENT_METADATA_CONTEXT_KEY) as
       | AgentMetadataContextValue
       | undefined;
