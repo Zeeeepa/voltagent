@@ -6006,7 +6006,7 @@ aside:has(~ main .docs-home) {
 [class*="docMainContainer"]:has(.docs-home) [class*="docItemContainer"] {
   max-width: 1200px !important;
   margin: 0 auto !important;
-  padding: 0 2rem !important;
+  padding: 0 !important;
 }
 
 /* Fix docs home centering */
@@ -6018,4 +6018,20 @@ aside:has(~ main .docs-home) {
 [class*="docMainContainer"]:has(.docs-home) > div {
   display: flex !important;
   justify-content: center !important;
+}
+
+/* Override markdown img styles for FeatureShowcase in docs */
+.markdown .feature-showcase img,
+.theme-doc-markdown .feature-showcase img,
+[data-theme="dark"] .markdown .feature-showcase img,
+[data-theme="dark"] .theme-doc-markdown .feature-showcase img {
+  border: none !important;
+  background-color: transparent !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+}
+
+/* Override paragraph color in docs-home */
+html[data-theme="dark"] .theme-doc-markdown .docs-home p.docs-home-description {
+  color: #f2f2f2 !important;
 }

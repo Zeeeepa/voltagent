@@ -1,15 +1,19 @@
 import Link from "@docusaurus/Link";
 import {
-  ArrowRightIcon,
   BoltIcon,
+  BookOpenIcon,
   ChartBarIcon,
+  ChatBubbleLeftRightIcon,
   DocumentTextIcon,
+  ListBulletIcon,
   MagnifyingGlassIcon,
   RocketLaunchIcon,
   ShieldCheckIcon,
 } from "@heroicons/react/24/outline";
 // @ts-expect-error - Docusaurus theme component
 import CodeBlock from "@theme/CodeBlock";
+import { FeatureShowcase } from "../feature-showcase";
+import { DotPattern } from "../ui/dot-pattern";
 
 const codeExample = `import { VoltAgent, Agent } from "@voltagent/core";
 import { honoServer } from "@voltagent/server-hono";
@@ -28,77 +32,50 @@ new VoltAgent({
 
 const coreFeatures = ["Memory", "RAG", "Guardrails", "Tools", "MCP", "Voice", "Workflow"];
 
-const voltOpsFeatures = [
+const quickLinks = [
   {
-    title: "Observability",
-    description:
-      "Debug agent behavior with detailed traces. See every tool call, LLM request, and decision path.",
-    href: "/observability-docs/",
-    icon: MagnifyingGlassIcon,
-  },
-  {
-    title: "Evaluation",
-    description:
-      "Score agent outputs against test datasets. Catch regressions before they hit production.",
-    href: "/evaluation-docs/",
-    icon: ChartBarIcon,
-  },
-  {
-    title: "Prompt Management",
-    description: "Version control your prompts. A/B test changes and rollback when needed.",
-    href: "/prompt-engineering-docs/",
-    icon: DocumentTextIcon,
-  },
-  {
-    title: "Deployment",
-    description: "Ship agents with one click. Connect your GitHub repo and deploy automatically.",
-    href: "/deployment-docs/",
+    title: "Quick Start",
+    description: "Get up and running with VoltAgent in minutes.",
+    href: "/docs/quick-start/",
     icon: RocketLaunchIcon,
   },
-  {
-    title: "Automation",
-    description: "Trigger workflows based on events. Build complex pipelines without extra code.",
-    href: "/actions-triggers-docs/",
-    icon: BoltIcon,
-  },
-  {
-    title: "Guardrails",
-    description: "Validate inputs and outputs. Block harmful content and enforce safety rules.",
-    href: "/docs/guardrails/overview/",
-    icon: ShieldCheckIcon,
-  },
-];
 
-const quickLinks = [
-  { title: "Quick Start Guide", href: "/docs/quick-start/" },
-  { title: "Recipes & Guides", href: "/recipes-and-guides/" },
-  { title: "API Reference", href: "/docs/api/overview/" },
   {
-    title: "Examples on GitHub",
-    href: "https://github.com/voltagent/voltagent/tree/main/examples",
-    external: true,
+    title: "Recipes & Guides",
+    description: "Ready-to-use patterns and best practices.",
+    href: "/recipes-and-guides/",
+    icon: BookOpenIcon,
+  },
+
+  {
+    title: "5 Steps Tutorial",
+    description: "Learn the fundamentals with hands-on examples.",
+    href: "/docs/getting-started/tutorial/",
+    icon: ListBulletIcon,
   },
 ];
 
 export default function DocsHome() {
   return (
-    <div className="docs-home -mt-8 max-w-5xl mx-auto px-4">
+    <div className="docs-home -mt-8 max-w-7xl mx-auto md:px-4">
+      <DotPattern dotColor="#94a3b8" dotSize={1.2} spacing={20} />
       {/* Hero Section - Centered */}
-      <div className="text-center pt-16 pb-12 mb-8 overflow-visible">
+      <div className="text-center pt-8 md:pt-16 pb-8 md:pb-12 mb-4 md:mb-8 overflow-visible">
         <div
-          className="text-4xl md:text-6xl font-semibold mb-6 leading-normal pb-2"
+          className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-semibold mb-4 md:mb-6 leading-normal pb-2"
           style={{
             background: "linear-gradient(to right, #ffffff, #a1a1aa)",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
             backgroundClip: "text",
+            lineHeight: 1.2,
           }}
         >
-          Build · Observe · Ship
+          Build · Observe · Automate · Ship
           <br />
           AI Agents
         </div>
-        <div className="text-lg text-white max-w-xl mx-auto">
+        <div className="text-sm sm:text-base md:text-lg text-white max-w-xl mx-auto px-2">
           AI Agent Engineering Platform for <span className="text-[#b2b2b2]">development</span>,{" "}
           <span className="text-[#b2b2b2]">observability</span>,{" "}
           <span className="text-[#b2b2b2]">evaluation</span>, and{" "}
@@ -107,23 +84,28 @@ export default function DocsHome() {
       </div>
 
       {/* VoltAgent Core Section */}
-      <div className="mb-12">
-        <div className="flex items-center gap-3 mb-4">
-          <span className="text-2xl font-semibold">Core</span>
-          <span className="text-lg text-[#b2b2b2]">Open Source TypeScript Framework</span>
+      <div className="mb-8 md:mb-12">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 mb-2">
+          <span className="text-xl md:text-2xl font-semibold">Core</span>
+          <span className="text-sm md:text-lg text-[#b2b2b2]">
+            Open Source TypeScript Framework
+          </span>
         </div>
+        <p className="docs-home-description text-sm md:text-base mb-4">
+          Everything you need to build production-ready AI agents in TypeScript.
+        </p>
 
         {/* Feature Badges */}
-        <div className="flex flex-wrap gap-2 mb-6">
+        <div className="flex flex-wrap gap-1.5 md:gap-2 mb-4 md:mb-6">
           {coreFeatures.map((feature) => (
             <span
               key={feature}
-              className="px-3 py-1 text-sm rounded-full bg-zinc-800/50 text-zinc-300 border border-zinc-700/50"
+              className="px-2 md:px-3 py-0.5 md:py-1 text-xs md:text-sm rounded-full bg-zinc-800/50 text-zinc-300 border border-zinc-700/50"
             >
               {feature}
             </span>
           ))}
-          <span className="px-3 py-1 text-sm rounded-full bg-zinc-800/50 text-zinc-500 border border-zinc-700/50">
+          <span className="px-2 md:px-3 py-0.5 md:py-1 text-xs md:text-sm rounded-full bg-zinc-800/50 text-zinc-500 border border-zinc-700/50">
             and more...
           </span>
         </div>
@@ -133,12 +115,19 @@ export default function DocsHome() {
       </div>
 
       {/* VoltOps Console Section */}
-      <div className="mb-12 bg-black">
-        <div className="flex items-center gap-3 mb-4">
-          <span className="text-2xl font-semibold">VoltOps Console</span>
-          <span className="text-lg text-[#b2b2b2]">Cloud / Self-Hosted Platform</span>
+      <div className="mb-8 md:mb-12 bg-black">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 mb-2">
+          <span className="text-xl md:text-2xl font-semibold">VoltOps Console</span>
+          <span className="text-sm md:text-lg text-[#b2b2b2]">Cloud / Self-Hosted Platform</span>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <p className="docs-home-description text-sm md:text-base mb-4">
+          Enterprise-grade platform to take AI agents from development to production.
+        </p>
+        {/* Feature Showcase - Full Width */}
+        <div className="my-6 md:my-12 relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen max-w-none px-2 md:px-8">
+          <FeatureShowcase />
+        </div>
+        {/*   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {voltOpsFeatures.map((feature) => (
             <Link to={feature.href} className="no-underline hover:no-underline">
               <div
@@ -157,23 +146,33 @@ export default function DocsHome() {
               </div>
             </Link>
           ))}
-        </div>
+        </div> */}
       </div>
 
       {/* Quick Links Section */}
       <div className="mb-8">
-        <h2 className="text-xl font-semibold mb-4 text-zinc-400">Quick Links</h2>
-        <div className="flex flex-wrap gap-6">
+        <h2 className="text-lg md:text-xl font-semibold mb-3 md:mb-4 text-white">Get Started</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
           {quickLinks.map((link) => (
-            <Link
+            <div
               key={link.title}
-              to={link.href}
-              target={link.external ? "_blank" : undefined}
-              rel={link.external ? "noopener noreferrer" : undefined}
-              className="text-emerald-500 hover:text-emerald-400 font-medium flex items-center gap-1 transition-colors"
+              className="group p-3 md:p-4 rounded-lg !border !border-solid !border-zinc-800 transition-all duration-200"
             >
-              {link.title} <ArrowRightIcon className="w-3 h-3" />
-            </Link>
+              <div className="flex items-start gap-2 md:gap-3">
+                <link.icon className="w-4 h-4 md:w-5 md:h-5 text-[#00d992] flex-shrink-0 mt-0.5" />
+                <Link
+                  to={link.href}
+                  className="text-white font-medium hover:text-emerald-400 transition-colors no-underline hover:no-underline"
+                >
+                  <div className="flex text-white flex-col">
+                    <span className="text-sm md:text-base">{link.title}</span>
+                    <span className="text-[#b2b2b2] text-xs md:text-sm mt-1">
+                      {link.description}
+                    </span>
+                  </div>
+                </Link>
+              </div>
+            </div>
           ))}
         </div>
       </div>

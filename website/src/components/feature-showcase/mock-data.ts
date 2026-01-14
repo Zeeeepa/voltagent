@@ -296,7 +296,7 @@ const agent = new Agent({
     ],
   },
 });`,
-    footerText: "Block harmful content, mask PII, and enforce topic boundaries automatically",
+    footerText: "Validate inputs and outputs. Block harmful content and enforce safety rules.",
     docLink: "/docs/guardrails/overview",
   },
   {
@@ -305,7 +305,7 @@ const agent = new Agent({
     icon: "zap",
     image: "https://cdn.voltagent.dev/website/feature-showcase/deployment-4.png",
     fullImage: true,
-    footerText: "Deploy agents to production with one click — no infrastructure to manage",
+    footerText: "Deploy agents to production with one click,no infrastructure to manage",
     docLink: "/deployment-docs/",
   },
 ];
