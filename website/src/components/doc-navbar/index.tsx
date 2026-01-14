@@ -19,10 +19,16 @@ type TabConfig = {
 
 const tabs: TabConfig[] = [
   {
+    id: "home",
+    label: "Home",
+    href: "/docs/home/",
+    match: (pathname) => pathname === "/docs/home/" || pathname === "/docs/home",
+  },
+  {
     id: "voltagent",
-    label: "VoltAgent Docs",
+    label: "VoltAgent",
     href: "/docs/",
-    match: (pathname) => pathname.startsWith("/docs/"),
+    match: (pathname) => pathname.startsWith("/docs/") && !pathname.startsWith("/docs/home"),
   },
   {
     id: "observability",
@@ -137,6 +143,16 @@ export default function DocNavbar() {
           <div className={styles.mobileDivider} />
           <div className={styles.mobileLinks}>
             <Link
+              to="/docs/home/"
+              className={clsx(
+                styles.mobileNavLink,
+                activeTab === "home" && styles.mobileNavLinkActive,
+              )}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Home
+            </Link>
+            <Link
               to="/docs/"
               className={clsx(
                 styles.mobileNavLink,
@@ -144,7 +160,7 @@ export default function DocNavbar() {
               )}
               onClick={() => setIsMenuOpen(false)}
             >
-              VoltAgent Docs
+              VoltAgent
             </Link>
             <Link
               to="/observability-docs/"
