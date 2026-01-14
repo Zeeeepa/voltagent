@@ -82,7 +82,7 @@ const quickLinks = [
 
 export default function DocsHome() {
   return (
-    <div className="docs-home -mt-8  ">
+    <div className="docs-home -mt-8 max-w-5xl mx-auto px-4">
       {/* Hero Section - Centered */}
       <div className="text-center pt-16 pb-12 mb-8 overflow-visible">
         <div
@@ -159,8 +159,6 @@ export default function DocsHome() {
           ))}
         </div>
       </div>
-
-      <hr className="border-zinc-800 my-10" />
 
       {/* Quick Links Section */}
       <div className="mb-8">

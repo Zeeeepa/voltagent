@@ -5965,3 +5965,57 @@ article:has(.docs-home) .copy-page-dropdown-wrapper,
 .docs-home a.no-underline {
   border-bottom: none !important;
 }
+
+/* Docs home page background */
+.docs-home {
+  background-color: #000000 !important;
+}
+
+/* Docs home page full background black */
+article:has(.docs-home),
+article:has(.docs-home) .theme-doc-markdown,
+[class*="docItemContainer"]:has(.docs-home) {
+  background-color: #000000 !important;
+}
+
+/* Also target the main container */
+main:has(.docs-home) {
+  background-color: #000000 !important;
+}
+
+/* Docs home page - target docItemWrapper */
+[class*="docItemWrapper"]:has(.docs-home),
+[class*="docMainContainer"]:has(.docs-home),
+[class*="docRoot"]:has(.docs-home) {
+  background-color: #000000 !important;
+}
+
+/* Hide sidebar on docs home page */
+[class*="docSidebarContainer"]:has(~ [class*="docMainContainer"] .docs-home),
+aside:has(~ main .docs-home) {
+  display: none !important;
+}
+
+/* Make content full width when sidebar is hidden */
+[class*="docMainContainer"]:has(.docs-home) {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Center content on docs home page */
+[class*="docMainContainer"]:has(.docs-home) [class*="docItemContainer"] {
+  max-width: 1200px !important;
+  margin: 0 auto !important;
+  padding: 0 2rem !important;
+}
+
+/* Fix docs home centering */
+[class*="docItemContainer"]:has(.docs-home) {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+[class*="docMainContainer"]:has(.docs-home) > div {
+  display: flex !important;
+  justify-content: center !important;
+}
