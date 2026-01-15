@@ -19,10 +19,16 @@ type TabConfig = {
 
 const tabs: TabConfig[] = [
   {
+    id: "home",
+    label: "Home",
+    href: "/docs/home/",
+    match: (pathname) => pathname === "/docs/home/" || pathname === "/docs/home",
+  },
+  {
     id: "voltagent",
-    label: "VoltAgent Docs",
+    label: "VoltAgent",
     href: "/docs/",
-    match: (pathname) => pathname.startsWith("/docs/"),
+    match: (pathname) => pathname.startsWith("/docs/") && !pathname.startsWith("/docs/home"),
   },
   {
     id: "observability",
@@ -78,8 +84,8 @@ export default function DocNavbar() {
       <nav className={styles.docNavbar} aria-label="Documentation navigation">
         <div className={styles.topRow}>
           <Link to="/" className={styles.brandLink} aria-label="VoltAgent home">
-            <span className={styles.brandMark}>
-              <BoltIcon className={styles.brandIcon} />
+            <span className="flex items-center justify-center w-8 h-8 rounded-full border-2 border-solid border-[#00d992] bg-[rgba(0,217,146,0.08)]">
+              <BoltIcon className="w-4 h-4 text-[#00d992]" />
             </span>
           </Link>
           <div className={styles.actions}>
@@ -137,6 +143,16 @@ export default function DocNavbar() {
           <div className={styles.mobileDivider} />
           <div className={styles.mobileLinks}>
             <Link
+              to="/docs/home/"
+              className={clsx(
+                styles.mobileNavLink,
+                activeTab === "home" && styles.mobileNavLinkActive,
+              )}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Home
+            </Link>
+            <Link
               to="/docs/"
               className={clsx(
                 styles.mobileNavLink,
@@ -144,7 +160,7 @@ export default function DocNavbar() {
               )}
               onClick={() => setIsMenuOpen(false)}
             >
-              VoltAgent Docs
+              VoltAgent
             </Link>
             <Link
               to="/observability-docs/"

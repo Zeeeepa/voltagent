@@ -43,21 +43,42 @@ import styles from "./styles.module.css";
 
 // Docs page tab configuration
 const docTabs = [
-  { label: "VoltAgent", href: "/docs/", match: "/docs/" },
-  { label: "Observability", href: "/observability-docs/", match: "/observability-docs/" },
+  { label: "Home", href: "/docs/home/", match: (path: string) => path.startsWith("/docs/home") },
+  {
+    label: "VoltAgent",
+    href: "/docs/",
+    match: (path: string) => path.startsWith("/docs/") && !path.startsWith("/docs/home"),
+  },
+  {
+    label: "Observability",
+    href: "/observability-docs/",
+    match: (path: string) => path.startsWith("/observability-docs/"),
+  },
   {
     label: "Actions & Triggers",
     href: "/actions-triggers-docs/",
-    match: "/actions-triggers-docs/",
+    match: (path: string) => path.startsWith("/actions-triggers-docs/"),
   },
-  { label: "Evaluation", href: "/evaluation-docs/", match: "/evaluation-docs/" },
+  {
+    label: "Evaluation",
+    href: "/evaluation-docs/",
+    match: (path: string) => path.startsWith("/evaluation-docs/"),
+  },
   {
     label: "Prompt Engineering",
     href: "/prompt-engineering-docs/",
-    match: "/prompt-engineering-docs/",
+    match: (path: string) => path.startsWith("/prompt-engineering-docs/"),
   },
-  { label: "Deployment", href: "/deployment-docs/", match: "/deployment-docs/" },
-  { label: "Recipes & Guides", href: "/recipes-and-guides/", match: "/recipes-and-guides/" },
+  {
+    label: "Deployment",
+    href: "/deployment-docs/",
+    match: (path: string) => path.startsWith("/deployment-docs/"),
+  },
+  {
+    label: "Recipes & Guides",
+    href: "/recipes-and-guides/",
+    match: (path: string) => path.startsWith("/recipes-and-guides/"),
+  },
 ];
 
 export default function Navbar() {
@@ -201,7 +222,7 @@ export default function Navbar() {
                 to={tab.href}
                 className={clsx(
                   styles.docsTab,
-                  location.pathname.startsWith(tab.match) && styles.docsTabActive,
+                  tab.match(location.pathname) && styles.docsTabActive,
                 )}
               >
                 {tab.label}

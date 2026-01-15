@@ -4666,13 +4666,13 @@ code .token.coord {
   background-color: transparent !important;
 }
 
-/* Root level section headers (GETTING STARTED, AGENTS, etc.) */
+/* Root level section headers (Getting Started, Agents, etc.) */
 .menu__list-item-collapsible .menu__link {
-  font-weight: 600 !important;
+  font-weight: 500 !important;
   color: #ffffff !important; /* Default white, emerald will only override for root level */
-  font-size: 0.75rem !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.05em !important;
+  font-size: 0.875rem !important;
+  text-transform: capitalize !important;
+  letter-spacing: 0.02em !important;
   background-color: transparent !important;
   border-left: 3px solid transparent !important;
   position: relative !important;
@@ -4721,19 +4721,19 @@ code .token.coord {
   > .menu__list-item-collapsible
   .menu__link {
   color: #ffffff !important;
-  font-weight: 600 !important;
+  font-weight: 500 !important;
 }
 
 /* Level 2 category headers (Storage Adapters, SCORERS, etc.) - same size as level 1 */
 .theme-doc-sidebar-item-category-level-2 .menu__list-item-collapsible .menu__link {
   font-size: 0.875rem !important;
-  font-weight: 600 !important;
+  font-weight: 500 !important;
   color: #ffffff !important;
 }
 
 .theme-doc-sidebar-item-category-level-2 > .menu__list-item-collapsible > .menu__link {
   font-size: 0.875rem !important;
-  font-weight: 600 !important;
+  font-weight: 500 !important;
   color: #ffffff !important;
 }
 
@@ -4758,7 +4758,7 @@ code .token.coord {
 .menu__list .menu__list .menu__link {
   padding: 0.4rem 0.75rem !important;
   padding-left: 2rem !important;
-  font-weight: 400 !important;
+  font-weight: 500 !important;
   color: rgb(156, 163, 175) !important;
   font-size: 0.875rem !important;
   width: 100% !important;
@@ -4804,8 +4804,8 @@ code .token.coord {
 .menu__list .menu__list .menu__list-item-collapsible .menu__link {
   padding-left: 1rem !important;
   color: #ffffff !important;
-  font-size: 12px !important;
-  font-weight: 600 !important;
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
 }
 
 [data-theme="dark"] .menu__list .menu__list .menu__list-item-collapsible .menu__link {
@@ -4830,11 +4830,11 @@ code .token.coord {
 }
 
 [data-theme="dark"] .menu__list-item-collapsible .menu__link {
-  font-weight: 700 !important;
+  font-weight: 500 !important;
   color: #ffffff !important; /* Default beyaz */
-  font-size: 0.75rem !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.05em !important;
+  font-size: 0.875rem !important;
+  text-transform: capitalize !important;
+  letter-spacing: 0.02em !important;
   background-color: transparent !important;
   border-left: none !important;
   padding-left: 0.75rem !important;
@@ -4962,7 +4962,7 @@ aside.theme-doc-sidebar-container .menu {
 .menu__list .menu__list .menu__link {
   padding: 0.4rem 0.75rem !important;
   padding-left: 1rem !important;
-  font-weight: 400 !important;
+  font-weight: 500 !important;
   color: rgb(156, 163, 175) !important;
   font-size: 0.875rem !important;
   width: 100% !important;
@@ -5416,10 +5416,10 @@ nav.table-of-contents .table-of-contents__link--active,
 
 /* Level 1 link items (Evals, Triggers, Actions, etc.) - same style as category headers */
 .theme-doc-sidebar-item-link-level-1 > .menu__link {
-  font-size: 0.75rem !important;
-  font-weight: 700 !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.05em !important;
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  text-transform: capitalize !important;
+  letter-spacing: 0.02em !important;
   color: #ffffff !important;
 }
 
@@ -5876,4 +5876,174 @@ html[data-theme="dark"] .three-columns .card p {
 /* Hide title in showcase code blocks */
 .showcase-code-block [class*="codeBlockTitle"] {
   display: none !important;
+}
+
+/* ========================================
+   Docs Home Page Styles
+   ======================================== */
+
+/* Hide sidebar on docs home page */
+.docs-home-page-wrapper aside.theme-doc-sidebar-container {
+  display: none !important;
+}
+
+/* Make main content full width on home page */
+.docs-home-page-wrapper main {
+  max-width: 100% !important;
+}
+
+.docs-home-page-wrapper .col--3 {
+  display: none !important;
+}
+
+.docs-home-page-wrapper [class*="docMainContainer"] {
+  max-width: 100% !important;
+  padding: 0 !important;
+}
+
+/* Center the home page content */
+.docs-home-page {
+  max-width: 960px !important;
+  margin: 0 auto !important;
+  padding: 2rem 1.5rem !important;
+}
+
+/* Home page hero section */
+.docs-home-page h1 {
+  font-size: 2.5rem !important;
+  font-weight: 700 !important;
+  margin-bottom: 1rem !important;
+  text-align: center !important;
+}
+
+.docs-home-page > p:first-of-type {
+  font-size: 1.125rem !important;
+  text-align: center !important;
+  opacity: 0.9;
+  max-width: 700px;
+  margin: 0 auto 1.5rem auto !important;
+}
+
+/* Center hero buttons */
+.docs-home-page .home-hero-buttons {
+  justify-content: center !important;
+}
+
+/* Section headings */
+.docs-home-page h2 {
+  font-size: 1.5rem !important;
+  font-weight: 600 !important;
+  margin-top: 2rem !important;
+  margin-bottom: 0.75rem !important;
+}
+
+/* Feature cards hover effect */
+.home-feature-link:hover {
+  border-color: var(--ifm-color-emphasis-500) !important;
+  transform: translateY(-2px);
+  transition: all 0.2s ease;
+}
+
+.home-feature-link {
+  transition: all 0.2s ease;
+}
+
+/* Hide copy-page dropdown on docs home page */
+.docs-home .copy-page-dropdown-wrapper {
+  display: none !important;
+}
+
+/* Alternative selector for docs home page */
+.docs-home ~ .copy-page-dropdown-wrapper,
+.docs-home + .copy-page-dropdown-wrapper,
+article:has(.docs-home) .copy-page-dropdown-wrapper,
+[class*="docItemContainer"]:has(.docs-home) .copy-page-dropdown-wrapper {
+  display: none !important;
+}
+
+/* Remove border-bottom from docs-home links */
+.docs-home a.no-underline {
+  border-bottom: none !important;
+}
+
+/* Docs home page background */
+.docs-home {
+  background-color: #000000 !important;
+}
+
+/* Docs home page full background black */
+article:has(.docs-home),
+article:has(.docs-home) .theme-doc-markdown,
+[class*="docItemContainer"]:has(.docs-home) {
+  background-color: #000000 !important;
+}
+
+/* Also target the main container */
+main:has(.docs-home) {
+  background-color: #000000 !important;
+}
+
+/* Docs home page - target docItemWrapper */
+[class*="docItemWrapper"]:has(.docs-home),
+[class*="docMainContainer"]:has(.docs-home),
+[class*="docRoot"]:has(.docs-home) {
+  background-color: #000000 !important;
+}
+
+/* Hide sidebar on docs home page */
+[class*="docSidebarContainer"]:has(~ [class*="docMainContainer"] .docs-home),
+aside:has(~ main .docs-home) {
+  display: none !important;
+}
+
+/* Make content full width when sidebar is hidden */
+[class*="docMainContainer"]:has(.docs-home) {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Center content on docs home page */
+[class*="docMainContainer"]:has(.docs-home) [class*="docItemContainer"] {
+  max-width: 1200px !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
+}
+
+/* Fix docs home centering */
+[class*="docItemContainer"]:has(.docs-home) {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+[class*="docMainContainer"]:has(.docs-home) > div {
+  display: flex !important;
+  justify-content: center !important;
+}
+
+/* Override markdown img styles for FeatureShowcase in docs */
+.markdown .feature-showcase img,
+.theme-doc-markdown .feature-showcase img,
+[data-theme="dark"] .markdown .feature-showcase img,
+[data-theme="dark"] .theme-doc-markdown .feature-showcase img {
+  border: none !important;
+  background-color: transparent !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+}
+
+/* Override paragraph color in docs-home */
+html[data-theme="dark"] .theme-doc-markdown .docs-home p.docs-home-description {
+  color: #f2f2f2 !important;
+}
+
+/* Override markdown p styles for FeatureShowcase in docs */
+.markdown .feature-showcase p,
+.theme-doc-markdown .feature-showcase p,
+article .markdown .feature-showcase p,
+[data-theme="dark"] .markdown .feature-showcase p,
+[data-theme="dark"] .theme-doc-markdown .feature-showcase p {
+  font-size: inherit !important;
+  font-weight: inherit !important;
+  line-height: inherit !important;
+  margin-bottom: 0 !important;
 }

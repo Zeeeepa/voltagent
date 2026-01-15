@@ -69,12 +69,12 @@ export function FeatureShowcase() {
   }, [activeTab]);
 
   return (
-    <section className="relative z-10  px-4 md:px-6">
+    <section className="feature-showcase relative z-10 px-4 md:px-6">
       <div className="max-w-7xl mx-auto">
         {/* Main Container */}
-        <div className="overflow-hidden border border-solid border-zinc-800 rounded-lg">
+        <div className="overflow-hidden !border !border-solid !border-zinc-800 rounded-lg">
           {/* Tab Bar + Description (unified) */}
-          <div className=" border-b border-solid border-t-0 border-l-0 border-r-0 border-zinc-800">
+          <div className="!border-b !border-solid !border-t-0 !border-l-0 !border-r-0 !border-zinc-800">
             {/* Tabs */}
             <div
               ref={tabsContainerRef}
@@ -111,7 +111,7 @@ export function FeatureShowcase() {
                   >
                     {Icon && (
                       <Icon
-                        className={`w-5 h-5 transition-colors duration-700 ease-in-out ${
+                        className={`w-3.5 h-3.5 md:w-5 md:h-5 transition-colors duration-700 ease-in-out ${
                           isHighlighted ? "text-emerald-400" : ""
                         }`}
                       />
@@ -130,14 +130,14 @@ export function FeatureShowcase() {
                 hoveredTab ? "bg-zinc-800/40" : activeTab ? "bg-zinc-800/60" : "bg-zinc-800/40"
               }`}
             >
-              <p
-                className={`text-xs md:text-sm m-0 flex-1 transition-colors duration-700 ${
+              <span
+                className={`text-xs md:text-sm flex-1 transition-colors duration-700 ${
                   hoveredTab || activeTab ? "" : "text-zinc-100"
                 }`}
               >
                 {displayTabData?.footerText ||
                   "Start building production-ready AI agents in minutes"}
-              </p>
+              </span>
               <a
                 href={displayTabData?.docLink || "/docs"}
                 target="_blank"
@@ -199,11 +199,11 @@ export function FeatureShowcase() {
                 </div>
 
                 {/* Code Panel - Bottom on mobile, Left on desktop */}
-                <div className="h-[250px] sm:h-[350px] md:h-[600px] overflow-auto showcase-code-block lg:border-r border-solid border-t-0 border-b-0 border-l-0 border-zinc-700 order-2 lg:order-1">
+                <div className="h-[250px] sm:h-[350px] md:h-[600px] overflow-auto showcase-code-block lg:!border-r !border-solid !border-t-0 !border-b-0 !border-l-0 !border-zinc-700 order-2 lg:order-1">
                   {displayTabData?.triggerCode && displayTabData?.actionCode ? (
                     <div className="flex flex-col h-full">
                       {/* Code Tabs */}
-                      <div className="flex border-b border-solid border-t-0 border-l-0 border-r-0 border-zinc-800 bg-black">
+                      <div className="flex !border-b !border-solid !border-t-0 !border-l-0 !border-r-0 !border-zinc-800 bg-black">
                         <button
                           onClick={() => setActiveCodeTab("trigger")}
                           className={`px-4 py-2 text-xs font-medium transition-colors cursor-pointer border-0 outline-none ${

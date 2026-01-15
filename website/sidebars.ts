@@ -13,6 +13,11 @@ import type { SidebarsConfig } from "@docusaurus/plugin-content-docs";
 const sidebars: SidebarsConfig = {
   docs: [
     {
+      type: "doc",
+      id: "home",
+      label: "Home",
+    },
+    {
       type: "category",
       label: "Get Started",
       collapsed: true,
