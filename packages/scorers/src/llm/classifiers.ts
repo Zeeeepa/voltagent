@@ -27,7 +27,7 @@ type ErrorWithMetadata = Error & { metadata?: Record<string, unknown> };
 
 const CHOICE_RESPONSE_SCHEMA = z.object({
   choice: z.string(),
-  reason: z.string().optional().nullable(),
+  reason: z.string().nullable(),
 });
 
 function parseChoiceResponse(text: string): { choice: ChoiceId; reason?: string } {
@@ -117,7 +117,7 @@ function buildDefaultChoiceInstructions(choiceIds: string[]): string {
   return [
     "You are an impartial evaluator.",
     `Respond strictly with JSON in the shape {"choice":"<id>","reason":"..."} where <id> is one of [${formatted}].`,
-    "Provide a concise reason when appropriate.",
+    "Provide a concise reason; use null when a reason is not applicable.",
   ].join(" ");
 }
 
