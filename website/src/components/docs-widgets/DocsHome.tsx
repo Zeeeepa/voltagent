@@ -112,9 +112,33 @@ export default function DocsHome() {
         {/* Code Block */}
         <CodeBlock language="typescript">{codeExample}</CodeBlock>
       </div>
-
+      <div className="my-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
+          {quickLinks.map((link) => (
+            <div
+              key={link.title}
+              className="group p-3 md:p-4 rounded-lg !border !border-solid !border-zinc-800 transition-all duration-200"
+            >
+              <div className="flex items-start gap-2 md:gap-3">
+                <link.icon className="w-4 h-4 md:w-5 md:h-5 text-[#00d992] flex-shrink-0 mt-0.5" />
+                <Link
+                  to={link.href}
+                  className="text-white font-medium hover:text-emerald-400 transition-colors no-underline hover:no-underline"
+                >
+                  <div className="flex text-white flex-col">
+                    <span className="text-sm md:text-base">{link.title}</span>
+                    <span className="text-[#b2b2b2] text-xs md:text-sm mt-1">
+                      {link.description}
+                    </span>
+                  </div>
+                </Link>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
       {/* VoltOps Console Section */}
-      <div className="mb-8 md:mb-12 bg-black">
+      <div className="my-8 md:my-12 bg-black">
         <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-3">
           <div className="flex items-center gap-2">
             <Squares2X2Icon className="w-5 h-5 md:w-6 md:h-6 text-[#00d992]" />
@@ -154,32 +178,6 @@ export default function DocsHome() {
       </div>
 
       {/* Quick Links Section */}
-      <div className="mb-8">
-        <h2 className="text-lg md:text-xl font-semibold mb-3 md:mb-4 text-white">Get Started</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
-          {quickLinks.map((link) => (
-            <div
-              key={link.title}
-              className="group p-3 md:p-4 rounded-lg !border !border-solid !border-zinc-800 transition-all duration-200"
-            >
-              <div className="flex items-start gap-2 md:gap-3">
-                <link.icon className="w-4 h-4 md:w-5 md:h-5 text-[#00d992] flex-shrink-0 mt-0.5" />
-                <Link
-                  to={link.href}
-                  className="text-white font-medium hover:text-emerald-400 transition-colors no-underline hover:no-underline"
-                >
-                  <div className="flex text-white flex-col">
-                    <span className="text-sm md:text-base">{link.title}</span>
-                    <span className="text-[#b2b2b2] text-xs md:text-sm mt-1">
-                      {link.description}
-                    </span>
-                  </div>
-                </Link>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
     </div>
   );
 }

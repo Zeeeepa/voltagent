@@ -21,14 +21,14 @@ const tabs: TabConfig[] = [
   {
     id: "home",
     label: "Home",
-    href: "/docs/home/",
-    match: (pathname) => pathname === "/docs/home/" || pathname === "/docs/home",
+    href: "/docs/",
+    match: (pathname) => pathname === "/docs/",
   },
   {
     id: "voltagent",
     label: "VoltAgent",
-    href: "/docs/",
-    match: (pathname) => pathname.startsWith("/docs/") && !pathname.startsWith("/docs/home"),
+    href: "/docs/overview/",
+    match: (pathname) => pathname.startsWith("/docs/overview/"),
   },
   {
     id: "observability",
@@ -143,7 +143,7 @@ export default function DocNavbar() {
           <div className={styles.mobileDivider} />
           <div className={styles.mobileLinks}>
             <Link
-              to="/docs/home/"
+              to="/docs/"
               className={clsx(
                 styles.mobileNavLink,
                 activeTab === "home" && styles.mobileNavLinkActive,

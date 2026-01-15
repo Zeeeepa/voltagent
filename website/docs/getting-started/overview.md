@@ -1,6 +1,6 @@
 ---
 title: Overview
-slug: /
+slug: /overview
 ---
 
 **VoltAgent** is an open source TypeScript framework for building and orchestrating AI agents.

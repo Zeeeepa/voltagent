@@ -1,7 +1,7 @@
 ---
 title: Home
 sidebar_label: Home
-slug: /home
+slug: /
 hide_table_of_contents: true
 hide_title: true
 custom_edit_url: null

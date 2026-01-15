@@ -43,11 +43,11 @@ import styles from "./styles.module.css";
 
 // Docs page tab configuration
 const docTabs = [
-  { label: "Home", href: "/docs/home/", match: (path: string) => path.startsWith("/docs/home") },
+  { label: "Home", href: "/docs/", match: (path: string) => path === "/docs/" },
   {
     label: "VoltAgent",
-    href: "/docs/",
-    match: (path: string) => path.startsWith("/docs/") && !path.startsWith("/docs/home"),
+    href: "/docs/overview/",
+    match: (path: string) => path.startsWith("/docs/overview/"),
   },
   {
     label: "Observability",
@@ -395,7 +395,7 @@ export default function Navbar() {
               </div>
             </div>
             <Link to="/docs/" className={`${styles.navLink}  `}>
-              Docs
+              Documentation
             </Link>
 
             <div className={`${styles.navLink} group relative`}>
