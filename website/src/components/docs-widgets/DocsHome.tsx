@@ -1,14 +1,10 @@
 import Link from "@docusaurus/Link";
 import {
-  BoltIcon,
   BookOpenIcon,
-  ChartBarIcon,
-  ChatBubbleLeftRightIcon,
-  DocumentTextIcon,
+  CodeBracketIcon,
   ListBulletIcon,
-  MagnifyingGlassIcon,
   RocketLaunchIcon,
-  ShieldCheckIcon,
+  Squares2X2Icon,
 } from "@heroicons/react/24/outline";
 // @ts-expect-error - Docusaurus theme component
 import CodeBlock from "@theme/CodeBlock";
@@ -85,13 +81,16 @@ export default function DocsHome() {
 
       {/* VoltAgent Core Section */}
       <div className="mb-8 md:mb-12">
-        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 mb-2">
-          <span className="text-xl md:text-2xl font-semibold">Core</span>
-          <span className="text-sm md:text-lg text-[#b2b2b2]">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-3">
+          <div className="flex items-center gap-2">
+            <CodeBracketIcon className="w-5 h-5 md:w-6 md:h-6 text-[#00d992]" />
+            <span className="text-xl md:text-2xl font-semibold text-white">Core</span>
+          </div>
+          <span className="px-2 py-0.5 text-xs md:text-sm rounded-full bg-zinc-800/80 text-zinc-300 border border-zinc-700/50">
             Open Source TypeScript Framework
           </span>
         </div>
-        <p className="docs-home-description text-sm md:text-base mb-4">
+        <p className="docs-home-description text-sm md:text-base mb-4 text-zinc-400">
           Everything you need to build production-ready AI agents in TypeScript.
         </p>
 
@@ -116,11 +115,16 @@ export default function DocsHome() {
 
       {/* VoltOps Console Section */}
       <div className="mb-8 md:mb-12 bg-black">
-        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 mb-2">
-          <span className="text-xl md:text-2xl font-semibold">VoltOps Console</span>
-          <span className="text-sm md:text-lg text-[#b2b2b2]">Cloud / Self-Hosted Platform</span>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-3">
+          <div className="flex items-center gap-2">
+            <Squares2X2Icon className="w-5 h-5 md:w-6 md:h-6 text-[#00d992]" />
+            <span className="text-xl md:text-2xl font-semibold text-white">VoltOps Console</span>
+          </div>
+          <span className="px-2 py-0.5 text-xs md:text-sm rounded-full bg-zinc-800/80 text-zinc-300 border border-zinc-700/50">
+            Cloud / Self-Hosted Platform
+          </span>
         </div>
-        <p className="docs-home-description text-sm md:text-base mb-4">
+        <p className="docs-home-description text-sm md:text-base mb-4 text-zinc-400">
           Enterprise-grade platform to take AI agents from development to production.
         </p>
         {/* Feature Showcase - Full Width */}

@@ -84,8 +84,8 @@ export default function DocNavbar() {
       <nav className={styles.docNavbar} aria-label="Documentation navigation">
         <div className={styles.topRow}>
           <Link to="/" className={styles.brandLink} aria-label="VoltAgent home">
-            <span className={styles.brandMark}>
-              <BoltIcon className={styles.brandIcon} />
+            <span className="flex items-center justify-center w-8 h-8 rounded-full border-2 border-solid border-[#00d992] bg-[rgba(0,217,146,0.08)]">
+              <BoltIcon className="w-4 h-4 text-[#00d992]" />
             </span>
           </Link>
           <div className={styles.actions}>
