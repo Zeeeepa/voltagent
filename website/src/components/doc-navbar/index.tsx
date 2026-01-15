@@ -4,7 +4,7 @@ import { BoltIcon } from "@heroicons/react/24/solid";
 import NavbarMobileSidebarSecondaryMenu from "@theme/Navbar/MobileSidebar/SecondaryMenu";
 import SearchBar from "@theme/SearchBar";
 import clsx from "clsx";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { DiscordLogo } from "../../../static/img/logos/discord";
 import { GitHubLogo } from "../../../static/img/logos/github";
 import styles from "./styles.module.css";
@@ -62,17 +62,29 @@ const tabs: TabConfig[] = [
   },
 ];
 
-function useActiveTab(pathname: string) {
-  return useMemo(() => {
-    const match = tabs.find((tab) => tab.match(pathname));
-    return match?.id ?? "voltagent";
-  }, [pathname]);
+function getActiveTabFromPathname(pathname: string): string {
+  const match = tabs.find((tab) => tab.match(pathname));
+  return match?.id ?? "voltagent";
+}
+
+function useActiveTab() {
+  const location = useLocation();
+  const [activeTab, setActiveTab] = useState<string>(() => {
+    return getActiveTabFromPathname(location.pathname);
+  });
+
+  useEffect(() => {
+    const pathname = typeof window !== "undefined" ? window.location.pathname : location.pathname;
+    setActiveTab(getActiveTabFromPathname(pathname));
+  }, [location.pathname]);
+
+  return activeTab;
 }
 
 export default function DocNavbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
-  const activeTab = useActiveTab(location.pathname);
+  const activeTab = useActiveTab();
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: Need to close menu on route change
   useEffect(() => {
