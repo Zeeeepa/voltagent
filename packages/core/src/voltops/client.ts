@@ -55,6 +55,9 @@ import type {
   VoltOpsEvalRunSummary,
   VoltOpsEvalsApi,
   VoltOpsFailEvalRunRequest,
+  VoltOpsFeedbackConfig,
+  VoltOpsFeedbackToken,
+  VoltOpsFeedbackTokenCreateInput,
   VoltOpsPromptManager,
   VoltOpsScorerSummary,
 } from "./types";
@@ -235,6 +238,48 @@ export class VoltOpsClient implements IVoltOpsClient {
     };
 
     return await this.fetchImpl(url, requestInit);
+  }
+
+  public async createFeedbackToken(
+    input: VoltOpsFeedbackTokenCreateInput,
+  ): Promise<VoltOpsFeedbackToken> {
+    const payload: Record<string, unknown> = {
+      trace_id: input.traceId,
+      feedback_key: input.key,
+    };
+
+    if (input.feedbackConfig !== undefined) {
+      payload.feedback_config = input.feedbackConfig;
+    }
+    if (input.expiresAt !== undefined) {
+      payload.expires_at = input.expiresAt;
+    }
+    if (input.expiresIn !== undefined) {
+      payload.expires_in = input.expiresIn;
+    }
+
+    const response = await this.request<{
+      id?: string;
+      url?: string;
+      expires_at?: string;
+      feedback_config?: VoltOpsFeedbackConfig | null;
+    }>("POST", "/api/public/feedback/tokens", payload);
+
+    const id = response?.id;
+    const url = response?.url;
+    const expiresAt = response?.expires_at;
+    const feedbackConfig = response?.feedback_config ?? input.feedbackConfig ?? null;
+
+    if (!id || !url || !expiresAt) {
+      throw new Error("Failed to create feedback token via VoltOps");
+    }
+
+    return {
+      id,
+      url,
+      expiresAt,
+      feedbackConfig,
+    };
   }
 
   // getObservabilityExporter removed - observability now handled by VoltAgentObservability
