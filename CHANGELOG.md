@@ -1,5 +1,805 @@
 ## Package: @voltagent/core
 
+## 2.0.10
+
+### Patch Changes
+
+- [#934](https://github.com/VoltAgent/voltagent/pull/934) [`12519f5`](https://github.com/VoltAgent/voltagent/commit/12519f572b3facbd32d35f939be08a0ad1b40b45) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: offline-first local prompts with version + label selection
+
+  ### What's New
+  - Local prompt resolution now supports multiple versions and labels stored as
+    `.voltagent/prompts/<promptName>/<version>.md`.
+  - Local files are used first; VoltOps is only queried if the local prompt is missing.
+  - If a local prompt is behind the online version, the agent logs a warning and records metadata.
+  - CLI `pull` can target labels or versions; `push` compares local vs online and creates new versions.
+
+  ### CLI Usage
+
+  ```bash
+  # Pull latest prompts (default)
+  volt prompts pull
+
+  # Pull a specific label or version (stored under .voltagent/prompts/<name>/<version>.md)
+  volt prompts pull --names support-agent --label production
+  volt prompts pull --names support-agent --prompt-version 4
+
+  # Push local changes (creates new versions after diff/confirm)
+  volt prompts push
+  ```
+
+  ### Agent Usage
+
+  ```typescript
+  instructions: async ({ prompts }) => {
+    return await prompts.getPrompt({
+      promptName: "support-agent",
+      version: 4,
+    });
+  };
+  ```
+
+  ```typescript
+  instructions: async ({ prompts }) => {
+    return await prompts.getPrompt({
+      promptName: "support-agent",
+      label: "production",
+    });
+  };
+  ```
+
+  ### Offline-First Workflow
+  - Pull once, then run fully offline with local Markdown files.
+  - Point the runtime to your local directory:
+
+  ```bash
+  export VOLTAGENT_PROMPTS_PATH="./.voltagent/prompts"
+  ```
+
+- [#935](https://github.com/VoltAgent/voltagent/pull/935) [`e7d984f`](https://github.com/VoltAgent/voltagent/commit/e7d984fe391cd2732886c7903f028ce33f40cfab) Thanks [@omeraplak](https://github.com/omeraplak)! - fix: MCPClient.listResources now returns the raw MCP `resources/list` response.
+
+## 2.0.9
+
+### Patch Changes
+
+- [#929](https://github.com/VoltAgent/voltagent/pull/929) [`78ff377`](https://github.com/VoltAgent/voltagent/commit/78ff377b200c48e90a2e3ab510d0d25ccca86c5a) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: add workflow control steps (branch, foreach, loop, map, sleep)
+
+  ```ts
+  import {
+    createWorkflowChain,
+    andThen,
+    andBranch,
+    andForEach,
+    andDoWhile,
+    andDoUntil,
+    andMap,
+    andSleep,
+    andSleepUntil,
+  } from "@voltagent/core";
+  import { z } from "zod";
+  ```
+
+  Branching:
+
+  ```ts
+  const workflow = createWorkflowChain({
+    id: "branching-flow",
+    input: z.object({ amount: z.number() }),
+  }).andBranch({
+    id: "rules",
+    branches: [
+      {
+        condition: ({ data }) => data.amount > 1000,
+        step: andThen({
+          id: "flag-large",
+          execute: async ({ data }) => ({ ...data, large: true }),
+        }),
+      },
+      {
+        condition: ({ data }) => data.amount < 0,
+        step: andThen({
+          id: "flag-invalid",
+          execute: async ({ data }) => ({ ...data, invalid: true }),
+        }),
+      },
+    ],
+  });
+  ```
+
+  For-each and loops:
+
+  ```ts
+  createWorkflowChain({
+    id: "batch-process",
+    input: z.array(z.number()),
+  }).andForEach({
+    id: "double-each",
+    concurrency: 2,
+    step: andThen({
+      id: "double",
+      execute: async ({ data }) => data * 2,
+    }),
+  });
+
+  createWorkflowChain({
+    id: "looping-flow",
+    input: z.number(),
+  })
+    .andDoWhile({
+      id: "increment-until-3",
+      step: andThen({
+        id: "increment",
+        execute: async ({ data }) => data + 1,
+      }),
+      condition: ({ data }) => data < 3,
+    })
+    .andDoUntil({
+      id: "increment-until-2",
+      step: andThen({
+        id: "increment-until",
+        execute: async ({ data }) => data + 1,
+      }),
+      condition: ({ data }) => data >= 2,
+    });
+  ```
+
+  Data shaping:
+
+  ```ts
+  createWorkflowChain({
+    id: "compose-result",
+    input: z.object({ userId: z.string() }),
+  })
+    .andThen({
+      id: "fetch-user",
+      execute: async ({ data }) => ({ name: "Ada", id: data.userId }),
+    })
+    .andMap({
+      id: "shape-output",
+      map: {
+        userId: { source: "data", path: "userId" },
+        name: { source: "step", stepId: "fetch-user", path: "name" },
+        region: { source: "context", key: "region" },
+        constant: { source: "value", value: "ok" },
+      },
+    });
+  ```
+
+  Sleep:
+
+  ```ts
+  createWorkflowChain({
+    id: "delayed-step",
+    input: z.object({ id: z.string() }),
+  })
+    .andSleep({
+      id: "pause",
+      duration: 500,
+    })
+    .andSleepUntil({
+      id: "wait-until",
+      date: () => new Date(Date.now() + 60_000),
+    })
+    .andThen({
+      id: "continue",
+      execute: async ({ data }) => ({ ...data, resumed: true }),
+    });
+  ```
+
+  Workflow-level retries:
+
+  ```ts
+  createWorkflowChain({
+    id: "retry-defaults",
+    retryConfig: { attempts: 2, delayMs: 500 },
+  })
+    .andThen({
+      id: "fetch-user",
+      execute: async ({ data }) => fetchUser(data.userId),
+    })
+    .andThen({
+      id: "no-retry-step",
+      retries: 0,
+      execute: async ({ data }) => data,
+    });
+  ```
+
+  Workflow hooks (finish/error/suspend):
+
+  ```ts
+  createWorkflowChain({
+    id: "hooked-workflow",
+    hooks: {
+      onSuspend: async (info) => {
+        console.log("Suspended:", info.suspension?.reason);
+      },
+      onError: async (info) => {
+        console.error("Failed:", info.error);
+      },
+      onFinish: async (info) => {
+        console.log("Done:", info.status);
+      },
+      onEnd: async (state, info) => {
+        if (info?.status === "completed") {
+          console.log("Result:", state.result);
+          console.log("Steps:", Object.keys(info.steps));
+        }
+      },
+    },
+  });
+  ```
+
+  Workflow guardrails (input/output + step-level):
+
+  ```ts
+  import {
+    andGuardrail,
+    andThen,
+    createInputGuardrail,
+    createOutputGuardrail,
+    createWorkflowChain,
+  } from "@voltagent/core";
+  import { z } from "zod";
+
+  const trimInput = createInputGuardrail({
+    name: "trim",
+    handler: async ({ input }) => ({
+      pass: true,
+      action: "modify",
+      modifiedInput: typeof input === "string" ? input.trim() : input,
+    }),
+  });
+
+  const redactOutput = createOutputGuardrail<string>({
+    name: "redact",
+    handler: async ({ output }) => ({
+      pass: true,
+      action: "modify",
+      modifiedOutput: output.replace(/[0-9]/g, "*"),
+    }),
+  });
+
+  createWorkflowChain({
+    id: "guarded-workflow",
+    input: z.string(),
+    result: z.string(),
+    inputGuardrails: [trimInput],
+    outputGuardrails: [redactOutput],
+  })
+    .andGuardrail({
+      id: "sanitize-step",
+      outputGuardrails: [redactOutput],
+    })
+    .andThen({
+      id: "finish",
+      execute: async ({ data }) => data,
+    });
+  ```
+
+## 2.0.8
+
+### Patch Changes
+
+- [#927](https://github.com/VoltAgent/voltagent/pull/927) [`2712078`](https://github.com/VoltAgent/voltagent/commit/27120782e6e278a53d049ae2a60ce9981140d490) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: enable `andAgent` tool usage by switching to `generateText` with `Output.object` while keeping structured output
+
+  Example:
+
+  ```ts
+  import { Agent, createTool, createWorkflowChain } from "@voltagent/core";
+  import { z } from "zod";
+  import { openai } from "@ai-sdk/openai";
+
+  const getWeather = createTool({
+    name: "get_weather",
+    description: "Get weather for a city",
+    parameters: z.object({ city: z.string() }),
+    execute: async ({ city }) => ({ city, temp: 72, condition: "sunny" }),
+  });
+
+  const agent = new Agent({
+    name: "WeatherAgent",
+    model: openai("gpt-4o-mini"),
+    tools: [getWeather],
+  });
+
+  const workflow = createWorkflowChain({
+    id: "weather-flow",
+    input: z.object({ city: z.string() }),
+  }).andAgent(({ data }) => `What is the weather in ${data.city}?`, agent, {
+    schema: z.object({ temp: z.number(), condition: z.string() }),
+  });
+  ```
+
+## 2.0.7
+
+### Patch Changes
+
+- [#921](https://github.com/VoltAgent/voltagent/pull/921) [`c4591fa`](https://github.com/VoltAgent/voltagent/commit/c4591fa92de6df75a22a758b0232669053bd2b62) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: add resumable streaming support via @voltagent/resumable-streams, with server adapters that let clients reconnect to in-flight streams.
+
+  ```ts
+  import { openai } from "@ai-sdk/openai";
+  import { Agent, VoltAgent } from "@voltagent/core";
+  import {
+    createResumableStreamAdapter,
+    createResumableStreamRedisStore,
+  } from "@voltagent/resumable-streams";
+  import { honoServer } from "@voltagent/server-hono";
+
+  const streamStore = await createResumableStreamRedisStore();
+  const resumableStream = await createResumableStreamAdapter({ streamStore });
+
+  const agent = new Agent({
+    id: "assistant",
+    name: "Resumable Stream Agent",
+    instructions: "You are a helpful assistant.",
+    model: openai("gpt-4o-mini"),
+  });
+
+  new VoltAgent({
+    agents: { assistant: agent },
+    server: honoServer({
+      resumableStream: { adapter: resumableStream },
+    }),
+  });
+
+  await fetch("http://localhost:3141/agents/assistant/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: `{"input":"Hello!","options":{"conversationId":"conv-1","userId":"user-1","resumableStream":true}}`,
+  });
+
+  // Resume the same stream after reconnect/refresh
+  const resumeResponse = await fetch(
+    "http://localhost:3141/agents/assistant/chat/conv-1/stream?userId=user-1"
+  );
+
+  const reader = resumeResponse.body?.getReader();
+  const decoder = new TextDecoder();
+  while (reader) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    const chunk = decoder.decode(value, { stream: true });
+    console.log(chunk);
+  }
+  ```
+
+  AI SDK client (resume on refresh):
+
+  ```tsx
+  import { useChat } from "@ai-sdk/react";
+  import { DefaultChatTransport } from "ai";
+
+  const { messages, sendMessage } = useChat({
+    id: chatId,
+    messages: initialMessages,
+    resume: true,
+    transport: new DefaultChatTransport({
+      api: "/api/chat",
+      prepareSendMessagesRequest: ({ id, messages }) => ({
+        body: {
+          message: messages[messages.length - 1],
+          options: { conversationId: id, userId },
+        },
+      }),
+      prepareReconnectToStreamRequest: ({ id }) => ({
+        api: `/api/chat/${id}/stream?userId=${encodeURIComponent(userId)}`,
+      }),
+    }),
+  });
+  ```
+
+## 2.0.6
+
+### Patch Changes
+
+- [`ad5ebe7`](https://github.com/VoltAgent/voltagent/commit/ad5ebe7f02a059b647d4862faeab537b293ab387) Thanks [@omeraplak](https://github.com/omeraplak)! - fix: OutputSpec export
+
+## 2.0.5
+
+### Patch Changes
+
+- [#916](https://github.com/VoltAgent/voltagent/pull/916) [`0707471`](https://github.com/VoltAgent/voltagent/commit/070747195992828845d7c4c4ff9711f3638c32f8) Thanks [@omeraplak](https://github.com/omeraplak)! - fix: infer structured output types for `generateText`
+
+  `generateText` now propagates the provided `Output.*` spec into the return type, so `result.output` is no longer `unknown` when using `Output.object`, `Output.array`, etc.
+
+## 2.0.4
+
+### Patch Changes
+
+- [#911](https://github.com/VoltAgent/voltagent/pull/911) [`975831a`](https://github.com/VoltAgent/voltagent/commit/975831a852ea471adb621a1d87990a8ffbc5ed31) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: expose Cloudflare Workers `env` bindings in serverless contexts
+
+  When using `@voltagent/serverless-hono` on Cloudflare Workers, the runtime `env` is now injected into the
+  context map for agent requests, workflow runs, and tool executions. `@voltagent/core` exports
+  `SERVERLESS_ENV_CONTEXT_KEY` so you can access bindings like D1 from `options.context` (tools) or
+  `state.context` (workflow steps). Tool execution also accepts `context` as a `Map`, preserving
+  `userId`/`conversationId` when provided that way.
+
+  `@voltagent/core` is also marked as side-effect free so edge bundlers can tree-shake the PlanAgent
+  filesystem backend, avoiding Node-only dependency loading when it is not used.
+
+  Usage:
+
+  ```ts
+  import { createTool, SERVERLESS_ENV_CONTEXT_KEY } from "@voltagent/core";
+  import type { D1Database } from "@cloudflare/workers-types";
+  import { z } from "zod";
+
+  type Env = { DB: D1Database };
+
+  export const listUsers = createTool({
+    name: "list-users",
+    description: "Fetch users from D1",
+    parameters: z.object({}),
+    execute: async (_args, options) => {
+      const env = options?.context?.get(SERVERLESS_ENV_CONTEXT_KEY) as Env | undefined;
+      const db = env?.DB;
+      if (!db) {
+        throw new Error("D1 binding is missing (env.DB)");
+      }
+
+      const { results } = await db.prepare("SELECT id, name FROM users").all();
+      return results;
+    },
+  });
+  ```
+
+## 2.0.3
+
+### Patch Changes
+
+- [#909](https://github.com/VoltAgent/voltagent/pull/909) [`b4301c7`](https://github.com/VoltAgent/voltagent/commit/b4301c73656ea96ea276cb37b4bf72af7fd8c926) Thanks [@omeraplak](https://github.com/omeraplak)! - fix: avoid TS4053 declaration emit errors when exporting `generateText` wrappers by decoupling ai-sdk `Output` types from public results
+
+## 2.0.2
+
+### Patch Changes
+
+- [`f6ffb8a`](https://github.com/VoltAgent/voltagent/commit/f6ffb8ae0fd95fbe920058e707d492d8c21b2505) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+- Updated dependencies [[`f6ffb8a`](https://github.com/VoltAgent/voltagent/commit/f6ffb8ae0fd95fbe920058e707d492d8c21b2505)]:
+  - @voltagent/internal@1.0.2
+  - @voltagent/logger@2.0.2
+
+## 2.0.1
+
+### Patch Changes
+
+- [`c3943aa`](https://github.com/VoltAgent/voltagent/commit/c3943aa89a7bee113d99404ecd5a81a62bc159c2) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+- Updated dependencies [[`c3943aa`](https://github.com/VoltAgent/voltagent/commit/c3943aa89a7bee113d99404ecd5a81a62bc159c2)]:
+  - @voltagent/internal@1.0.1
+  - @voltagent/logger@2.0.1
+
+## 2.0.0
+
+### Major Changes
+
+- [#894](https://github.com/VoltAgent/voltagent/pull/894) [`ee05549`](https://github.com/VoltAgent/voltagent/commit/ee055498096b1b99015a8362903712663969677f) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+### Patch Changes
+
+- Updated dependencies [[`ee05549`](https://github.com/VoltAgent/voltagent/commit/ee055498096b1b99015a8362903712663969677f)]:
+  - @voltagent/internal@1.0.0
+  - @voltagent/logger@2.0.0
+
+## 1.5.2
+
+### Patch Changes
+
+- [#895](https://github.com/VoltAgent/voltagent/pull/895) [`f2a3ba8`](https://github.com/VoltAgent/voltagent/commit/f2a3ba8a9e96e78f36a30bba004754b7b61ed69f) Thanks [@omeraplak](https://github.com/omeraplak)! - fix: normalize MCP elicitation requests with empty `message` by falling back to the schema description so handlers receive a usable prompt.
+
+## 1.5.1
+
+### Patch Changes
+
+- [`b663dce`](https://github.com/VoltAgent/voltagent/commit/b663dceb57542d1b85475777f32ceb3671cc1237) Thanks [@omeraplak](https://github.com/omeraplak)! - fix: dedupe MCP endpoints in server startup output and include MCP transport paths (streamable HTTP/SSE) so the actual server endpoint is visible.
+
+## 1.5.0
+
+### Minor Changes
+
+- [#879](https://github.com/VoltAgent/voltagent/pull/879) [`2f81e6d`](https://github.com/VoltAgent/voltagent/commit/2f81e6df4176120bfdbb47c503a4d027164e5a5e) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: add VoltAgentRagRetriever to @voltagent/core
+
+  Added `VoltAgentRagRetriever` - a built-in retriever that connects to VoltAgent Knowledge Bases for fully managed RAG. No infrastructure setup required - just upload documents to the Console and start searching.
+
+  ## Features
+  - **Automatic context injection**: Searches before each response and injects relevant context
+  - **Tool-based retrieval**: Use as a tool that the agent calls when needed
+  - **Tag filtering**: Filter results by custom document tags
+  - **Source tracking**: Access retrieved chunk references via `rag.references` context
+
+  ## Usage
+
+  ```typescript
+  import { Agent, VoltAgentRagRetriever } from "@voltagent/core";
+  import { openai } from "@ai-sdk/openai";
+
+  const retriever = new VoltAgentRagRetriever({
+    knowledgeBaseName: "my-docs",
+    topK: 8,
+    includeSources: true,
+  });
+
+  // Option 1: Automatic context injection
+  const agent = new Agent({
+    name: "RAG Assistant",
+    model: openai("gpt-4o-mini"),
+    retriever,
+  });
+
+  // Option 2: Tool-based retrieval
+  const agentWithTool = new Agent({
+    name: "RAG Assistant",
+    model: openai("gpt-4o-mini"),
+    tools: [retriever.tool],
+  });
+  ```
+
+  ## Configuration
+
+  | Option              | Default  | Description                  |
+  | ------------------- | -------- | ---------------------------- |
+  | `knowledgeBaseName` | required | Name of your knowledge base  |
+  | `topK`              | 8        | Number of chunks to retrieve |
+  | `tagFilters`        | null     | Filter by document tags      |
+  | `includeSources`    | true     | Include document metadata    |
+  | `includeSimilarity` | false    | Include similarity scores    |
+
+  ## Environment Variables
+
+  ```bash
+  VOLTAGENT_PUBLIC_KEY=pk_...
+  VOLTAGENT_SECRET_KEY=sk_...
+  # Optional
+  VOLTAGENT_API_BASE_URL=https://api.voltagent.dev
+  ```
+
+## 1.4.0
+
+### Minor Changes
+
+- [#875](https://github.com/VoltAgent/voltagent/pull/875) [`93c52cc`](https://github.com/VoltAgent/voltagent/commit/93c52ccc191d463328a929869e5445abf9ff99df) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: add MCP client elicitation support for user input handling
+
+  Added support for handling elicitation requests from MCP servers. When an MCP server needs user input during tool execution (e.g., confirmation dialogs, credentials, or form data), you can now dynamically register handlers to process these requests.
+
+  ## New API
+
+  Access the elicitation bridge via `mcpClient.elicitation`:
+
+  ```ts
+  const clients = await mcpConfig.getClients();
+
+  // Set a persistent handler
+  clients.myServer.elicitation.setHandler(async (request) => {
+    console.log("Server asks:", request.message);
+    console.log("Expected schema:", request.requestedSchema);
+
+    const userConfirmed = await promptUser(request.message);
+
+    return {
+      action: userConfirmed ? "accept" : "decline",
+      content: userConfirmed ? { confirmed: true } : undefined,
+    };
+  });
+
+  // One-time handler (auto-removes after first call)
+  clients.myServer.elicitation.once(async (request) => {
+    return { action: "accept", content: { approved: true } };
+  });
+
+  // Remove handler
+  clients.myServer.elicitation.removeHandler();
+
+  // Check if handler exists
+  if (clients.myServer.elicitation.hasHandler) {
+    console.log("Handler registered");
+  }
+  ```
+
+  ## Agent-Level Elicitation
+
+  Pass elicitation handler directly to `generateText` or `streamText`:
+
+  ```ts
+  const response = await agent.generateText("Do something with MCP", {
+    userId: "user123",
+    elicitation: async (request) => {
+      // Handler receives elicitation request from any MCP tool
+      const confirmed = await askUser(request.message);
+      return {
+        action: confirmed ? "accept" : "decline",
+        content: confirmed ? { confirmed: true } : undefined,
+      };
+    },
+  });
+  ```
+
+  This handler is automatically applied to all MCP tools during the request.
+
+  ## Key Features
+  - **Dynamic handler management**: Add, replace, or remove handlers at runtime
+  - **One-time handlers**: Use `.once()` for handlers that auto-remove after first invocation
+  - **Method chaining**: All methods return `this` for fluent API usage
+  - **Auto-cancellation**: Requests without handlers are automatically cancelled
+  - **Agent-level integration**: Pass handler via `generateText`/`streamText` options
+  - **Full MCP SDK compatibility**: Uses `ElicitRequest` and `ElicitResult` types from `@modelcontextprotocol/sdk`
+
+  ## Exports
+
+  New exports from `@voltagent/core`:
+  - `MCPClient` - MCP client with elicitation support
+  - `UserInputBridge` - Bridge class for handler management
+  - `UserInputHandler` - Handler function type
+
+## 1.3.0
+
+### Minor Changes
+
+- [#870](https://github.com/VoltAgent/voltagent/pull/870) [`63cade8`](https://github.com/VoltAgent/voltagent/commit/63cade8b3226e97b6864a20906a748892f23fb96) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: add authorization layer for MCP tools
+
+  Add a `can` function to `MCPConfiguration` that lets you control which MCP tools users can discover and execute. Supports both tool discovery filtering and execution-time checks.
+
+  ## Usage
+
+  ```typescript
+  import { MCPConfiguration, type MCPCanParams } from "@voltagent/core";
+
+  const mcp = new MCPConfiguration({
+    servers: {
+      expenses: { type: "http", url: "http://localhost:3142/mcp" },
+    },
+    authorization: {
+      can: async ({ toolName, action, userId, context }: MCPCanParams) => {
+        const roles = (context?.get("roles") as string[]) ?? [];
+
+        // action is "discovery" (getTools) or "execution" (tool call)
+        if (toolName === "delete_expense" && !roles.includes("admin")) {
+          return { allowed: false, reason: "Admin only" };
+        }
+
+        return true;
+      },
+      filterOnDiscovery: true, // Hide unauthorized tools from tool list
+      checkOnExecution: true, // Verify on each tool call
+    },
+  });
+
+  // Get tools filtered by user's permissions
+  const tools = await mcp.getTools({
+    userId: "user-123",
+    context: { roles: ["manager"] },
+  });
+  ```
+
+  ## `MCPCanParams`
+
+  ```typescript
+  interface MCPCanParams {
+    toolName: string; // Tool name (without server prefix)
+    serverName: string; // MCP server identifier
+    action: "discovery" | "execution"; // When the check is happening
+    arguments?: Record<string, unknown>; // Tool arguments (execution only)
+    userId?: string;
+    context?: Map<string | symbol, unknown>;
+  }
+  ```
+
+  ## Cerbos Integration
+
+  For production use with policy-based authorization:
+
+  ```typescript
+  import { GRPC } from "@cerbos/grpc";
+
+  const cerbos = new GRPC("localhost:3593", { tls: false });
+
+  const mcp = new MCPConfiguration({
+    servers: { expenses: { type: "http", url: "..." } },
+    authorization: {
+      can: async ({ toolName, serverName, userId, context }) => {
+        const roles = (context?.get("roles") as string[]) ?? ["user"];
+
+        const result = await cerbos.checkResource({
+          principal: { id: userId ?? "anonymous", roles },
+          resource: { kind: `mcp::${serverName}`, id: serverName },
+          actions: [toolName],
+        });
+
+        return { allowed: result.isAllowed(toolName) ?? false };
+      },
+      filterOnDiscovery: true,
+      checkOnExecution: true,
+    },
+  });
+  ```
+
+  See the full Cerbos example: [examples/with-cerbos](https://github.com/VoltAgent/voltagent/tree/main/examples/with-cerbos)
+
+## 1.2.21
+
+### Patch Changes
+
+- [#855](https://github.com/VoltAgent/voltagent/pull/855) [`cd500ea`](https://github.com/VoltAgent/voltagent/commit/cd500ea0c71879c4ddbf5662b47758752595cc7d) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: add google drive and google calendar actions methods and expose trigger DSL events
+  - The trigger DSL now supports Google Calendar (`on.googleCalendar.*`) and Google Drive (`on.googleDrive.*`) events alongside the new action helpers.
+
+## 1.2.20
+
+### Patch Changes
+
+- [#852](https://github.com/VoltAgent/voltagent/pull/852) [`097f0cf`](https://github.com/VoltAgent/voltagent/commit/097f0cfcc113ae2029e233f67ff7e7c10db3e29d) Thanks [@omeraplak](https://github.com/omeraplak)! - fix: fullStream forwarding from sub-agents so metadata reflects the executing sub-agent (adds executingAgentId/name, parent info, agentPath) instead of the supervisor - #849
+
+  Documentation now calls out the metadata shape and how it appears in fullStream/toUIMessageStream, and the with-subagents example logs forwarded chunks for easy validation.
+
+  Example:
+
+  ```ts
+  const res = await supervisor.streamText("delegate something");
+  for await (const part of res.fullStream) {
+    console.log({
+      type: part.type,
+      subAgent: part.subAgentName,
+      executing: part.executingAgentName,
+      parent: part.parentAgentName,
+      path: part.agentPath,
+    });
+  }
+  ```
+
+  Example output:
+
+  ```json
+  {
+    "type": "tool-call",
+    "subAgent": "Formatter",
+    "executing": "Formatter",
+    "parent": "Supervisor",
+    "path": ["Supervisor", "Formatter"]
+  }
+  ```
+
 ## 1.2.19
 
 ### Patch Changes
@@ -7726,6 +8526,81 @@
 
 ## Package: @voltagent/a2a-server
 
+## 2.0.2
+
+### Patch Changes
+
+- [`f6ffb8a`](https://github.com/VoltAgent/voltagent/commit/f6ffb8ae0fd95fbe920058e707d492d8c21b2505) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+- Updated dependencies [[`f6ffb8a`](https://github.com/VoltAgent/voltagent/commit/f6ffb8ae0fd95fbe920058e707d492d8c21b2505)]:
+  - @voltagent/internal@1.0.2
+
+## 2.0.1
+
+### Patch Changes
+
+- [`c3943aa`](https://github.com/VoltAgent/voltagent/commit/c3943aa89a7bee113d99404ecd5a81a62bc159c2) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+- Updated dependencies [[`c3943aa`](https://github.com/VoltAgent/voltagent/commit/c3943aa89a7bee113d99404ecd5a81a62bc159c2)]:
+  - @voltagent/internal@1.0.1
+
+## 2.0.0
+
+### Major Changes
+
+- [#894](https://github.com/VoltAgent/voltagent/pull/894) [`ee05549`](https://github.com/VoltAgent/voltagent/commit/ee055498096b1b99015a8362903712663969677f) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+### Patch Changes
+
+- Updated dependencies [[`ee05549`](https://github.com/VoltAgent/voltagent/commit/ee055498096b1b99015a8362903712663969677f)]:
+  - @voltagent/core@2.0.0
+  - @voltagent/internal@1.0.0
+
 ## 1.0.2
 
 ### Patch Changes
@@ -7777,7 +8652,225 @@
 
 ---
 
+## Package: @voltagent/ag-ui
+
+## 1.0.2
+
+### Patch Changes
+
+- [`f6ffb8a`](https://github.com/VoltAgent/voltagent/commit/f6ffb8ae0fd95fbe920058e707d492d8c21b2505) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+## 1.0.1
+
+### Patch Changes
+
+- [`c3943aa`](https://github.com/VoltAgent/voltagent/commit/c3943aa89a7bee113d99404ecd5a81a62bc159c2) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+## 1.0.0
+
+### Major Changes
+
+- [#894](https://github.com/VoltAgent/voltagent/pull/894) [`ee05549`](https://github.com/VoltAgent/voltagent/commit/ee055498096b1b99015a8362903712663969677f) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+### Patch Changes
+
+- Updated dependencies [[`ee05549`](https://github.com/VoltAgent/voltagent/commit/ee055498096b1b99015a8362903712663969677f)]:
+  - @voltagent/internal@1.0.0
+
+## 0.1.0
+
+### Minor Changes
+
+- [#861](https://github.com/VoltAgent/voltagent/pull/861) [`9854d43`](https://github.com/VoltAgent/voltagent/commit/9854d4374c977751f29f73b097164ed33c2290d5) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: add AG-UI adapter for CopilotKit integration #295
+
+  New `@voltagent/ag-ui` package enables seamless CopilotKit integration with VoltAgent agents.
+
+  ## Features
+  - **VoltAgent AGUI**: AG-UI protocol adapter that wraps VoltAgent agents, streaming events (text chunks, tool calls, state snapshots) in AG-UI format
+  - **registerCopilotKitRoutes**: One-liner to mount CopilotKit runtime on any Hono-based VoltAgent server
+  - **State persistence**: Automatically syncs AG-UI state to VoltAgent working memory for cross-turn context
+  - **Tool mapping**: VoltAgent tools are exposed to CopilotKit clients with full streaming support
+
+  ## Usage
+
+  ```ts
+  import { registerCopilotKitRoutes } from "@voltagent/ag-ui";
+  import { honoServer } from "@voltagent/server-hono";
+
+  new VoltAgent({
+    agents: { myAgent },
+    server: honoServer({
+      configureApp: (app) => registerCopilotKitRoutes({ app, resourceIds: ["myAgent"] }),
+    }),
+  });
+  ```
+
+  Includes `with-copilotkit` example with Vite React client and VoltAgent server setup.
+
+---
+
 ## Package: @voltagent/cli
+
+## 0.1.21
+
+### Patch Changes
+
+- [#934](https://github.com/VoltAgent/voltagent/pull/934) [`12519f5`](https://github.com/VoltAgent/voltagent/commit/12519f572b3facbd32d35f939be08a0ad1b40b45) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: offline-first local prompts with version + label selection
+
+  ### What's New
+  - Local prompt resolution now supports multiple versions and labels stored as
+    `.voltagent/prompts/<promptName>/<version>.md`.
+  - Local files are used first; VoltOps is only queried if the local prompt is missing.
+  - If a local prompt is behind the online version, the agent logs a warning and records metadata.
+  - CLI `pull` can target labels or versions; `push` compares local vs online and creates new versions.
+
+  ### CLI Usage
+
+  ```bash
+  # Pull latest prompts (default)
+  volt prompts pull
+
+  # Pull a specific label or version (stored under .voltagent/prompts/<name>/<version>.md)
+  volt prompts pull --names support-agent --label production
+  volt prompts pull --names support-agent --prompt-version 4
+
+  # Push local changes (creates new versions after diff/confirm)
+  volt prompts push
+  ```
+
+  ### Agent Usage
+
+  ```typescript
+  instructions: async ({ prompts }) => {
+    return await prompts.getPrompt({
+      promptName: "support-agent",
+      version: 4,
+    });
+  };
+  ```
+
+  ```typescript
+  instructions: async ({ prompts }) => {
+    return await prompts.getPrompt({
+      promptName: "support-agent",
+      label: "production",
+    });
+  };
+  ```
+
+  ### Offline-First Workflow
+  - Pull once, then run fully offline with local Markdown files.
+  - Point the runtime to your local directory:
+
+  ```bash
+  export VOLTAGENT_PROMPTS_PATH="./.voltagent/prompts"
+  ```
+
+## 0.1.20
+
+### Patch Changes
+
+- [`f6ffb8a`](https://github.com/VoltAgent/voltagent/commit/f6ffb8ae0fd95fbe920058e707d492d8c21b2505) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+- Updated dependencies [[`f6ffb8a`](https://github.com/VoltAgent/voltagent/commit/f6ffb8ae0fd95fbe920058e707d492d8c21b2505)]:
+  - @voltagent/evals@2.0.2
+  - @voltagent/internal@1.0.2
+  - @voltagent/sdk@2.0.2
+
+## 0.1.19
+
+### Patch Changes
+
+- [`c3943aa`](https://github.com/VoltAgent/voltagent/commit/c3943aa89a7bee113d99404ecd5a81a62bc159c2) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+- Updated dependencies [[`c3943aa`](https://github.com/VoltAgent/voltagent/commit/c3943aa89a7bee113d99404ecd5a81a62bc159c2)]:
+  - @voltagent/evals@2.0.1
+  - @voltagent/internal@1.0.1
+  - @voltagent/sdk@2.0.1
+
+## 0.1.18
+
+### Patch Changes
+
+- Updated dependencies [[`ee05549`](https://github.com/VoltAgent/voltagent/commit/ee055498096b1b99015a8362903712663969677f)]:
+  - @voltagent/evals@2.0.0
+  - @voltagent/internal@1.0.0
+  - @voltagent/sdk@2.0.0
 
 ## 0.1.17
 
@@ -8176,7 +9269,68 @@
 
 ---
 
+## Package: @voltagent/cloudflare-d1
+
+## 2.0.4
+
+### Patch Changes
+
+- [#915](https://github.com/VoltAgent/voltagent/pull/915) [`37cc8d3`](https://github.com/VoltAgent/voltagent/commit/37cc8d3d6e49973dff30791f4237878b20c62c24) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: add Cloudflare D1 memory adapter for Workers
+
+  You can now persist Memory V2 in Cloudflare D1 using `@voltagent/cloudflare-d1`. The adapter accepts a
+  D1 binding directly, so you can keep Worker bindings inside your `fetch` handler and wire them into
+  VoltAgent via a small factory.
+
+  Serverless routes still inject Worker `env` into request contexts for ad-hoc access in tools or
+  workflow steps. The D1 memory adapter does not require this and works with the binding directly.
+
+  Usage:
+
+  ```ts
+  import { Memory } from "@voltagent/core";
+  import { D1MemoryAdapter } from "@voltagent/cloudflare-d1";
+
+  const memory = new Memory({
+    storage: new D1MemoryAdapter({
+      binding: env.DB,
+    }),
+  });
+  ```
+
+---
+
 ## Package: create-voltagent-app
+
+## 0.2.14
+
+### Patch Changes
+
+- [`f6ffb8a`](https://github.com/VoltAgent/voltagent/commit/f6ffb8ae0fd95fbe920058e707d492d8c21b2505) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+## 0.2.13
+
+### Patch Changes
+
+- [#857](https://github.com/VoltAgent/voltagent/pull/857) [`056bbda`](https://github.com/VoltAgent/voltagent/commit/056bbdac8502a21bf4d317d05a9492658afc406a) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: use LibSQL for persistent observability in project template
+
+  Previously, projects created with `create-voltagent-app` used in-memory observability storage, which meant traces and spans were lost on restart.
+
+  Now the template uses `LibSQLObservabilityAdapter` to persist observability data to `.voltagent/observability.db`, matching the existing persistent memory setup. This ensures agent traces, spans, and logs are retained across restarts for better debugging and monitoring during development.
 
 ## 0.2.11
 
@@ -8448,6 +9602,69 @@
 
 ## Package: @voltagent/docs-mcp
 
+## 2.0.2
+
+### Patch Changes
+
+- [`f6ffb8a`](https://github.com/VoltAgent/voltagent/commit/f6ffb8ae0fd95fbe920058e707d492d8c21b2505) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+## 2.0.1
+
+### Patch Changes
+
+- [`c3943aa`](https://github.com/VoltAgent/voltagent/commit/c3943aa89a7bee113d99404ecd5a81a62bc159c2) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+## 2.0.0
+
+### Major Changes
+
+- [#894](https://github.com/VoltAgent/voltagent/pull/894) [`ee05549`](https://github.com/VoltAgent/voltagent/commit/ee055498096b1b99015a8362903712663969677f) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
 ## 1.0.21
 
 ### Patch Changes
@@ -8695,6 +9912,86 @@
 
 ## Package: @voltagent/evals
 
+## 2.0.2
+
+### Patch Changes
+
+- [`f6ffb8a`](https://github.com/VoltAgent/voltagent/commit/f6ffb8ae0fd95fbe920058e707d492d8c21b2505) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+- Updated dependencies [[`f6ffb8a`](https://github.com/VoltAgent/voltagent/commit/f6ffb8ae0fd95fbe920058e707d492d8c21b2505)]:
+  - @voltagent/internal@1.0.2
+  - @voltagent/scorers@2.0.2
+  - @voltagent/sdk@2.0.2
+
+## 2.0.1
+
+### Patch Changes
+
+- [`c3943aa`](https://github.com/VoltAgent/voltagent/commit/c3943aa89a7bee113d99404ecd5a81a62bc159c2) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+- Updated dependencies [[`c3943aa`](https://github.com/VoltAgent/voltagent/commit/c3943aa89a7bee113d99404ecd5a81a62bc159c2)]:
+  - @voltagent/internal@1.0.1
+  - @voltagent/scorers@2.0.1
+  - @voltagent/sdk@2.0.1
+
+## 2.0.0
+
+### Major Changes
+
+- [#894](https://github.com/VoltAgent/voltagent/pull/894) [`ee05549`](https://github.com/VoltAgent/voltagent/commit/ee055498096b1b99015a8362903712663969677f) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+### Patch Changes
+
+- Updated dependencies [[`ee05549`](https://github.com/VoltAgent/voltagent/commit/ee055498096b1b99015a8362903712663969677f)]:
+  - @voltagent/scorers@2.0.0
+  - @voltagent/internal@1.0.0
+  - @voltagent/sdk@2.0.0
+
 ## 1.0.4
 
 ### Patch Changes
@@ -8744,6 +10041,69 @@
 ---
 
 ## Package: @voltagent/internal
+
+## 1.0.2
+
+### Patch Changes
+
+- [`f6ffb8a`](https://github.com/VoltAgent/voltagent/commit/f6ffb8ae0fd95fbe920058e707d492d8c21b2505) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+## 1.0.1
+
+### Patch Changes
+
+- [`c3943aa`](https://github.com/VoltAgent/voltagent/commit/c3943aa89a7bee113d99404ecd5a81a62bc159c2) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+## 1.0.0
+
+### Major Changes
+
+- [#894](https://github.com/VoltAgent/voltagent/pull/894) [`ee05549`](https://github.com/VoltAgent/voltagent/commit/ee055498096b1b99015a8362903712663969677f) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
 
 ## 0.0.12
 
@@ -8967,6 +10327,74 @@
 
 ## Package: @voltagent/langfuse-exporter
 
+## 2.0.2
+
+### Patch Changes
+
+- [`f6ffb8a`](https://github.com/VoltAgent/voltagent/commit/f6ffb8ae0fd95fbe920058e707d492d8c21b2505) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+## 2.0.1
+
+### Patch Changes
+
+- [`c3943aa`](https://github.com/VoltAgent/voltagent/commit/c3943aa89a7bee113d99404ecd5a81a62bc159c2) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+## 2.0.0
+
+### Major Changes
+
+- [#894](https://github.com/VoltAgent/voltagent/pull/894) [`ee05549`](https://github.com/VoltAgent/voltagent/commit/ee055498096b1b99015a8362903712663969677f) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+### Patch Changes
+
+- Updated dependencies [[`ee05549`](https://github.com/VoltAgent/voltagent/commit/ee055498096b1b99015a8362903712663969677f)]:
+  - @voltagent/core@2.0.0
+
 ## 1.1.3
 
 ### Patch Changes
@@ -9188,6 +10616,104 @@
 ---
 
 ## Package: @voltagent/libsql
+
+## 2.0.2
+
+### Patch Changes
+
+- [`f6ffb8a`](https://github.com/VoltAgent/voltagent/commit/f6ffb8ae0fd95fbe920058e707d492d8c21b2505) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+- Updated dependencies [[`f6ffb8a`](https://github.com/VoltAgent/voltagent/commit/f6ffb8ae0fd95fbe920058e707d492d8c21b2505)]:
+  - @voltagent/internal@1.0.2
+
+## 2.0.1
+
+### Patch Changes
+
+- [`c3943aa`](https://github.com/VoltAgent/voltagent/commit/c3943aa89a7bee113d99404ecd5a81a62bc159c2) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+- Updated dependencies [[`c3943aa`](https://github.com/VoltAgent/voltagent/commit/c3943aa89a7bee113d99404ecd5a81a62bc159c2)]:
+  - @voltagent/internal@1.0.1
+
+## 2.0.0
+
+### Major Changes
+
+- [#894](https://github.com/VoltAgent/voltagent/pull/894) [`ee05549`](https://github.com/VoltAgent/voltagent/commit/ee055498096b1b99015a8362903712663969677f) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+### Patch Changes
+
+- Updated dependencies [[`ee05549`](https://github.com/VoltAgent/voltagent/commit/ee055498096b1b99015a8362903712663969677f)]:
+  - @voltagent/core@2.0.0
+  - @voltagent/internal@1.0.0
+  - @voltagent/logger@2.0.0
+
+## 1.1.0
+
+### Minor Changes
+
+- [#887](https://github.com/VoltAgent/voltagent/pull/887) [`25f3859`](https://github.com/VoltAgent/voltagent/commit/25f38592293e77852f0e9e814c6c8548fcbad1a5) Thanks [@nt9142](https://github.com/nt9142)! - Add Edge/Cloudflare Workers support for @voltagent/libsql
+  - New `@voltagent/libsql/edge` export for edge runtimes
+  - Refactored adapters into core classes with dependency injection
+  - Edge adapters use `@libsql/client/web` for fetch-based transport
+  - Core uses DataView/ArrayBuffer for cross-platform compatibility
+  - Node.js adapters override with Buffer for better performance
+
+  Usage:
+
+  ```typescript
+  import { LibSQLMemoryAdapter } from "@voltagent/libsql/edge";
+
+  const adapter = new LibSQLMemoryAdapter({
+    url: "libsql://your-db.turso.io",
+    authToken: "your-token",
+  });
+  ```
 
 ## 1.0.14
 
@@ -9732,6 +11258,80 @@
 
 ## Package: @voltagent/logger
 
+## 2.0.2
+
+### Patch Changes
+
+- [`f6ffb8a`](https://github.com/VoltAgent/voltagent/commit/f6ffb8ae0fd95fbe920058e707d492d8c21b2505) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+- Updated dependencies [[`f6ffb8a`](https://github.com/VoltAgent/voltagent/commit/f6ffb8ae0fd95fbe920058e707d492d8c21b2505)]:
+  - @voltagent/internal@1.0.2
+
+## 2.0.1
+
+### Patch Changes
+
+- [`c3943aa`](https://github.com/VoltAgent/voltagent/commit/c3943aa89a7bee113d99404ecd5a81a62bc159c2) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+- Updated dependencies [[`c3943aa`](https://github.com/VoltAgent/voltagent/commit/c3943aa89a7bee113d99404ecd5a81a62bc159c2)]:
+  - @voltagent/internal@1.0.1
+
+## 2.0.0
+
+### Major Changes
+
+- [#894](https://github.com/VoltAgent/voltagent/pull/894) [`ee05549`](https://github.com/VoltAgent/voltagent/commit/ee055498096b1b99015a8362903712663969677f) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+### Patch Changes
+
+- Updated dependencies [[`ee05549`](https://github.com/VoltAgent/voltagent/commit/ee055498096b1b99015a8362903712663969677f)]:
+  - @voltagent/internal@1.0.0
+
 ## 1.0.4
 
 ### Patch Changes
@@ -9910,6 +11510,81 @@
 
 ## Package: @voltagent/mcp-server
 
+## 2.0.2
+
+### Patch Changes
+
+- [`f6ffb8a`](https://github.com/VoltAgent/voltagent/commit/f6ffb8ae0fd95fbe920058e707d492d8c21b2505) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+- Updated dependencies [[`f6ffb8a`](https://github.com/VoltAgent/voltagent/commit/f6ffb8ae0fd95fbe920058e707d492d8c21b2505)]:
+  - @voltagent/internal@1.0.2
+
+## 2.0.1
+
+### Patch Changes
+
+- [`c3943aa`](https://github.com/VoltAgent/voltagent/commit/c3943aa89a7bee113d99404ecd5a81a62bc159c2) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+- Updated dependencies [[`c3943aa`](https://github.com/VoltAgent/voltagent/commit/c3943aa89a7bee113d99404ecd5a81a62bc159c2)]:
+  - @voltagent/internal@1.0.1
+
+## 2.0.0
+
+### Major Changes
+
+- [#894](https://github.com/VoltAgent/voltagent/pull/894) [`ee05549`](https://github.com/VoltAgent/voltagent/commit/ee055498096b1b99015a8362903712663969677f) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+### Patch Changes
+
+- Updated dependencies [[`ee05549`](https://github.com/VoltAgent/voltagent/commit/ee055498096b1b99015a8362903712663969677f)]:
+  - @voltagent/core@2.0.0
+  - @voltagent/internal@1.0.0
+
 ## 1.0.3
 
 ### Patch Changes
@@ -10025,6 +11700,81 @@
 ---
 
 ## Package: @voltagent/postgres
+
+## 2.0.2
+
+### Patch Changes
+
+- [`f6ffb8a`](https://github.com/VoltAgent/voltagent/commit/f6ffb8ae0fd95fbe920058e707d492d8c21b2505) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+- Updated dependencies [[`f6ffb8a`](https://github.com/VoltAgent/voltagent/commit/f6ffb8ae0fd95fbe920058e707d492d8c21b2505)]:
+  - @voltagent/internal@1.0.2
+
+## 2.0.1
+
+### Patch Changes
+
+- [`c3943aa`](https://github.com/VoltAgent/voltagent/commit/c3943aa89a7bee113d99404ecd5a81a62bc159c2) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+- Updated dependencies [[`c3943aa`](https://github.com/VoltAgent/voltagent/commit/c3943aa89a7bee113d99404ecd5a81a62bc159c2)]:
+  - @voltagent/internal@1.0.1
+
+## 2.0.0
+
+### Major Changes
+
+- [#894](https://github.com/VoltAgent/voltagent/pull/894) [`ee05549`](https://github.com/VoltAgent/voltagent/commit/ee055498096b1b99015a8362903712663969677f) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+### Patch Changes
+
+- Updated dependencies [[`ee05549`](https://github.com/VoltAgent/voltagent/commit/ee055498096b1b99015a8362903712663969677f)]:
+  - @voltagent/core@2.0.0
+  - @voltagent/internal@1.0.0
 
 ## 1.1.4
 
@@ -10910,7 +12660,236 @@
 
 ---
 
+## Package: @voltagent/rag
+
+## 1.0.2
+
+### Patch Changes
+
+- [`f6ffb8a`](https://github.com/VoltAgent/voltagent/commit/f6ffb8ae0fd95fbe920058e707d492d8c21b2505) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+## 1.0.1
+
+### Patch Changes
+
+- [`c3943aa`](https://github.com/VoltAgent/voltagent/commit/c3943aa89a7bee113d99404ecd5a81a62bc159c2) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+## 1.0.0
+
+### Major Changes
+
+- [#894](https://github.com/VoltAgent/voltagent/pull/894) [`ee05549`](https://github.com/VoltAgent/voltagent/commit/ee055498096b1b99015a8362903712663969677f) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+---
+
+## Package: @voltagent/resumable-streams
+
+## 2.0.1
+
+### Patch Changes
+
+- [#921](https://github.com/VoltAgent/voltagent/pull/921) [`c4591fa`](https://github.com/VoltAgent/voltagent/commit/c4591fa92de6df75a22a758b0232669053bd2b62) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: add resumable streaming support via @voltagent/resumable-streams, with server adapters that let clients reconnect to in-flight streams.
+
+  ```ts
+  import { openai } from "@ai-sdk/openai";
+  import { Agent, VoltAgent } from "@voltagent/core";
+  import {
+    createResumableStreamAdapter,
+    createResumableStreamRedisStore,
+  } from "@voltagent/resumable-streams";
+  import { honoServer } from "@voltagent/server-hono";
+
+  const streamStore = await createResumableStreamRedisStore();
+  const resumableStream = await createResumableStreamAdapter({ streamStore });
+
+  const agent = new Agent({
+    id: "assistant",
+    name: "Resumable Stream Agent",
+    instructions: "You are a helpful assistant.",
+    model: openai("gpt-4o-mini"),
+  });
+
+  new VoltAgent({
+    agents: { assistant: agent },
+    server: honoServer({
+      resumableStream: { adapter: resumableStream },
+    }),
+  });
+
+  await fetch("http://localhost:3141/agents/assistant/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: `{"input":"Hello!","options":{"conversationId":"conv-1","userId":"user-1","resumableStream":true}}`,
+  });
+
+  // Resume the same stream after reconnect/refresh
+  const resumeResponse = await fetch(
+    "http://localhost:3141/agents/assistant/chat/conv-1/stream?userId=user-1"
+  );
+
+  const reader = resumeResponse.body?.getReader();
+  const decoder = new TextDecoder();
+  while (reader) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    const chunk = decoder.decode(value, { stream: true });
+    console.log(chunk);
+  }
+  ```
+
+  AI SDK client (resume on refresh):
+
+  ```tsx
+  import { useChat } from "@ai-sdk/react";
+  import { DefaultChatTransport } from "ai";
+
+  const { messages, sendMessage } = useChat({
+    id: chatId,
+    messages: initialMessages,
+    resume: true,
+    transport: new DefaultChatTransport({
+      api: "/api/chat",
+      prepareSendMessagesRequest: ({ id, messages }) => ({
+        body: {
+          message: messages[messages.length - 1],
+          options: { conversationId: id, userId },
+        },
+      }),
+      prepareReconnectToStreamRequest: ({ id }) => ({
+        api: `/api/chat/${id}/stream?userId=${encodeURIComponent(userId)}`,
+      }),
+    }),
+  });
+  ```
+
+- Updated dependencies [[`c4591fa`](https://github.com/VoltAgent/voltagent/commit/c4591fa92de6df75a22a758b0232669053bd2b62)]:
+  - @voltagent/core@2.0.7
+
+---
+
 ## Package: @voltagent/scorers
+
+## 2.0.2
+
+### Patch Changes
+
+- [`f6ffb8a`](https://github.com/VoltAgent/voltagent/commit/f6ffb8ae0fd95fbe920058e707d492d8c21b2505) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+- Updated dependencies [[`f6ffb8a`](https://github.com/VoltAgent/voltagent/commit/f6ffb8ae0fd95fbe920058e707d492d8c21b2505)]:
+  - @voltagent/core@2.0.2
+  - @voltagent/internal@1.0.2
+
+## 2.0.1
+
+### Patch Changes
+
+- [`c3943aa`](https://github.com/VoltAgent/voltagent/commit/c3943aa89a7bee113d99404ecd5a81a62bc159c2) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+- Updated dependencies [[`c3943aa`](https://github.com/VoltAgent/voltagent/commit/c3943aa89a7bee113d99404ecd5a81a62bc159c2)]:
+  - @voltagent/core@2.0.1
+  - @voltagent/internal@1.0.1
+
+## 2.0.0
+
+### Major Changes
+
+- [#894](https://github.com/VoltAgent/voltagent/pull/894) [`ee05549`](https://github.com/VoltAgent/voltagent/commit/ee055498096b1b99015a8362903712663969677f) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+### Patch Changes
+
+- Updated dependencies [[`ee05549`](https://github.com/VoltAgent/voltagent/commit/ee055498096b1b99015a8362903712663969677f)]:
+  - @voltagent/core@2.0.0
+  - @voltagent/internal@1.0.0
 
 ## 1.0.2
 
@@ -10947,6 +12926,83 @@
 ---
 
 ## Package: @voltagent/sdk
+
+## 2.0.2
+
+### Patch Changes
+
+- [`f6ffb8a`](https://github.com/VoltAgent/voltagent/commit/f6ffb8ae0fd95fbe920058e707d492d8c21b2505) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+- Updated dependencies [[`f6ffb8a`](https://github.com/VoltAgent/voltagent/commit/f6ffb8ae0fd95fbe920058e707d492d8c21b2505)]:
+  - @voltagent/core@2.0.2
+  - @voltagent/internal@1.0.2
+
+## 2.0.1
+
+### Patch Changes
+
+- [`c3943aa`](https://github.com/VoltAgent/voltagent/commit/c3943aa89a7bee113d99404ecd5a81a62bc159c2) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+- Updated dependencies [[`c3943aa`](https://github.com/VoltAgent/voltagent/commit/c3943aa89a7bee113d99404ecd5a81a62bc159c2)]:
+  - @voltagent/core@2.0.1
+  - @voltagent/internal@1.0.1
+
+## 2.0.0
+
+### Major Changes
+
+- [#894](https://github.com/VoltAgent/voltagent/pull/894) [`ee05549`](https://github.com/VoltAgent/voltagent/commit/ee055498096b1b99015a8362903712663969677f) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+### Patch Changes
+
+- Updated dependencies [[`ee05549`](https://github.com/VoltAgent/voltagent/commit/ee055498096b1b99015a8362903712663969677f)]:
+  - @voltagent/core@2.0.0
+  - @voltagent/internal@1.0.0
 
 ## 1.0.2
 
@@ -11110,6 +13166,317 @@
 ---
 
 ## Package: @voltagent/server-core
+
+## 2.1.2
+
+### Patch Changes
+
+- [#921](https://github.com/VoltAgent/voltagent/pull/921) [`c4591fa`](https://github.com/VoltAgent/voltagent/commit/c4591fa92de6df75a22a758b0232669053bd2b62) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: add resumable streaming support via @voltagent/resumable-streams, with server adapters that let clients reconnect to in-flight streams.
+
+  ```ts
+  import { openai } from "@ai-sdk/openai";
+  import { Agent, VoltAgent } from "@voltagent/core";
+  import {
+    createResumableStreamAdapter,
+    createResumableStreamRedisStore,
+  } from "@voltagent/resumable-streams";
+  import { honoServer } from "@voltagent/server-hono";
+
+  const streamStore = await createResumableStreamRedisStore();
+  const resumableStream = await createResumableStreamAdapter({ streamStore });
+
+  const agent = new Agent({
+    id: "assistant",
+    name: "Resumable Stream Agent",
+    instructions: "You are a helpful assistant.",
+    model: openai("gpt-4o-mini"),
+  });
+
+  new VoltAgent({
+    agents: { assistant: agent },
+    server: honoServer({
+      resumableStream: { adapter: resumableStream },
+    }),
+  });
+
+  await fetch("http://localhost:3141/agents/assistant/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: `{"input":"Hello!","options":{"conversationId":"conv-1","userId":"user-1","resumableStream":true}}`,
+  });
+
+  // Resume the same stream after reconnect/refresh
+  const resumeResponse = await fetch(
+    "http://localhost:3141/agents/assistant/chat/conv-1/stream?userId=user-1"
+  );
+
+  const reader = resumeResponse.body?.getReader();
+  const decoder = new TextDecoder();
+  while (reader) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    const chunk = decoder.decode(value, { stream: true });
+    console.log(chunk);
+  }
+  ```
+
+  AI SDK client (resume on refresh):
+
+  ```tsx
+  import { useChat } from "@ai-sdk/react";
+  import { DefaultChatTransport } from "ai";
+
+  const { messages, sendMessage } = useChat({
+    id: chatId,
+    messages: initialMessages,
+    resume: true,
+    transport: new DefaultChatTransport({
+      api: "/api/chat",
+      prepareSendMessagesRequest: ({ id, messages }) => ({
+        body: {
+          message: messages[messages.length - 1],
+          options: { conversationId: id, userId },
+        },
+      }),
+      prepareReconnectToStreamRequest: ({ id }) => ({
+        api: `/api/chat/${id}/stream?userId=${encodeURIComponent(userId)}`,
+      }),
+    }),
+  });
+  ```
+
+- Updated dependencies [[`c4591fa`](https://github.com/VoltAgent/voltagent/commit/c4591fa92de6df75a22a758b0232669053bd2b62)]:
+  - @voltagent/core@2.0.7
+
+## 2.1.1
+
+### Patch Changes
+
+- [#911](https://github.com/VoltAgent/voltagent/pull/911) [`975831a`](https://github.com/VoltAgent/voltagent/commit/975831a852ea471adb621a1d87990a8ffbc5ed31) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: expose Cloudflare Workers `env` bindings in serverless contexts
+
+  When using `@voltagent/serverless-hono` on Cloudflare Workers, the runtime `env` is now injected into the
+  context map for agent requests, workflow runs, and tool executions. `@voltagent/core` exports
+  `SERVERLESS_ENV_CONTEXT_KEY` so you can access bindings like D1 from `options.context` (tools) or
+  `state.context` (workflow steps). Tool execution also accepts `context` as a `Map`, preserving
+  `userId`/`conversationId` when provided that way.
+
+  `@voltagent/core` is also marked as side-effect free so edge bundlers can tree-shake the PlanAgent
+  filesystem backend, avoiding Node-only dependency loading when it is not used.
+
+  Usage:
+
+  ```ts
+  import { createTool, SERVERLESS_ENV_CONTEXT_KEY } from "@voltagent/core";
+  import type { D1Database } from "@cloudflare/workers-types";
+  import { z } from "zod";
+
+  type Env = { DB: D1Database };
+
+  export const listUsers = createTool({
+    name: "list-users",
+    description: "Fetch users from D1",
+    parameters: z.object({}),
+    execute: async (_args, options) => {
+      const env = options?.context?.get(SERVERLESS_ENV_CONTEXT_KEY) as Env | undefined;
+      const db = env?.DB;
+      if (!db) {
+        throw new Error("D1 binding is missing (env.DB)");
+      }
+
+      const { results } = await db.prepare("SELECT id, name FROM users").all();
+      return results;
+    },
+  });
+  ```
+
+- Updated dependencies [[`975831a`](https://github.com/VoltAgent/voltagent/commit/975831a852ea471adb621a1d87990a8ffbc5ed31)]:
+  - @voltagent/core@2.0.4
+
+## 2.1.0
+
+### Minor Changes
+
+- [#898](https://github.com/VoltAgent/voltagent/pull/898) [`b322cf4`](https://github.com/VoltAgent/voltagent/commit/b322cf4c511c64872c178e51f9ddccb869385dee) Thanks [@MGrin](https://github.com/MGrin)! - feat: Initial release of @voltagent/server-elysia
+
+  # @voltagent/server-elysia
+
+  ## 1.0.0
+
+  ### Major Changes
+  - Initial release of Elysia server implementation for VoltAgent
+  - Full feature parity with server-hono including:
+    - Agent execution endpoints (text, stream, chat, object)
+    - Workflow execution and lifecycle management
+    - Tool execution and discovery
+    - MCP (Model Context Protocol) support
+    - A2A (Agent-to-Agent) communication
+    - Observability and tracing
+    - Logging endpoints
+    - Authentication with authNext support
+    - Custom endpoint configuration
+    - CORS configuration
+    - WebSocket support
+
+  ### Features
+  - **High Performance**: Built on Elysia, optimized for speed and low latency
+  - **Type Safety**: Full TypeScript support with strict typing
+  - **Flexible Configuration**: Support for both `configureApp` and `configureFullApp` patterns
+  - **Auth Support**: JWT authentication with public route configuration via `authNext`
+  - **Extensible**: Easy to add custom routes, middleware, and plugins
+  - **OpenAPI/Swagger**: Built-in API documentation via @elysiajs/swagger
+  - **MCP Support**: Full Model Context Protocol implementation with SSE streaming
+  - **WebSocket Support**: Real-time updates and streaming capabilities
+
+  ### Dependencies
+  - `@voltagent/core`: ^1.5.1
+  - `@voltagent/server-core`: ^1.0.36
+  - `@voltagent/mcp-server`: ^1.0.3
+  - `@voltagent/a2a-server`: ^1.0.2
+  - `elysia`: ^1.1.29
+
+  ### Peer Dependencies
+  - `@voltagent/core`: ^1.x
+  - `elysia`: ^1.x
+
+## 2.0.2
+
+### Patch Changes
+
+- [`f6ffb8a`](https://github.com/VoltAgent/voltagent/commit/f6ffb8ae0fd95fbe920058e707d492d8c21b2505) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+- Updated dependencies [[`f6ffb8a`](https://github.com/VoltAgent/voltagent/commit/f6ffb8ae0fd95fbe920058e707d492d8c21b2505)]:
+  - @voltagent/core@2.0.2
+  - @voltagent/internal@1.0.2
+
+## 2.0.1
+
+### Patch Changes
+
+- [`c3943aa`](https://github.com/VoltAgent/voltagent/commit/c3943aa89a7bee113d99404ecd5a81a62bc159c2) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+- Updated dependencies [[`c3943aa`](https://github.com/VoltAgent/voltagent/commit/c3943aa89a7bee113d99404ecd5a81a62bc159c2)]:
+  - @voltagent/core@2.0.1
+  - @voltagent/internal@1.0.1
+
+## 2.0.0
+
+### Major Changes
+
+- [#894](https://github.com/VoltAgent/voltagent/pull/894) [`ee05549`](https://github.com/VoltAgent/voltagent/commit/ee055498096b1b99015a8362903712663969677f) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+### Patch Changes
+
+- Updated dependencies [[`ee05549`](https://github.com/VoltAgent/voltagent/commit/ee055498096b1b99015a8362903712663969677f)]:
+  - @voltagent/core@2.0.0
+  - @voltagent/internal@1.0.0
+
+## 1.0.36
+
+### Patch Changes
+
+- [#883](https://github.com/VoltAgent/voltagent/pull/883) [`9320326`](https://github.com/VoltAgent/voltagent/commit/93203262bf3ebcbc38fe4663c4b0cea27dd9ea16) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: add authNext and deprecate legacy auth
+
+  Add a new `authNext` policy that splits routes into public, console, and user access. All routes are protected by default; use `publicRoutes` to opt out.
+
+  AuthNext example:
+
+  ```ts
+  import { jwtAuth } from "@voltagent/server-core";
+  import { honoServer } from "@voltagent/server-hono";
+
+  const server = honoServer({
+    authNext: {
+      provider: jwtAuth({ secret: process.env.JWT_SECRET! }),
+      publicRoutes: ["GET /health"],
+    },
+  });
+  ```
+
+  Behavior summary:
+  - When `authNext` is set, all routes are private by default.
+  - Console endpoints (agents, workflows, tools, docs, observability, updates) require a Console Access Key.
+  - Execution endpoints require a user token (JWT).
+
+  Console access uses `VOLTAGENT_CONSOLE_ACCESS_KEY`:
+
+  ```bash
+  VOLTAGENT_CONSOLE_ACCESS_KEY=your-console-key
+  ```
+
+  ```bash
+  curl http://localhost:3141/agents \
+    -H "x-console-access-key: your-console-key"
+  ```
+
+  Legacy `auth` remains supported but is deprecated. Use `authNext` for new integrations.
+
+## 1.0.35
+
+### Patch Changes
+
+- [`b663dce`](https://github.com/VoltAgent/voltagent/commit/b663dceb57542d1b85475777f32ceb3671cc1237) Thanks [@omeraplak](https://github.com/omeraplak)! - fix: dedupe MCP endpoints in server startup output and include MCP transport paths (streamable HTTP/SSE) so the actual server endpoint is visible.
+
+- Updated dependencies [[`b663dce`](https://github.com/VoltAgent/voltagent/commit/b663dceb57542d1b85475777f32ceb3671cc1237)]:
+  - @voltagent/core@1.5.1
+
+## 1.0.34
+
+### Patch Changes
+
+- [#865](https://github.com/VoltAgent/voltagent/pull/865) [`77833b8`](https://github.com/VoltAgent/voltagent/commit/77833b848fbb1ae99e79c955e25442f9ebdd162f) Thanks [@omeraplak](https://github.com/omeraplak)! - fix: make GET /tools endpoint public when auth is enabled
+
+  Previously, `GET /tools` was listed in `PROTECTED_ROUTES`, requiring authentication even though it only returns tool metadata (name, description, parameters). This was inconsistent with `GET /agents` and `GET /workflows` which are publicly accessible for discovery.
+
+  ## Changes
+  - Moved `GET /tools` from `PROTECTED_ROUTES` to `DEFAULT_PUBLIC_ROUTES`
+  - Tool execution (`POST /tools/:name/execute`) remains protected and requires authentication
+
+  This allows VoltOps Console and other clients to discover available tools without authentication, while still requiring auth to actually execute them.
 
 ## 1.0.33
 
@@ -12397,7 +14764,290 @@
 
 ---
 
+## Package: @voltagent/server-elysia
+
+## 2.0.0
+
+### Major Changes
+
+- [#898](https://github.com/VoltAgent/voltagent/pull/898) [`b322cf4`](https://github.com/VoltAgent/voltagent/commit/b322cf4c511c64872c178e51f9ddccb869385dee) Thanks [@MGrin](https://github.com/MGrin)! - feat: Initial release of @voltagent/server-elysia
+
+  # @voltagent/server-elysia
+
+  ## 1.0.0
+
+  ### Major Changes
+  - Initial release of Elysia server implementation for VoltAgent
+  - Full feature parity with server-hono including:
+    - Agent execution endpoints (text, stream, chat, object)
+    - Workflow execution and lifecycle management
+    - Tool execution and discovery
+    - MCP (Model Context Protocol) support
+    - A2A (Agent-to-Agent) communication
+    - Observability and tracing
+    - Logging endpoints
+    - Authentication with authNext support
+    - Custom endpoint configuration
+    - CORS configuration
+    - WebSocket support
+
+  ### Features
+  - **High Performance**: Built on Elysia, optimized for speed and low latency
+  - **Type Safety**: Full TypeScript support with strict typing
+  - **Flexible Configuration**: Support for both `configureApp` and `configureFullApp` patterns
+  - **Auth Support**: JWT authentication with public route configuration via `authNext`
+  - **Extensible**: Easy to add custom routes, middleware, and plugins
+  - **OpenAPI/Swagger**: Built-in API documentation via @elysiajs/swagger
+  - **MCP Support**: Full Model Context Protocol implementation with SSE streaming
+  - **WebSocket Support**: Real-time updates and streaming capabilities
+
+  ### Dependencies
+  - `@voltagent/core`: ^1.5.1
+  - `@voltagent/server-core`: ^1.0.36
+  - `@voltagent/mcp-server`: ^1.0.3
+  - `@voltagent/a2a-server`: ^1.0.2
+  - `elysia`: ^1.1.29
+
+  ### Peer Dependencies
+  - `@voltagent/core`: ^1.x
+  - `elysia`: ^1.x
+
+### Patch Changes
+
+- Updated dependencies [[`b322cf4`](https://github.com/VoltAgent/voltagent/commit/b322cf4c511c64872c178e51f9ddccb869385dee)]:
+  - @voltagent/server-core@2.1.0
+
+---
+
 ## Package: @voltagent/server-hono
+
+## 2.0.3
+
+### Patch Changes
+
+- [#921](https://github.com/VoltAgent/voltagent/pull/921) [`c4591fa`](https://github.com/VoltAgent/voltagent/commit/c4591fa92de6df75a22a758b0232669053bd2b62) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: add resumable streaming support via @voltagent/resumable-streams, with server adapters that let clients reconnect to in-flight streams.
+
+  ```ts
+  import { openai } from "@ai-sdk/openai";
+  import { Agent, VoltAgent } from "@voltagent/core";
+  import {
+    createResumableStreamAdapter,
+    createResumableStreamRedisStore,
+  } from "@voltagent/resumable-streams";
+  import { honoServer } from "@voltagent/server-hono";
+
+  const streamStore = await createResumableStreamRedisStore();
+  const resumableStream = await createResumableStreamAdapter({ streamStore });
+
+  const agent = new Agent({
+    id: "assistant",
+    name: "Resumable Stream Agent",
+    instructions: "You are a helpful assistant.",
+    model: openai("gpt-4o-mini"),
+  });
+
+  new VoltAgent({
+    agents: { assistant: agent },
+    server: honoServer({
+      resumableStream: { adapter: resumableStream },
+    }),
+  });
+
+  await fetch("http://localhost:3141/agents/assistant/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: `{"input":"Hello!","options":{"conversationId":"conv-1","userId":"user-1","resumableStream":true}}`,
+  });
+
+  // Resume the same stream after reconnect/refresh
+  const resumeResponse = await fetch(
+    "http://localhost:3141/agents/assistant/chat/conv-1/stream?userId=user-1"
+  );
+
+  const reader = resumeResponse.body?.getReader();
+  const decoder = new TextDecoder();
+  while (reader) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    const chunk = decoder.decode(value, { stream: true });
+    console.log(chunk);
+  }
+  ```
+
+  AI SDK client (resume on refresh):
+
+  ```tsx
+  import { useChat } from "@ai-sdk/react";
+  import { DefaultChatTransport } from "ai";
+
+  const { messages, sendMessage } = useChat({
+    id: chatId,
+    messages: initialMessages,
+    resume: true,
+    transport: new DefaultChatTransport({
+      api: "/api/chat",
+      prepareSendMessagesRequest: ({ id, messages }) => ({
+        body: {
+          message: messages[messages.length - 1],
+          options: { conversationId: id, userId },
+        },
+      }),
+      prepareReconnectToStreamRequest: ({ id }) => ({
+        api: `/api/chat/${id}/stream?userId=${encodeURIComponent(userId)}`,
+      }),
+    }),
+  });
+  ```
+
+- Updated dependencies [[`c4591fa`](https://github.com/VoltAgent/voltagent/commit/c4591fa92de6df75a22a758b0232669053bd2b62)]:
+  - @voltagent/resumable-streams@2.0.1
+  - @voltagent/server-core@2.1.2
+  - @voltagent/core@2.0.7
+
+## 2.0.2
+
+### Patch Changes
+
+- [`f6ffb8a`](https://github.com/VoltAgent/voltagent/commit/f6ffb8ae0fd95fbe920058e707d492d8c21b2505) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+- Updated dependencies [[`f6ffb8a`](https://github.com/VoltAgent/voltagent/commit/f6ffb8ae0fd95fbe920058e707d492d8c21b2505)]:
+  - @voltagent/a2a-server@2.0.2
+  - @voltagent/core@2.0.2
+  - @voltagent/internal@1.0.2
+  - @voltagent/mcp-server@2.0.2
+  - @voltagent/server-core@2.0.2
+
+## 2.0.1
+
+### Patch Changes
+
+- [`c3943aa`](https://github.com/VoltAgent/voltagent/commit/c3943aa89a7bee113d99404ecd5a81a62bc159c2) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+- Updated dependencies [[`c3943aa`](https://github.com/VoltAgent/voltagent/commit/c3943aa89a7bee113d99404ecd5a81a62bc159c2)]:
+  - @voltagent/a2a-server@2.0.1
+  - @voltagent/core@2.0.1
+  - @voltagent/internal@1.0.1
+  - @voltagent/mcp-server@2.0.1
+  - @voltagent/server-core@2.0.1
+
+## 2.0.0
+
+### Major Changes
+
+- [#894](https://github.com/VoltAgent/voltagent/pull/894) [`ee05549`](https://github.com/VoltAgent/voltagent/commit/ee055498096b1b99015a8362903712663969677f) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+### Patch Changes
+
+- Updated dependencies [[`ee05549`](https://github.com/VoltAgent/voltagent/commit/ee055498096b1b99015a8362903712663969677f)]:
+  - @voltagent/server-core@2.0.0
+  - @voltagent/core@2.0.0
+  - @voltagent/a2a-server@2.0.0
+  - @voltagent/internal@1.0.0
+  - @voltagent/mcp-server@2.0.0
+
+## 1.2.11
+
+### Patch Changes
+
+- [#883](https://github.com/VoltAgent/voltagent/pull/883) [`9320326`](https://github.com/VoltAgent/voltagent/commit/93203262bf3ebcbc38fe4663c4b0cea27dd9ea16) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: add authNext and deprecate legacy auth
+
+  Add a new `authNext` policy that splits routes into public, console, and user access. All routes are protected by default; use `publicRoutes` to opt out.
+
+  AuthNext example:
+
+  ```ts
+  import { jwtAuth } from "@voltagent/server-core";
+  import { honoServer } from "@voltagent/server-hono";
+
+  const server = honoServer({
+    authNext: {
+      provider: jwtAuth({ secret: process.env.JWT_SECRET! }),
+      publicRoutes: ["GET /health"],
+    },
+  });
+  ```
+
+  Behavior summary:
+  - When `authNext` is set, all routes are private by default.
+  - Console endpoints (agents, workflows, tools, docs, observability, updates) require a Console Access Key.
+  - Execution endpoints require a user token (JWT).
+
+  Console access uses `VOLTAGENT_CONSOLE_ACCESS_KEY`:
+
+  ```bash
+  VOLTAGENT_CONSOLE_ACCESS_KEY=your-console-key
+  ```
+
+  ```bash
+  curl http://localhost:3141/agents \
+    -H "x-console-access-key: your-console-key"
+  ```
+
+  Legacy `auth` remains supported but is deprecated. Use `authNext` for new integrations.
+
+- Updated dependencies [[`9320326`](https://github.com/VoltAgent/voltagent/commit/93203262bf3ebcbc38fe4663c4b0cea27dd9ea16)]:
+  - @voltagent/server-core@1.0.36
+
+## 1.2.10
+
+### Patch Changes
+
+- [`b663dce`](https://github.com/VoltAgent/voltagent/commit/b663dceb57542d1b85475777f32ceb3671cc1237) Thanks [@omeraplak](https://github.com/omeraplak)! - fix: dedupe MCP endpoints in server startup output and include MCP transport paths (streamable HTTP/SSE) so the actual server endpoint is visible.
+
+- Updated dependencies [[`b663dce`](https://github.com/VoltAgent/voltagent/commit/b663dceb57542d1b85475777f32ceb3671cc1237)]:
+  - @voltagent/server-core@1.0.35
+  - @voltagent/core@1.5.1
+
+## 1.2.9
+
+### Patch Changes
+
+- [`37be1ed`](https://github.com/VoltAgent/voltagent/commit/37be1ed67f833add6a3cce5cb47a8f0774236956) Thanks [@omeraplak](https://github.com/omeraplak)! - fix: bump @voltagent/server-core dep
 
 ## 1.2.8
 
@@ -14215,6 +16865,216 @@
 
 ## Package: @voltagent/serverless-hono
 
+## 2.0.5
+
+### Patch Changes
+
+- [#921](https://github.com/VoltAgent/voltagent/pull/921) [`c4591fa`](https://github.com/VoltAgent/voltagent/commit/c4591fa92de6df75a22a758b0232669053bd2b62) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: add resumable streaming support via @voltagent/resumable-streams, with server adapters that let clients reconnect to in-flight streams.
+
+  ```ts
+  import { openai } from "@ai-sdk/openai";
+  import { Agent, VoltAgent } from "@voltagent/core";
+  import {
+    createResumableStreamAdapter,
+    createResumableStreamRedisStore,
+  } from "@voltagent/resumable-streams";
+  import { honoServer } from "@voltagent/server-hono";
+
+  const streamStore = await createResumableStreamRedisStore();
+  const resumableStream = await createResumableStreamAdapter({ streamStore });
+
+  const agent = new Agent({
+    id: "assistant",
+    name: "Resumable Stream Agent",
+    instructions: "You are a helpful assistant.",
+    model: openai("gpt-4o-mini"),
+  });
+
+  new VoltAgent({
+    agents: { assistant: agent },
+    server: honoServer({
+      resumableStream: { adapter: resumableStream },
+    }),
+  });
+
+  await fetch("http://localhost:3141/agents/assistant/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: `{"input":"Hello!","options":{"conversationId":"conv-1","userId":"user-1","resumableStream":true}}`,
+  });
+
+  // Resume the same stream after reconnect/refresh
+  const resumeResponse = await fetch(
+    "http://localhost:3141/agents/assistant/chat/conv-1/stream?userId=user-1"
+  );
+
+  const reader = resumeResponse.body?.getReader();
+  const decoder = new TextDecoder();
+  while (reader) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    const chunk = decoder.decode(value, { stream: true });
+    console.log(chunk);
+  }
+  ```
+
+  AI SDK client (resume on refresh):
+
+  ```tsx
+  import { useChat } from "@ai-sdk/react";
+  import { DefaultChatTransport } from "ai";
+
+  const { messages, sendMessage } = useChat({
+    id: chatId,
+    messages: initialMessages,
+    resume: true,
+    transport: new DefaultChatTransport({
+      api: "/api/chat",
+      prepareSendMessagesRequest: ({ id, messages }) => ({
+        body: {
+          message: messages[messages.length - 1],
+          options: { conversationId: id, userId },
+        },
+      }),
+      prepareReconnectToStreamRequest: ({ id }) => ({
+        api: `/api/chat/${id}/stream?userId=${encodeURIComponent(userId)}`,
+      }),
+    }),
+  });
+  ```
+
+- Updated dependencies [[`c4591fa`](https://github.com/VoltAgent/voltagent/commit/c4591fa92de6df75a22a758b0232669053bd2b62)]:
+  - @voltagent/resumable-streams@2.0.1
+  - @voltagent/server-core@2.1.2
+
+## 2.0.4
+
+### Patch Changes
+
+- [#911](https://github.com/VoltAgent/voltagent/pull/911) [`975831a`](https://github.com/VoltAgent/voltagent/commit/975831a852ea471adb621a1d87990a8ffbc5ed31) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: expose Cloudflare Workers `env` bindings in serverless contexts
+
+  When using `@voltagent/serverless-hono` on Cloudflare Workers, the runtime `env` is now injected into the
+  context map for agent requests, workflow runs, and tool executions. `@voltagent/core` exports
+  `SERVERLESS_ENV_CONTEXT_KEY` so you can access bindings like D1 from `options.context` (tools) or
+  `state.context` (workflow steps). Tool execution also accepts `context` as a `Map`, preserving
+  `userId`/`conversationId` when provided that way.
+
+  `@voltagent/core` is also marked as side-effect free so edge bundlers can tree-shake the PlanAgent
+  filesystem backend, avoiding Node-only dependency loading when it is not used.
+
+  Usage:
+
+  ```ts
+  import { createTool, SERVERLESS_ENV_CONTEXT_KEY } from "@voltagent/core";
+  import type { D1Database } from "@cloudflare/workers-types";
+  import { z } from "zod";
+
+  type Env = { DB: D1Database };
+
+  export const listUsers = createTool({
+    name: "list-users",
+    description: "Fetch users from D1",
+    parameters: z.object({}),
+    execute: async (_args, options) => {
+      const env = options?.context?.get(SERVERLESS_ENV_CONTEXT_KEY) as Env | undefined;
+      const db = env?.DB;
+      if (!db) {
+        throw new Error("D1 binding is missing (env.DB)");
+      }
+
+      const { results } = await db.prepare("SELECT id, name FROM users").all();
+      return results;
+    },
+  });
+  ```
+
+- Updated dependencies [[`975831a`](https://github.com/VoltAgent/voltagent/commit/975831a852ea471adb621a1d87990a8ffbc5ed31)]:
+  - @voltagent/server-core@2.1.1
+
+## 2.0.3
+
+### Patch Changes
+
+- [`c9bd810`](https://github.com/VoltAgent/voltagent/commit/c9bd810ac71972eb7e9e6e01c9ca15b6e9cfc9f0) Thanks [@omeraplak](https://github.com/omeraplak)! - fix: allow Console dev headers in CORS and add a /ws probe response for serverless runtimes without WebSocket support
+
+## 2.0.2
+
+### Patch Changes
+
+- [`f6ffb8a`](https://github.com/VoltAgent/voltagent/commit/f6ffb8ae0fd95fbe920058e707d492d8c21b2505) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+- Updated dependencies [[`f6ffb8a`](https://github.com/VoltAgent/voltagent/commit/f6ffb8ae0fd95fbe920058e707d492d8c21b2505)]:
+  - @voltagent/internal@1.0.2
+  - @voltagent/server-core@2.0.2
+
+## 2.0.1
+
+### Patch Changes
+
+- [`c3943aa`](https://github.com/VoltAgent/voltagent/commit/c3943aa89a7bee113d99404ecd5a81a62bc159c2) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+- Updated dependencies [[`c3943aa`](https://github.com/VoltAgent/voltagent/commit/c3943aa89a7bee113d99404ecd5a81a62bc159c2)]:
+  - @voltagent/internal@1.0.1
+  - @voltagent/server-core@2.0.1
+
+## 2.0.0
+
+### Major Changes
+
+- [#894](https://github.com/VoltAgent/voltagent/pull/894) [`ee05549`](https://github.com/VoltAgent/voltagent/commit/ee055498096b1b99015a8362903712663969677f) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+### Patch Changes
+
+- Updated dependencies [[`ee05549`](https://github.com/VoltAgent/voltagent/commit/ee055498096b1b99015a8362903712663969677f)]:
+  - @voltagent/server-core@2.0.0
+  - @voltagent/core@2.0.0
+  - @voltagent/internal@1.0.0
+
 ## 1.0.10
 
 ### Patch Changes
@@ -14470,6 +17330,82 @@
 ---
 
 ## Package: @voltagent/supabase
+
+## 2.0.2
+
+### Patch Changes
+
+- [`f6ffb8a`](https://github.com/VoltAgent/voltagent/commit/f6ffb8ae0fd95fbe920058e707d492d8c21b2505) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+- Updated dependencies [[`f6ffb8a`](https://github.com/VoltAgent/voltagent/commit/f6ffb8ae0fd95fbe920058e707d492d8c21b2505)]:
+  - @voltagent/internal@1.0.2
+
+## 2.0.1
+
+### Patch Changes
+
+- [`c3943aa`](https://github.com/VoltAgent/voltagent/commit/c3943aa89a7bee113d99404ecd5a81a62bc159c2) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+- Updated dependencies [[`c3943aa`](https://github.com/VoltAgent/voltagent/commit/c3943aa89a7bee113d99404ecd5a81a62bc159c2)]:
+  - @voltagent/internal@1.0.1
+
+## 2.0.0
+
+### Major Changes
+
+- [#894](https://github.com/VoltAgent/voltagent/pull/894) [`ee05549`](https://github.com/VoltAgent/voltagent/commit/ee055498096b1b99015a8362903712663969677f) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+### Patch Changes
+
+- Updated dependencies [[`ee05549`](https://github.com/VoltAgent/voltagent/commit/ee055498096b1b99015a8362903712663969677f)]:
+  - @voltagent/core@2.0.0
+  - @voltagent/internal@1.0.0
+  - @voltagent/logger@2.0.0
 
 ## 1.0.11
 
@@ -15503,6 +18439,62 @@
 
 ## Package: @voltagent/vercel-ai-exporter
 
+## 2.0.2
+
+### Patch Changes
+
+- [`f6ffb8a`](https://github.com/VoltAgent/voltagent/commit/f6ffb8ae0fd95fbe920058e707d492d8c21b2505) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+- Updated dependencies [[`f6ffb8a`](https://github.com/VoltAgent/voltagent/commit/f6ffb8ae0fd95fbe920058e707d492d8c21b2505)]:
+  - @voltagent/sdk@2.0.2
+
+## 2.0.1
+
+### Patch Changes
+
+- [`c3943aa`](https://github.com/VoltAgent/voltagent/commit/c3943aa89a7bee113d99404ecd5a81a62bc159c2) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+- Updated dependencies [[`c3943aa`](https://github.com/VoltAgent/voltagent/commit/c3943aa89a7bee113d99404ecd5a81a62bc159c2)]:
+  - @voltagent/sdk@2.0.1
+
+## 2.0.0
+
+### Patch Changes
+
+- Updated dependencies [[`ee05549`](https://github.com/VoltAgent/voltagent/commit/ee055498096b1b99015a8362903712663969677f)]:
+  - @voltagent/core@2.0.0
+  - @voltagent/sdk@2.0.0
+
 ## 1.0.2
 
 ### Patch Changes
@@ -15612,6 +18604,74 @@
 ---
 
 ## Package: @voltagent/voice
+
+## 2.0.2
+
+### Patch Changes
+
+- [`f6ffb8a`](https://github.com/VoltAgent/voltagent/commit/f6ffb8ae0fd95fbe920058e707d492d8c21b2505) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+## 2.0.1
+
+### Patch Changes
+
+- [`c3943aa`](https://github.com/VoltAgent/voltagent/commit/c3943aa89a7bee113d99404ecd5a81a62bc159c2) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+## 2.0.0
+
+### Major Changes
+
+- [#894](https://github.com/VoltAgent/voltagent/pull/894) [`ee05549`](https://github.com/VoltAgent/voltagent/commit/ee055498096b1b99015a8362903712663969677f) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+### Patch Changes
+
+- Updated dependencies [[`ee05549`](https://github.com/VoltAgent/voltagent/commit/ee055498096b1b99015a8362903712663969677f)]:
+  - @voltagent/core@2.0.0
 
 ## 1.0.2
 
@@ -15826,6 +18886,81 @@
 ---
 
 ## Package: @voltagent/voltagent-memory
+
+## 1.0.2
+
+### Patch Changes
+
+- [`f6ffb8a`](https://github.com/VoltAgent/voltagent/commit/f6ffb8ae0fd95fbe920058e707d492d8c21b2505) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+- Updated dependencies [[`f6ffb8a`](https://github.com/VoltAgent/voltagent/commit/f6ffb8ae0fd95fbe920058e707d492d8c21b2505)]:
+  - @voltagent/internal@1.0.2
+
+## 1.0.1
+
+### Patch Changes
+
+- [`c3943aa`](https://github.com/VoltAgent/voltagent/commit/c3943aa89a7bee113d99404ecd5a81a62bc159c2) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+- Updated dependencies [[`c3943aa`](https://github.com/VoltAgent/voltagent/commit/c3943aa89a7bee113d99404ecd5a81a62bc159c2)]:
+  - @voltagent/internal@1.0.1
+
+## 1.0.0
+
+### Major Changes
+
+- [#894](https://github.com/VoltAgent/voltagent/pull/894) [`ee05549`](https://github.com/VoltAgent/voltagent/commit/ee055498096b1b99015a8362903712663969677f) Thanks [@omeraplak](https://github.com/omeraplak)! - feat: VoltAgent 2.x (AI SDK v6)
+
+  VoltAgent 2.x aligns the framework with AI SDK v6 and adds new features. VoltAgent APIs are compatible, but if you call AI SDK directly, follow the upstream v6 migration guide.
+
+  Migration summary (1.x -> 2.x):
+  1. Update VoltAgent packages
+  - `npm run volt update`
+  - If the CLI is missing: `npx @voltagent/cli init` then `npm run volt update`
+  2. Align AI SDK packages
+  - `pnpm add ai@^6 @ai-sdk/provider@^3 @ai-sdk/provider-utils@^4 @ai-sdk/openai@^3`
+  - If you use UI hooks, upgrade `@ai-sdk/react` to `^3`
+  3. Structured output
+  - `generateObject` and `streamObject` are deprecated in VoltAgent 2.x
+  - Use `generateText` / `streamText` with `Output.object(...)`
+
+  Full migration guide: https://voltagent.dev/docs/getting-started/migration-guide/
+
+### Patch Changes
+
+- Updated dependencies [[`ee05549`](https://github.com/VoltAgent/voltagent/commit/ee055498096b1b99015a8362903712663969677f)]:
+  - @voltagent/core@2.0.0
+  - @voltagent/internal@1.0.0
 
 ## 0.1.5
 
