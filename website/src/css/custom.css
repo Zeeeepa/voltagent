@@ -4666,13 +4666,13 @@ code .token.coord {
   background-color: transparent !important;
 }
 
-/* Root level section headers (GETTING STARTED, AGENTS, etc.) */
+/* Root level section headers (Getting Started, Agents, etc.) */
 .menu__list-item-collapsible .menu__link {
-  font-weight: 600 !important;
+  font-weight: 500 !important;
   color: #ffffff !important; /* Default white, emerald will only override for root level */
-  font-size: 0.75rem !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.05em !important;
+  font-size: 0.875rem !important;
+  text-transform: capitalize !important;
+  letter-spacing: 0.02em !important;
   background-color: transparent !important;
   border-left: 3px solid transparent !important;
   position: relative !important;
@@ -4721,19 +4721,19 @@ code .token.coord {
   > .menu__list-item-collapsible
   .menu__link {
   color: #ffffff !important;
-  font-weight: 600 !important;
+  font-weight: 500 !important;
 }
 
 /* Level 2 category headers (Storage Adapters, SCORERS, etc.) - same size as level 1 */
 .theme-doc-sidebar-item-category-level-2 .menu__list-item-collapsible .menu__link {
   font-size: 0.875rem !important;
-  font-weight: 600 !important;
+  font-weight: 500 !important;
   color: #ffffff !important;
 }
 
 .theme-doc-sidebar-item-category-level-2 > .menu__list-item-collapsible > .menu__link {
   font-size: 0.875rem !important;
-  font-weight: 600 !important;
+  font-weight: 500 !important;
   color: #ffffff !important;
 }
 
@@ -4758,7 +4758,7 @@ code .token.coord {
 .menu__list .menu__list .menu__link {
   padding: 0.4rem 0.75rem !important;
   padding-left: 2rem !important;
-  font-weight: 400 !important;
+  font-weight: 500 !important;
   color: rgb(156, 163, 175) !important;
   font-size: 0.875rem !important;
   width: 100% !important;
@@ -4804,8 +4804,8 @@ code .token.coord {
 .menu__list .menu__list .menu__list-item-collapsible .menu__link {
   padding-left: 1rem !important;
   color: #ffffff !important;
-  font-size: 12px !important;
-  font-weight: 600 !important;
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
 }
 
 [data-theme="dark"] .menu__list .menu__list .menu__list-item-collapsible .menu__link {
@@ -4830,11 +4830,11 @@ code .token.coord {
 }
 
 [data-theme="dark"] .menu__list-item-collapsible .menu__link {
-  font-weight: 700 !important;
+  font-weight: 500 !important;
   color: #ffffff !important; /* Default beyaz */
-  font-size: 0.75rem !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.05em !important;
+  font-size: 0.875rem !important;
+  text-transform: capitalize !important;
+  letter-spacing: 0.02em !important;
   background-color: transparent !important;
   border-left: none !important;
   padding-left: 0.75rem !important;
@@ -4962,7 +4962,7 @@ aside.theme-doc-sidebar-container .menu {
 .menu__list .menu__list .menu__link {
   padding: 0.4rem 0.75rem !important;
   padding-left: 1rem !important;
-  font-weight: 400 !important;
+  font-weight: 500 !important;
   color: rgb(156, 163, 175) !important;
   font-size: 0.875rem !important;
   width: 100% !important;
@@ -5416,10 +5416,10 @@ nav.table-of-contents .table-of-contents__link--active,
 
 /* Level 1 link items (Evals, Triggers, Actions, etc.) - same style as category headers */
 .theme-doc-sidebar-item-link-level-1 > .menu__link {
-  font-size: 0.75rem !important;
-  font-weight: 700 !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.05em !important;
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  text-transform: capitalize !important;
+  letter-spacing: 0.02em !important;
   color: #ffffff !important;
 }
 
