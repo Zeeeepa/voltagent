@@ -6,6 +6,15 @@ title: Feedback
 
 Feedback lets you capture user ratings and comments tied to a trace. VoltAgent can create signed feedback tokens for each trace and attach them to assistant message metadata so you can submit feedback later from the UI.
 
+<video controls loop muted playsInline style={{width: '100%', height: 'auto'}}>
+
+  <source src="https://cdn.voltagent.dev/docs/feedbacks-demo.mp4" type="video/mp4" />
+  Your browser does not support the video tag.
+</video>
+
+<br/>
+<br/>
+
 ## How it works
 
 - Feedback is always linked to a trace_id.
