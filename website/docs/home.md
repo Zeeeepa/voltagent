@@ -1,4 +1,5 @@
 ---
+title: Home
 sidebar_label: Home
 slug: /home
 hide_table_of_contents: true
