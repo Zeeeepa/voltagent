@@ -6035,3 +6035,15 @@ aside:has(~ main .docs-home) {
 html[data-theme="dark"] .theme-doc-markdown .docs-home p.docs-home-description {
   color: #f2f2f2 !important;
 }
+
+/* Override markdown p styles for FeatureShowcase in docs */
+.markdown .feature-showcase p,
+.theme-doc-markdown .feature-showcase p,
+article .markdown .feature-showcase p,
+[data-theme="dark"] .markdown .feature-showcase p,
+[data-theme="dark"] .theme-doc-markdown .feature-showcase p {
+  font-size: inherit !important;
+  font-weight: inherit !important;
+  line-height: inherit !important;
+  margin-bottom: 0 !important;
+}

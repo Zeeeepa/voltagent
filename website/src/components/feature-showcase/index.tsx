@@ -111,7 +111,7 @@ export function FeatureShowcase() {
                   >
                     {Icon && (
                       <Icon
-                        className={`w-5 h-5 transition-colors duration-700 ease-in-out ${
+                        className={`w-3.5 h-3.5 md:w-5 md:h-5 transition-colors duration-700 ease-in-out ${
                           isHighlighted ? "text-emerald-400" : ""
                         }`}
                       />
@@ -130,14 +130,14 @@ export function FeatureShowcase() {
                 hoveredTab ? "bg-zinc-800/40" : activeTab ? "bg-zinc-800/60" : "bg-zinc-800/40"
               }`}
             >
-              <p
-                className={`text-xs md:text-sm !m-0 flex-1 transition-colors duration-700 ${
+              <span
+                className={`text-xs md:text-sm flex-1 transition-colors duration-700 ${
                   hoveredTab || activeTab ? "" : "text-zinc-100"
                 }`}
               >
                 {displayTabData?.footerText ||
                   "Start building production-ready AI agents in minutes"}
-              </p>
+              </span>
               <a
                 href={displayTabData?.docLink || "/docs"}
                 target="_blank"

@@ -50,7 +50,7 @@ const quickLinks = [
   {
     title: "5 Steps Tutorial",
     description: "Learn the fundamentals with hands-on examples.",
-    href: "/docs/getting-started/tutorial/",
+    href: "/tutorial/introduction/",
     icon: ListBulletIcon,
   },
 ];
