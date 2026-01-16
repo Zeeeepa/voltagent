@@ -118,6 +118,73 @@ for await (const _chunk of stream.textStream) {
 console.log(stream.feedback);
 ```
 
+## Automated feedback with eval scorers
+
+You can run LLM or heuristic scorers and persist the result as feedback without manual `fetch` calls. The `onResult` callback receives a `feedback` helper with `feedback.save(...)`. The `key` is required and the trace id is taken from the scorer result.
+
+```ts
+import { Agent, buildScorer } from "@voltagent/core";
+import { openai } from "@ai-sdk/openai";
+import { z } from "zod";
+
+const judgeAgent = new Agent({
+  name: "satisfaction-judge",
+  model: openai("gpt-4o-mini"),
+  instructions: "Return JSON with score (0-1), label, and optional reason.",
+});
+
+const judgeSchema = z.object({
+  score: z.number().min(0).max(1),
+  label: z.string(),
+  reason: z.string().optional(),
+});
+
+const satisfactionScorer = buildScorer({
+  id: "satisfaction-judge",
+  label: "Satisfaction Judge",
+})
+  .score(async ({ payload }) => {
+    const prompt = `Score user satisfaction (0-1) and label it.
+User: ${payload.input}
+Assistant: ${payload.output}`;
+    const response = await judgeAgent.generateObject(prompt, judgeSchema);
+    return {
+      score: response.object.score,
+      metadata: {
+        label: response.object.label,
+        reason: response.object.reason ?? null,
+      },
+    };
+  })
+  .build();
+
+const agent = new Agent({
+  name: "support-agent",
+  model: openai("gpt-4o-mini"),
+  eval: {
+    scorers: {
+      satisfaction: {
+        scorer: satisfactionScorer,
+        onResult: async ({ result, feedback }) => {
+          await feedback.save({
+            key: "satisfaction",
+            value: result.metadata?.label ?? null,
+            score: result.score ?? null,
+            comment: result.metadata?.reason ?? null,
+            feedbackSourceType: "model",
+          });
+        },
+      },
+    },
+  },
+});
+```
+
+Notes:
+
+- Requires a configured VoltOps client (keys) so feedback can be persisted.
+- `feedback.save` uses the scorer trace id by default; you can override via `traceId`.
+
 ## useChat integration
 
 When you use the `/agents/:id/chat` endpoint (AI SDK useChat compatible), the assistant message includes feedback metadata under `message.metadata.feedback`. You can render a thumbs up/down UI and submit feedback to `feedback.url`.
