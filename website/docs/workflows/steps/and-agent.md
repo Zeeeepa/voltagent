@@ -20,7 +20,7 @@ const agent = new Agent({
 const workflow = createWorkflowChain({
   id: "analyze-text",
   input: z.object({ text: z.string() }),
-}).andAgent(({ data }) => `Analyze this text: ${data.text}`, agent, {
+}).andAgent(async ({ data }) => `Analyze this text: ${data.text}`, agent, {
   schema: z.object({
     sentiment: z.enum(["positive", "negative", "neutral"]),
     summary: z.string(),
@@ -44,6 +44,8 @@ const result = await workflow.run({ text: "I love this!" });
 )
 ```
 
+If you pass a function for `prompt`, it must return a Promise (use `async`) and resolve to a string, `UIMessage[]`, or `ModelMessage[]`.
+
 **Important:** `andAgent` uses `generateText` with `Output.object` under the hood, which means:
 
 - ✅ You get **structured, typed responses** based on your schema
@@ -60,12 +62,12 @@ By default, the step result replaces the workflow data with the agent output. If
 // Simple prompt (string)
 .andAgent("Summarize this", agent, { schema })
 
-// Dynamic prompt from data (string)
-.andAgent(({ data }) => `Analyze: ${data.text}`, agent, { schema })
+// Dynamic prompt from data (async)
+.andAgent(async ({ data }) => `Analyze: ${data.text}`, agent, { schema })
 
 // Advanced: pass ai-sdk v5 ModelMessage[] (multimodal)
 .andAgent(
-  ({ data }) => [
+  async ({ data }) => [
     { role: 'user', content: [{ type: 'text', text: `Hello ${data.name}` }] },
   ],
   agent,
@@ -74,7 +76,7 @@ By default, the step result replaces the workflow data with the agent output. If
 
 // Advanced: pass UIMessage[]
 .andAgent(
-  ({ data }) => [
+  async ({ data }) => [
     { id: crypto.randomUUID(), role: 'user', parts: [{ type: 'text', text: data.prompt }] },
   ],
   agent,
@@ -83,7 +85,7 @@ By default, the step result replaces the workflow data with the agent output. If
 
 // Merge agent output with existing data
 .andAgent(
-  ({ data }) => `Classify: ${data.email}`,
+  async ({ data }) => `Classify: ${data.email}`,
   agent,
   { schema: z.object({ type: z.enum(["support", "sales", "spam"]) }) },
   (output, { data }) => ({ ...data, emailType: output })
@@ -96,7 +98,7 @@ By default, the step result replaces the workflow data with the agent output. If
 
 ```typescript
 .andAgent(
-  ({ data }) => `Analyze sentiment of: ${data.review}`,
+  async ({ data }) => `Analyze sentiment of: ${data.review}`,
   agent,
   {
     schema: z.object({
@@ -112,7 +114,7 @@ By default, the step result replaces the workflow data with the agent output. If
 
 ```typescript
 .andAgent(
-  ({ data }) => `Write a ${data.tone} email about ${data.topic}`,
+  async ({ data }) => `Write a ${data.tone} email about ${data.topic}`,
   agent,
   {
     schema: z.object({
@@ -128,7 +130,7 @@ By default, the step result replaces the workflow data with the agent output. If
 
 ```typescript
 .andAgent(
-  ({ data }) => `Extract key information from: ${data.document}`,
+  async ({ data }) => `Extract key information from: ${data.document}`,
   agent,
   {
     schema: z.object({
@@ -145,7 +147,7 @@ By default, the step result replaces the workflow data with the agent output. If
 
 ```typescript
 .andAgent(
-  ({ data }) => `What type of email is this: ${data.email}`,
+  async ({ data }) => `What type of email is this: ${data.email}`,
   agent,
   {
     schema: z.object({
@@ -163,7 +165,7 @@ Build prompts from workflow data:
 
 ```typescript
 .andAgent(
-  ({ data }) => {
+  async ({ data }) => {
     // Adjust prompt based on data
     if (data.userLevel === "beginner") {
       return `Explain in simple terms: ${data.question}`;
@@ -183,7 +185,7 @@ Combine AI with logic:
 createWorkflowChain({ id: "smart-email" })
   // Step 1: Classify with AI
   .andAgent(
-    ({ data }) => `What type of email is this: ${data.email}`,
+    async ({ data }) => `What type of email is this: ${data.email}`,
     agent,
     {
       schema: z.object({
