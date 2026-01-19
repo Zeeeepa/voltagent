@@ -39,6 +39,12 @@ const workflow = createWorkflowChain({
 });
 ```
 
+## Behavior
+
+- Conditions are evaluated independently; there is no first-match or else behavior.
+- All matching branches run concurrently, so multiple branches can execute.
+- For if/else logic, make conditions mutually exclusive or use sequential `andWhen` steps.
+
 ## Function Signature
 
 ```typescript
@@ -56,5 +62,6 @@ const workflow = createWorkflowChain({
 
 ## Notes
 
+- Conditions are evaluated independently, so multiple branches can run.
 - Results are returned as an array aligned to the `branches` order.
 - Branches that do not run return `undefined`.

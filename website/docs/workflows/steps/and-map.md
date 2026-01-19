@@ -49,6 +49,9 @@ const workflow = createWorkflowChain({
 
 ## Notes
 
-- `data` refers to the current step input.
-- `input` refers to the original workflow input.
-- `context` reads from `WorkflowRunOptions.context`.
+- `data` refers to the current step input; `input` refers to the original workflow input.
+- `context` reads from `WorkflowRunOptions.context` (either a `Map` or a plain object).
+- `path` uses dot notation; use `"."` or omit it to return the full value.
+- `step` reads from a step's output when available, otherwise its input.
+- Missing `stepId` or invalid `path` throws an error.
+- Map entries resolve in definition order and can be async.
