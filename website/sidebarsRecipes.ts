@@ -88,6 +88,16 @@ const sidebars: SidebarsConfig = {
         },
         {
           type: "doc",
+          id: "retrying",
+          label: "Retrying",
+        },
+        {
+          type: "doc",
+          id: "fallback",
+          label: "Fallback",
+        },
+        {
+          type: "doc",
           id: "subagents",
           label: "Subagents",
         },

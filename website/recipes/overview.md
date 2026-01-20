@@ -35,6 +35,8 @@ Quick reference guides for common VoltAgent features.
 - [Tools](./tools) - Add custom tools to your agents.
 - [Authentication](./authentication) - Protect endpoints with JWT auth.
 - [Hooks](./hooks) - Lifecycle hooks for agent behavior.
+- [Retrying](./retrying) - Automatic retries for transient model errors.
+- [Fallback](./fallback) - Fail over to secondary models when the primary fails.
 - [Subagents](./subagents) - Multi-agent systems with supervisors.
 - [Memory](./memory) - Conversation and working memory.
 - [Workflows](./workflows) - Multi-step workflows with agents.
