@@ -5,7 +5,7 @@
 feat: allow `runExperiment` to accept a `VoltOpsClient` directly by adapting it for dataset resolution when needed.
 
 ```ts
-import { VoltOpsClient } from "@voltagent/sdk";
+import { VoltOpsClient } from "@voltagent/core";
 import { runExperiment } from "@voltagent/evals";
 import experiment from "./experiments/support-nightly.experiment";
 
