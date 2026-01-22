@@ -28,7 +28,7 @@ const sidebars: SidebarsConfig = {
     {
       type: "category",
       label: "Tracing",
-      items: ["tracing/overview", "tracing/concept"],
+      items: ["tracing/overview", "tracing/views", "tracing/users"],
     },
     {
       type: "doc",
