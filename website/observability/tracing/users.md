@@ -1,75 +1,50 @@
 ---
-title: Users
+title: User Analytics
 ---
 
-# Users
+# User Analytics
 
-The Users page groups traces by user so you can quickly see who is affected by errors, high latency, or unusual cost and then jump into details.
+The Users page groups traces by user so you can see who is impacted and where issues concentrate. It helps you go from "something feels off" to a specific user, session, and trace.
 
-:::note Add visuals
-Add the Users list screenshot or video here.
-:::
+<video controls loop muted playsInline style={{width: '100%', height: 'auto'}}>
 
-## Users List
+  <source src="https://cdn.voltagent.dev/docs/observability/tracing/tracing-users.mp4" type="video/mp4" />
+  Your browser does not support the video tag.
+</video>
 
-Each row represents a user. Use this list to find users that need attention and open their detail view.
-
-## User Detail View
-
-The detail page follows the same top-to-bottom layout as the UI.
-
-### Profile and Metadata
-
-Shows user identity and metadata (plan, tier, region) so you can segment behavior and compare cohorts. Use this to spot plan-based issues or regional latency differences.
-
-:::note Add visuals
-Add the user header and metadata screenshot here.
-:::
+<br/>
+<br/>
 
 ### Key Metrics
 
-Gives a quick read of volume, success rate, latency, and cost. Use this to decide whether to investigate quality, performance, or spend first.
+Quick read of volume, success rate, latency, and cost over time. Use it to decide if the problem is quality, performance, or spend, and to link regressions to model switches.
 
-:::note Add visuals
-Add the metrics cards screenshot here.
-:::
+<img
+src="https://cdn.voltagent.dev/docs/observability/tracing/tracing-charts.gif"
+alt="Trace filters overview"
+style={{  maxWidth: "100%", borderRadius: "12px", display: "block", margin: "0 auto" }}
+/>
 
-### Trends and Model Usage
+<br/>
 
-Time-range charts show changes over time; model usage shows which model versions the user saw. This helps connect regressions to releases or model switches.
+### User Feedback
 
-:::note Add visuals
-Add the trends and model usage charts here.
-:::
+Feedback turns user sentiment into signals you can track. Use it to confirm whether fixes improved the experience and to see which issues users feel most.
 
-### User Feedback (Optional)
+<img
+src="https://cdn.voltagent.dev/docs/observability/tracing/tracing-feedback.gif"
+alt="Trace filters overview"
+style={{  maxWidth: "100%", borderRadius: "12px", display: "block", margin: "0 auto" }}
+/>
 
-Shows ratings and comments with the related traces so you can compare behavior with user feedback. Use it to validate fixes and track perceived quality.
+<br/>
 
-:::note Add visuals
-Add the user feedback section screenshots here.
-:::
-
-Each chart answers a specific question:
-
-- **Feedback Summary**: Quick snapshot of volume, average score, and coverage.
-- **Feedback Trends**: How feedback volume and sentiment change over time.
-- **Score Distribution**: Where scores cluster to spot polarization or drift.
-- **Top Feedback Keys**: Which feedback signals dominate for this user.
-- **Comment Momentum**: When users leave comments, not just scores.
+Use the charts to see feedback volume, sentiment trends, score clusters, dominant feedback keys, and when users leave comments.
 
 ### Conversations
 
-Groups traces into user journeys; selecting one filters the trace list below. This is useful when a problem spans multiple steps instead of a single trace.
+Conversations group traces by session so you can follow a user flow end to end.
 
-:::note Add visuals
-Add the conversations section screenshot here.
-:::
+Use the cards (status, time range, model, cost) to pick the most suspicious session, then filter traces to that path.
 
-### Traces
-
-Lists all runs for the user; filtered by conversation when selected.
-
-:::note Add visuals
-Add the user trace table screenshot here.
-:::
+![conversation](https://cdn.voltagent.dev/docs/observability/tracing/tracing-conversation-2.png)

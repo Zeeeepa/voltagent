@@ -1,10 +1,8 @@
 ---
-title: Views
+title: Trace Inspectors
 ---
 
-# Trace Views
-
-When you open a trace, the drawer shows three tabs. Each tab answers a different question.
+When you open a trace, the drawer shows three tabs. Each tab helps you answer a different debugging question.
 
 ## Waterfall
 
@@ -19,7 +17,7 @@ Use Waterfall to understand timing and execution order. It shows spans as a hier
 <br/>
 <br/>
 
-Use Waterfall to answer three core questions: what failed, what was slow, and what the model actually saw. The details panel gives the context you need to confirm tool usage, memory behavior, and LLM settings without digging through logs.
+Use Waterfall when you need the root cause of a failure or a latency spike. The details panel gives the context you need to confirm tool usage, memory behavior, and LLM settings without digging through logs.
 
 Key signals to check:
 
@@ -32,6 +30,8 @@ Key signals to check:
 
 Use Logs to review structured events tied to the trace and span context. This is the fastest way to inspect errors and metadata without opening each span.
 
+Logs are best when you need a fast answer to “what happened and why.” Start with errors, then use search or level filters to narrow down, and follow the trace/span context to the exact step.
+
 <video controls loop muted playsInline style={{width: '100%', height: 'auto'}}>
 
   <source src="https://cdn.voltagent.dev/docs/observability/tracing/logs-2.mp4" type="video/mp4" />
@@ -41,25 +41,20 @@ Use Logs to review structured events tied to the trace and span context. This is
 <br/>
 <br/>
 
-Logs are best when you need a fast answer to “what happened and why.” Start with errors, then follow the trace/span context to the exact step, and use attributes to see the payload that caused it.
-
 ## Feedback
 
-Use Feedback to capture human signals for a trace. It helps you compare agent behavior with user sentiment and track quality over time.
+Use Feedback to tie human judgment to a specific trace so you can validate fixes and catch regressions early. It turns “this felt wrong” into a trackable signal you can compare across runs.
+
+What to look at:
+
+- **History and source**: confirm the trace was rated and where it came from (app, API, model).
+- **Key and score**: keep signals consistent (for example, satisfaction) so you can compare runs.
+- **Comments**: capture short context that explains why the output was good or bad.
 
 <img
 src="https://cdn.voltagent.dev/docs/observability/tracing/feedback.gif"
 alt="Trace filters overview"
-style={{ width: "520px", maxWidth: "100%", borderRadius: "12px" }}
+style={{ width: "520px", maxWidth: "100%", borderRadius: "12px", display: "block", margin: "0 auto" }}
 />
 
-What to look at:
-
-- **Feedback history**: see if this trace has already been rated and by which source.
-- **Active key**: understand which signal you are recording (for example, satisfaction).
-- **Helpful / Not helpful**: capture a simple quality signal for fast triage.
-- **Comments**: add short context that explains why a trace felt good or bad.
-
-:::note Add visuals
-Add the Feedback screenshot or GIF here.
-:::
+<br/>

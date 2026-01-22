@@ -4,7 +4,11 @@ title: Overview
 
 # VoltOps Tracing
 
-Tracing shows you exactly what happened in a single user request, end to end. Use it to find where a flow failed, which step is slow, or why a user got a specific response. It is most useful for agent debugging, performance and cost tuning, QA checks, and audit trails.
+Tracing shows how a single user request runs from start to finish. As a developer, you use it to answer:
+
+- Why did the agent respond this way?
+- Which step failed?
+- Where did latency or cost spike?
 
 <video controls loop muted playsInline style={{width: '100%', height: 'auto'}}>
 
@@ -19,15 +23,23 @@ When you select a trace from the list, you can open its [detailed views](https:/
 
 ## Trace Filters
 
-The trace list includes filters so you can narrow down the exact runs you care about before opening details.
+Filters help you find the right trace fast.
+
+:::tip
+For example use:
+
+- Status + Duration to see where a failure started,
+- Token usage + Cost to catch expensive runs, and
+- User ID + Conversation ID to inspect a specific user flow.
+  :::
 
 ![Trace filters overview](https://cdn.voltagent.dev/docs/observability/tracing/overview-trace-filters.gif)
 
+<br/>
+
 - **Status**: isolate failed or retry-heavy runs.
-- **Agent ID**: compare behavior across agents.
-- **Entity type**: focus on agent/tool/llm steps at scale.
-- **Token usage**: find expensive runs by input/output size.
-- **Cost**: spot budget spikes quickly.
-- **Duration**: isolate slow traces and latency outliers.
-- **Feedback source / key**: review user or model feedback by source.
-- **User ID / Conversation ID**: drill into a specific user journey.
+- **Agent ID / Entity type**: narrow down which agent or step is involved.
+- **Token usage / Cost**: find expensive or abnormal runs.
+- **Duration**: spot slow traces and latency outliers.
+- **Feedback source / key**: review feedback by source.
+- **User ID / Conversation ID**: drill into one user journey.
