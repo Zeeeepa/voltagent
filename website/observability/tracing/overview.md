@@ -31,7 +31,7 @@ For example use:
 - Status + Duration to see where a failure started,
 - Token usage + Cost to catch expensive runs, and
 - User ID + Conversation ID to inspect a specific user flow.
-  :::
+:::
 
 ![Trace filters overview](https://cdn.voltagent.dev/docs/observability/tracing/overview-trace-filters.gif)
 
