@@ -19,7 +19,7 @@ Tracing shows how a single user request runs from start to finish. As a develope
 <br/>
 <br/>
 
-When you select a trace from the list, you can open its [detailed views](https://voltagent.dev/observability-docs/tracing/views/).
+When you select a trace from the list, you can open the [Waterfall view](https://voltagent.dev/observability-docs/tracing/waterfall/) or the [Node-Based view](https://voltagent.dev/observability-docs/tracing/node-based/) and then dig into [Logs](https://voltagent.dev/observability-docs/tracing/logs/) and [Feedback](https://voltagent.dev/observability-docs/tracing/feedback/).
 
 ## Trace Filters
 
