@@ -1,4 +1,4 @@
-# AndAgent
+# andAgent
 
 > Add AI to your workflow. Get structured, typed responses from language models.
 
