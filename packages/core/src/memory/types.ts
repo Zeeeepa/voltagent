@@ -136,6 +136,8 @@ export interface WorkflowStateEntry {
   input?: unknown;
   /** Execution context */
   context?: Array<[string | symbol, unknown]>;
+  /** Shared workflow state at the time of persistence */
+  workflowState?: Record<string, unknown>;
   /** Suspension metadata including checkpoint data */
   suspension?: {
     suspendedAt: Date;
@@ -145,6 +147,7 @@ export interface WorkflowStateEntry {
     checkpoint?: {
       stepExecutionState?: any;
       completedStepsData?: any[];
+      workflowState?: Record<string, unknown>;
     };
     suspendData?: any;
   };
