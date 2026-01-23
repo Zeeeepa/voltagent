@@ -15,7 +15,7 @@ The Users page groups traces by user so you can see who is impacted and where is
 <br/>
 <br/>
 
-### Key Metrics
+## Key Metrics
 
 Quick read of volume, success rate, latency, and cost over time. Use it to decide if the problem is quality, performance, or spend, and to link regressions to model switches.
 
@@ -27,7 +27,7 @@ style={{  maxWidth: "100%", borderRadius: "12px", display: "block", margin: "0 a
 
 <br/>
 
-### User Feedback
+## User Feedback
 
 Feedback turns user sentiment into signals you can track. Use it to confirm whether fixes improved the experience and to see which issues users feel most.
 
@@ -41,7 +41,7 @@ style={{  maxWidth: "100%", borderRadius: "12px", display: "block", margin: "0 a
 
 Use the charts to see feedback volume, sentiment trends, score clusters, dominant feedback keys, and when users leave comments.
 
-### Conversations
+## Conversations
 
 Conversations group traces by session so you can follow a user flow end to end.
 
