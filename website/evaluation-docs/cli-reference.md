@@ -45,10 +45,10 @@ Add to your `package.json`:
 }
 ```
 
-Now you can use:
+Now you can use (pass CLI flags after `--` so npm forwards them to `volt`):
 
 ```bash
-npm run volt eval dataset push --name my-dataset
+npm run volt eval dataset push -- --name my-dataset
 # Instead of: npx @voltagent/cli eval dataset push --name my-dataset
 ```
 
@@ -60,7 +60,7 @@ Upload a local dataset JSON file to VoltOps.
 
 ```bash
 # Using npm script
-npm run volt eval dataset push --name <dataset-name>
+npm run volt eval dataset push -- --name <dataset-name>
 
 # Or directly
 voltagent eval dataset push --name <dataset-name>
@@ -89,11 +89,11 @@ export VOLTAGENT_DATASET_NAME=production-qa
 npm run volt eval dataset push
 
 # Push specific file
-npm run volt eval dataset push --name qa-tests --file ./data/custom-qa.json
+npm run volt eval dataset push -- --name qa-tests --file ./data/custom-qa.json
 
 # Push to different environment
 VOLTAGENT_API_URL=https://staging-api.voltagent.dev \
-  npm run volt eval dataset push --name staging-data
+  npm run volt eval dataset push -- --name staging-data
 ```
 
 ### `eval dataset pull`
@@ -101,7 +101,7 @@ VOLTAGENT_API_URL=https://staging-api.voltagent.dev \
 Download a dataset from VoltOps to local filesystem.
 
 ```bash
-npm run volt eval dataset pull [options]
+npm run volt eval dataset pull -- [options]
 ```
 
 **Options:**
@@ -138,19 +138,19 @@ When target file exists:
 npm run volt eval dataset pull
 
 # Pull specific dataset
-npm run volt eval dataset pull --name production-qa
+npm run volt eval dataset pull -- --name production-qa
 
 # Pull specific version
-npm run volt eval dataset pull --name qa-tests --version v3
+npm run volt eval dataset pull -- --name qa-tests --version v3
 
 # Pull by ID with custom output
-npm run volt eval dataset pull \
+npm run volt eval dataset pull -- \
   --id dataset_abc123 \
   --version version_xyz789 \
   --output ./test-data/qa.json
 
 # Force overwrite
-npm run volt eval dataset pull --name staging-data --overwrite
+npm run volt eval dataset pull -- --name staging-data --overwrite
 ```
 
 ## Experiment Commands
@@ -160,7 +160,7 @@ npm run volt eval dataset pull --name staging-data --overwrite
 Execute an experiment definition against a dataset.
 
 ```bash
-npm run volt eval run --experiment <path> [options]
+npm run volt eval run -- --experiment <path> [options]
 ```
 
 **Options:**
@@ -235,31 +235,31 @@ VoltOps Run: https://console.voltagent.dev/evals/runs/run_abc123
 
 ```bash
 # Basic run
-npm run volt eval run --experiment ./experiments/qa-test.ts
+npm run volt eval run -- --experiment ./experiments/qa-test.ts
 
 # Override dataset
-npm run volt eval run \
+npm run volt eval run -- \
   --experiment ./experiments/qa-test.ts \
   --dataset production-qa-v2
 
 # High concurrency
-npm run volt eval run \
+npm run volt eval run -- \
   --experiment ./experiments/batch-test.ts \
   --concurrency 20
 
 # Local testing
-npm run volt eval run \
+npm run volt eval run -- \
   --experiment ./experiments/dev-test.ts \
   --dry-run
 
 # CI/CD usage
-npm run volt eval run \
+npm run volt eval run -- \
   --experiment ./experiments/regression.ts \
   --tag github-actions \
   --experiment-name "PR #123 Regression"
 
 # Full options
-npm run volt eval run \
+npm run volt eval run -- \
   --experiment ./src/experiments/comprehensive.ts \
   --dataset large-dataset \
   --experiment-name "Nightly Regression" \
