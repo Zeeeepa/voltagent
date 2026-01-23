@@ -4635,19 +4635,92 @@ export class Agent {
       oc.systemContext.set("historyEntryId", oc.operationId);
       oc.systemContext.set("parentToolSpan", toolSpan);
 
-      const handleToolSuccess = async (result: any, validatedResult: any) => {
-        toolSpan.setAttribute("output", safeStringify(result));
-        toolSpan.setStatus({ code: SpanStatusCode.OK });
-        toolSpan.end();
+      const hasOutputOverride = (
+        value: unknown,
+      ): value is {
+        output?: unknown;
+      } => {
+        if (!value || typeof value !== "object") {
+          return false;
+        }
+        return Object.prototype.hasOwnProperty.call(value, "output");
+      };
 
-        await hooks.onToolEnd?.({
+      const runToolStartHooks = async () => {
+        await tool.hooks?.onStart?.({
+          tool,
+          args,
+          options: executionOptions,
+        });
+
+        await hooks.onToolStart?.({
           agent: this,
           tool,
-          output: validatedResult,
+          context: oc,
+          args,
+          options: executionOptions,
+        });
+      };
+
+      let spanOutcome:
+        | { status: "completed"; output?: unknown }
+        | { status: "error"; error?: Error | any }
+        | null = null;
+
+      const finalizeToolSpan = () => {
+        const shouldEnd =
+          typeof toolSpan.isRecording === "function" ? toolSpan.isRecording() : true;
+        if (!shouldEnd) {
+          return;
+        }
+        const status = spanOutcome?.status ?? "completed";
+        oc.traceContext.endChildSpan(toolSpan, status, {
+          output: spanOutcome?.status === "completed" ? spanOutcome.output : undefined,
+          error: spanOutcome?.status === "error" ? spanOutcome.error : undefined,
+        });
+      };
+
+      const resolveToolEndOutput = async (currentOutput: any) => {
+        let output = currentOutput;
+        let overrideProvided = false;
+
+        const toolHookResult = await tool.hooks?.onEnd?.({
+          tool,
+          args,
+          output,
+          error: undefined,
+          options: executionOptions,
+        });
+        if (hasOutputOverride(toolHookResult)) {
+          output = toolHookResult.output;
+          overrideProvided = true;
+        }
+
+        const agentHookResult = await hooks.onToolEnd?.({
+          agent: this,
+          tool,
+          output,
           error: undefined,
           context: oc,
           options: executionOptions,
         });
+        if (hasOutputOverride(agentHookResult)) {
+          output = agentHookResult.output;
+          overrideProvided = true;
+        }
+
+        if (overrideProvided) {
+          output = await this.validateToolOutput(output, tool);
+        }
+
+        return output;
+      };
+
+      const handleToolSuccess = async (_result: any, validatedResult: any) => {
+        const finalOutput = await resolveToolEndOutput(validatedResult);
+        spanOutcome = { status: "completed", output: finalOutput };
+
+        return finalOutput;
       };
 
       const handleToolError = async (errorValue: unknown) => {
@@ -4663,9 +4736,15 @@ export class Agent {
         });
         const errorResult = buildToolErrorResult(error, toolCallId, tool.name);
 
-        toolSpan.setStatus({ code: SpanStatusCode.ERROR, message: error.message });
-        toolSpan.recordException(error);
-        toolSpan.end();
+        spanOutcome = { status: "error", error: voltAgentError };
+
+        await tool.hooks?.onEnd?.({
+          tool,
+          args,
+          output: undefined,
+          error: voltAgentError,
+          options: executionOptions,
+        });
 
         await hooks.onToolEnd?.({
           agent: this,
@@ -4688,13 +4767,7 @@ export class Agent {
         return async function* (this: Agent): AsyncGenerator<any, void, void> {
           try {
             await oc.traceContext.withSpan(toolSpan, async () => {
-              await hooks.onToolStart?.({
-                agent: this,
-                tool,
-                context: oc,
-                args,
-                options: executionOptions,
-              });
+              await runToolStartHooks();
             });
 
             const result = execute(args, executionOptions);
@@ -4702,15 +4775,15 @@ export class Agent {
             if (!isAsyncIterable(result)) {
               const resolved = await result;
               const validatedResult = await this.validateToolOutput(resolved, tool);
-              await oc.traceContext.withSpan(toolSpan, async () => {
-                await handleToolSuccess(resolved, validatedResult);
+              const finalOutput = await oc.traceContext.withSpan(toolSpan, async () => {
+                return await handleToolSuccess(resolved, validatedResult);
               });
-              yield resolved;
+              yield finalOutput;
               return;
             }
 
             const iterator = result[Symbol.asyncIterator]();
-            let finalOutput: any = undefined;
+            let pendingOutput: any = undefined;
             let validatedResult: any = undefined;
             let hasOutput = false;
 
@@ -4720,24 +4793,33 @@ export class Agent {
                 break;
               }
 
-              finalOutput = next.value;
+              if (hasOutput) {
+                yield pendingOutput;
+              }
+
+              pendingOutput = next.value;
               hasOutput = true;
-              validatedResult = await this.validateToolOutput(finalOutput, tool);
-              yield finalOutput;
+              validatedResult = await this.validateToolOutput(pendingOutput, tool);
             }
 
             if (!hasOutput) {
-              validatedResult = await this.validateToolOutput(finalOutput, tool);
+              validatedResult = await this.validateToolOutput(pendingOutput, tool);
             }
 
-            await oc.traceContext.withSpan(toolSpan, async () => {
-              await handleToolSuccess(finalOutput, validatedResult);
+            const finalOutput = await oc.traceContext.withSpan(toolSpan, async () => {
+              return await handleToolSuccess(pendingOutput, validatedResult);
             });
+
+            if (hasOutput || finalOutput !== undefined) {
+              yield finalOutput;
+            }
           } catch (e) {
             const errorResult = await oc.traceContext.withSpan(toolSpan, async () => {
               return await handleToolError(e);
             });
             yield errorResult;
+          } finally {
+            finalizeToolSpan();
           }
         }.call(this);
       }
@@ -4745,13 +4827,7 @@ export class Agent {
       return oc.traceContext.withSpan(toolSpan, async () => {
         try {
           // Call tool start hook - can throw ToolDeniedError
-          await hooks.onToolStart?.({
-            agent: this,
-            tool,
-            context: oc,
-            args,
-            options: executionOptions,
-          });
+          await runToolStartHooks();
 
           // Execute tool with merged options
           if (!tool.execute) {
@@ -4769,14 +4845,13 @@ export class Agent {
 
           const validatedResult = await this.validateToolOutput(result, tool);
 
-          await handleToolSuccess(result, validatedResult);
+          const finalOutput = await handleToolSuccess(result, validatedResult);
 
-          return result;
+          return finalOutput;
         } catch (e) {
           return await handleToolError(e);
         } finally {
-          // End the span if it was created
-          oc.traceContext.endChildSpan(toolSpan, "completed", {});
+          finalizeToolSpan();
         }
       });
     };
