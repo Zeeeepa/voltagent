@@ -11,7 +11,7 @@ VoltAgent supports two ways to give AI assistants access to up-to-date documenta
 ## Option 1: Local Skills
 
 ```bash
-npx add-skill VoltAgent/skills
+npx skills add VoltAgent/skills
 ```
 
 Use this when your assistant can read local files. It uses the version-matched docs bundled with your project, so no additional setup is required.
