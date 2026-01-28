@@ -45,7 +45,7 @@ import styles from "./styles.module.css";
 const docTabs = [
   { label: "Home", href: "/docs/", match: (path: string) => path === "/docs/" },
   {
-    label: "VoltAgent",
+    label: "VoltAgent Framework",
     href: "/docs/overview/",
     match: (path: string) => path.startsWith("/docs/overview/"),
   },
