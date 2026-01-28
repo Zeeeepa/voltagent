@@ -1,5 +1,5 @@
 ---
-"@voltagent/core": major
+"@voltagent/core": minor
 ---
 
 feat: replace tool routers with `searchTools` + `callTool` tool routing
