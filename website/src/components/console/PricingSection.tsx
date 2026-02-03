@@ -128,7 +128,7 @@ const PricingSection = ({
       features: [
         {
           name: "Monthly Traces",
-          free: "100 traces",
+          free: "250 traces",
           core: "5,000 traces",
           pro: "20,000 traces",
           enterprise: "Unlimited",
