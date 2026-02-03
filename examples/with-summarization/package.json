@@ -1,5 +1,5 @@
 {
-  "name": "voltagent-example-with-vector-search",
+  "name": "voltagent-example-with-summarization",
   "author": "",
   "dependencies": {
     "@ai-sdk/openai": "^3.0.0",
@@ -19,8 +19,6 @@
   "keywords": [
     "agent",
     "ai",
-    "embeddings",
-    "vector-search",
     "voltagent"
   ],
   "license": "MIT",
@@ -28,7 +26,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/VoltAgent/voltagent.git",
-    "directory": "examples/with-vector-search"
+    "directory": "examples/with-summarization"
   },
   "scripts": {
     "build": "tsc",
