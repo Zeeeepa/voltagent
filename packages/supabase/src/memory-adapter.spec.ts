@@ -317,18 +317,18 @@ describe.sequential("SupabaseMemoryAdapter - Core Functionality", () => {
     it("should get messages from a conversation", async () => {
       const dbRows = [
         {
-          message_id: "msg-1",
-          user_id: "user-1",
-          role: "user",
-          parts: [{ type: "text", text: "Hello" }],
-          metadata: {},
-          created_at: new Date().toISOString(),
-        },
-        {
           message_id: "msg-2",
           user_id: "user-1",
           role: "assistant",
           parts: [{ type: "text", text: "Hi!" }],
+          metadata: {},
+          created_at: new Date().toISOString(),
+        },
+        {
+          message_id: "msg-1",
+          user_id: "user-1",
+          role: "user",
+          parts: [{ type: "text", text: "Hello" }],
           metadata: {},
           created_at: new Date().toISOString(),
         },
@@ -607,7 +607,7 @@ describe.sequential("SupabaseMemoryAdapter - Core Functionality", () => {
       expect(builder.in).toHaveBeenCalledWith("role", roles as any);
       expect(builder.lt).toHaveBeenCalledWith("created_at", before.toISOString());
       expect(builder.gt).toHaveBeenCalledWith("created_at", after.toISOString());
-      expect(builder.order).toHaveBeenCalledWith("created_at", { ascending: true });
+      expect(builder.order).toHaveBeenCalledWith("created_at", { ascending: false });
       expect(builder.limit).toHaveBeenCalledWith(5);
     });
 
