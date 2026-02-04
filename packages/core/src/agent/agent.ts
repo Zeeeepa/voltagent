@@ -3304,16 +3304,6 @@ export class Agent {
 
     buffer.ingestUIMessages([placeholder], false);
     oc.systemContext.set(STREAM_RESPONSE_MESSAGE_ID_KEY, messageId);
-
-    if (!oc.userId || !oc.conversationId) {
-      return messageId;
-    }
-
-    if (!this.memoryManager.hasConversationMemory()) {
-      return messageId;
-    }
-
-    await this.memoryManager.saveMessage(oc, placeholder, oc.userId, oc.conversationId);
     return messageId;
   }
 
@@ -4798,6 +4788,7 @@ export class Agent {
               statusCode: (error as any)?.statusCode,
               error: safeStringify(error),
             });
+
             await hooks.onRetry?.({
               agent: this,
               context: oc,

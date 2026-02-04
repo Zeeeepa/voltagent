@@ -668,7 +668,7 @@ describe("Agent", () => {
       expect(text).toBe("Streamed response");
     });
 
-    it("pre-creates streaming messages and forwards the id to UI streams", async () => {
+    it("pre-creates streaming message ids and forwards them to UI streams", async () => {
       const agent = new Agent({
         name: "TestAgent",
         instructions: "You are a helpful assistant",
@@ -713,11 +713,11 @@ describe("Agent", () => {
         conversationId: "conv-1",
       });
 
-      const savedMessage = saveMessageSpy.mock.calls
+      const placeholderSaved = saveMessageSpy.mock.calls
         .map((call) => call[1] as UIMessage)
-        .find((message) => message.role === "assistant" && message.parts.length === 0);
+        .some((message) => message.role === "assistant" && message.parts.length === 0);
 
-      expect(savedMessage).toBeDefined();
+      expect(placeholderSaved).toBe(false);
 
       result.toUIMessageStream();
 
@@ -727,7 +727,10 @@ describe("Agent", () => {
           generateMessageId: expect.any(Function),
         }),
       );
-      expect(callArgs?.generateMessageId()).toBe(savedMessage?.id);
+      const generatedId = callArgs?.generateMessageId();
+      expect(typeof generatedId).toBe("string");
+      expect(generatedId).not.toBe("");
+      expect(callArgs?.generateMessageId()).toBe(generatedId);
     });
 
     it("uses last-step usage for finish events when provider is anthropic", async () => {
