@@ -166,6 +166,8 @@ vitest.config.*.timestamp*
 # claude
 .claude
 skills
+!packages/core/src/workspace/skills
+!packages/core/src/workspace/skills/**
 
 dev-debug.log
 node_modules/
@@ -179,3 +181,7 @@ node_modules/
 
 # serena
 .serena
+
+
+# example skills
+!examples/with-workspace/workspace/skills

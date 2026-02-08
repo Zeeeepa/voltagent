@@ -87,6 +87,7 @@ import type { Voice } from "../voice";
 import { VoltOpsClient as VoltOpsClientClass } from "../voltops/client";
 import type { VoltOpsClient } from "../voltops/client";
 import type { PromptContent, PromptHelper } from "../voltops/types";
+import { Workspace } from "../workspace";
 import { buildToolErrorResult } from "./error-utils";
 import {
   ToolDeniedError,
@@ -273,6 +274,60 @@ const filterResponseMessages = (messages: unknown): ModelMessage[] | undefined =
 
   const filtered = messages.filter(isResponseMessage);
   return filtered.length > 0 ? filtered : undefined;
+};
+
+const resolveWorkspace = (workspace: AgentOptions["workspace"]): Workspace | undefined => {
+  if (!workspace) {
+    return undefined;
+  }
+
+  if (workspace instanceof Workspace) {
+    return workspace;
+  }
+
+  return new Workspace(workspace);
+};
+
+const buildWorkspaceToolkits = (
+  workspace: Workspace | undefined,
+  options: AgentOptions["workspaceToolkits"],
+): Toolkit[] => {
+  if (!workspace || options === false) {
+    return [];
+  }
+
+  const includeDefaults = options === undefined;
+  const toolkits: Toolkit[] = [];
+
+  const filesystemOptions = includeDefaults ? {} : options?.filesystem;
+  if (includeDefaults || filesystemOptions !== undefined) {
+    if (filesystemOptions !== false) {
+      toolkits.push(workspace.createFilesystemToolkit(filesystemOptions || {}));
+    }
+  }
+
+  const sandboxOptions = includeDefaults ? {} : options?.sandbox;
+  if (includeDefaults || sandboxOptions !== undefined) {
+    if (sandboxOptions !== false) {
+      toolkits.push(workspace.createSandboxToolkit(sandboxOptions || {}));
+    }
+  }
+
+  const searchOptions = includeDefaults ? {} : options?.search;
+  if (includeDefaults || searchOptions !== undefined) {
+    if (searchOptions !== false) {
+      toolkits.push(workspace.createSearchToolkit(searchOptions || {}));
+    }
+  }
+
+  const skillsOptions = includeDefaults ? {} : options?.skills;
+  if (includeDefaults || skillsOptions !== undefined) {
+    if (skillsOptions !== false) {
+      toolkits.push(workspace.createSkillsToolkit(skillsOptions || {}));
+    }
+  }
+
+  return toolkits;
 };
 
 const searchToolsParameters = z.object({
@@ -533,7 +588,8 @@ function isAsyncIterable(value: unknown): value is AsyncIterable<unknown> {
  * Base options for all generation methods
  * Extends AI SDK's CallSettings for full compatibility
  */
-export interface BaseGenerationOptions extends Partial<CallSettings> {
+export interface BaseGenerationOptions<TProviderOptions extends ProviderOptions = ProviderOptions>
+  extends Partial<CallSettings> {
   // === VoltAgent Specific ===
   // Context
   userId?: string;
@@ -589,7 +645,7 @@ export interface BaseGenerationOptions extends Partial<CallSettings> {
   maxMiddlewareRetries?: number;
 
   // Provider-specific options
-  providerOptions?: ProviderOptions;
+  providerOptions?: TProviderOptions;
 
   // Structured output (for schema-guided generation)
   output?: OutputSpec;
@@ -610,24 +666,27 @@ export interface BaseGenerationOptions extends Partial<CallSettings> {
   toolChoice?: ToolChoice<Record<string, unknown>>;
 }
 
-export type GenerateTextOptions<OUTPUT extends OutputSpec = OutputSpec> = Omit<
-  BaseGenerationOptions,
-  "output"
-> & {
+export type GenerateTextOptions<
+  OUTPUT extends OutputSpec = OutputSpec,
+  TProviderOptions extends ProviderOptions = ProviderOptions,
+> = Omit<BaseGenerationOptions<TProviderOptions>, "output"> & {
   output?: OUTPUT;
 };
-export type StreamTextOptions = BaseGenerationOptions & {
-  onFinish?: (result: any) => void | Promise<void>;
-  /**
-   * When true, avoids wiring the HTTP abort signal into the stream so clients can resume later.
-   * Use with a resumable stream store to prevent orphaned streams.
-   */
-  resumableStream?: boolean;
-};
-export type GenerateObjectOptions = BaseGenerationOptions;
-export type StreamObjectOptions = BaseGenerationOptions & {
-  onFinish?: (result: any) => void | Promise<void>;
-};
+export type StreamTextOptions<TProviderOptions extends ProviderOptions = ProviderOptions> =
+  BaseGenerationOptions<TProviderOptions> & {
+    onFinish?: (result: any) => void | Promise<void>;
+    /**
+     * When true, avoids wiring the HTTP abort signal into the stream so clients can resume later.
+     * Use with a resumable stream store to prevent orphaned streams.
+     */
+    resumableStream?: boolean;
+  };
+export type GenerateObjectOptions<TProviderOptions extends ProviderOptions = ProviderOptions> =
+  BaseGenerationOptions<TProviderOptions>;
+export type StreamObjectOptions<TProviderOptions extends ProviderOptions = ProviderOptions> =
+  BaseGenerationOptions<TProviderOptions> & {
+    onFinish?: (result: any) => void | Promise<void>;
+  };
 
 // ============================================================================
 // Agent Implementation
@@ -658,6 +717,7 @@ export class Agent {
   private readonly memory?: Memory | false;
   private readonly memoryConfigured: boolean;
   private readonly summarization?: AgentSummarizationOptions | false;
+  private readonly workspace?: Workspace;
   private defaultObservability?: VoltAgentObservability;
   private readonly toolManager: ToolManager;
   private readonly toolPoolManager: ToolManager;
@@ -690,7 +750,11 @@ export class Agent {
     this.hooks = options.hooks || {};
     this.temperature = options.temperature;
     this.maxOutputTokens = options.maxOutputTokens;
-    this.maxSteps = options.maxSteps || 5;
+    const globalWorkspace = AgentRegistry.getInstance().getGlobalWorkspace();
+    const workspaceOption = options.workspace === undefined ? globalWorkspace : options.workspace;
+    this.workspace = resolveWorkspace(workspaceOption);
+    const defaultMaxSteps = this.workspace ? 100 : 5;
+    this.maxSteps = options.maxSteps ?? defaultMaxSteps;
     this.maxRetries = options.maxRetries ?? DEFAULT_LLM_MAX_RETRIES;
     this.stopWhen = options.stopWhen;
     this.markdown = options.markdown ?? false;
@@ -735,6 +799,7 @@ export class Agent {
     this.memoryConfigured = options.memory !== undefined;
     this.memory = options.memory;
     this.summarization = options.summarization;
+    // workspace resolved above to set default maxSteps
 
     // Initialize memory manager
     const resolvedMemory = this.memoryConfigured
@@ -751,11 +816,16 @@ export class Agent {
       titleGenerator,
     );
 
+    const workspaceToolkits = buildWorkspaceToolkits(this.workspace, options.workspaceToolkits);
+
     // Initialize tool manager with static tools
     const staticTools = typeof options.tools === "function" ? [] : options.tools;
     this.toolManager = new ToolManager(staticTools, this.logger);
     if (options.toolkits) {
       this.toolManager.addItems(options.toolkits);
+    }
+    if (workspaceToolkits.length > 0) {
+      this.toolManager.addItems(workspaceToolkits);
     }
     this.toolPoolManager = new ToolManager([], this.logger);
     this.applyToolRoutingConfig(this.toolRouting);
@@ -778,9 +848,12 @@ export class Agent {
   /**
    * Generate text response
    */
-  async generateText<OUTPUT extends OutputSpec = OutputSpec>(
+  async generateText<
+    OUTPUT extends OutputSpec = OutputSpec,
+    TProviderOptions extends ProviderOptions = ProviderOptions,
+  >(
     input: string | UIMessage[] | BaseMessage[],
-    options?: GenerateTextOptions<OUTPUT>,
+    options?: GenerateTextOptions<OUTPUT, TProviderOptions>,
   ): Promise<GenerateTextResultWithContext<ToolSet, OUTPUT>> {
     const startTime = Date.now();
     const oc = this.createOperationContext(input, options);
@@ -1250,9 +1323,9 @@ export class Agent {
   /**
    * Stream text response
    */
-  async streamText(
+  async streamText<TProviderOptions extends ProviderOptions = ProviderOptions>(
     input: string | UIMessage[] | BaseMessage[],
-    options?: StreamTextOptions,
+    options?: StreamTextOptions<TProviderOptions>,
   ): Promise<StreamTextResultWithContext> {
     const startTime = Date.now();
     const oc = this.createOperationContext(input, options);
@@ -2212,10 +2285,13 @@ export class Agent {
    * Generate structured object
    * @deprecated — Use generateText with an output setting instead.
    */
-  async generateObject<T extends z.ZodType>(
+  async generateObject<
+    T extends z.ZodType,
+    TProviderOptions extends ProviderOptions = ProviderOptions,
+  >(
     input: string | UIMessage[] | BaseMessage[],
     schema: T,
-    options?: GenerateObjectOptions,
+    options?: GenerateObjectOptions<TProviderOptions>,
   ): Promise<GenerateObjectResultWithContext<z.infer<T>>> {
     const startTime = Date.now();
     const oc = this.createOperationContext(input, options);
@@ -2533,10 +2609,13 @@ export class Agent {
    * Stream structured object
    * @deprecated — Use streamText with an output setting instead.
    */
-  async streamObject<T extends z.ZodType>(
+  async streamObject<
+    T extends z.ZodType,
+    TProviderOptions extends ProviderOptions = ProviderOptions,
+  >(
     input: string | UIMessage[] | BaseMessage[],
     schema: T,
-    options?: StreamObjectOptions,
+    options?: StreamObjectOptions<TProviderOptions>,
   ): Promise<StreamObjectResultWithContext<z.infer<T>>> {
     const startTime = Date.now();
     const oc = this.createOperationContext(input, options);
@@ -6824,6 +6903,13 @@ export class Agent {
    */
   public getToolManager(): ToolManager {
     return this.toolManager;
+  }
+
+  /**
+   * Get Workspace instance if configured
+   */
+  public getWorkspace(): Workspace | undefined {
+    return this.workspace;
   }
 
   /**

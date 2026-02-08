@@ -118,6 +118,79 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
+      label: "Workspaces",
+      collapsed: true,
+      items: [
+        {
+          type: "doc",
+          id: "workspaces/overview",
+          label: "Overview",
+          customProps: {
+            badge: {
+              label: "Experimental",
+              variant: "accent",
+            },
+          },
+        },
+        {
+          type: "doc",
+          id: "workspaces/filesystem",
+          label: "Filesystem",
+          customProps: {
+            badge: {
+              label: "Experimental",
+              variant: "accent",
+            },
+          },
+        },
+        {
+          type: "doc",
+          id: "workspaces/search",
+          label: "Search",
+          customProps: {
+            badge: {
+              label: "Experimental",
+              variant: "accent",
+            },
+          },
+        },
+        {
+          type: "doc",
+          id: "workspaces/sandbox",
+          label: "Sandbox",
+          customProps: {
+            badge: {
+              label: "Experimental",
+              variant: "accent",
+            },
+          },
+        },
+        {
+          type: "doc",
+          id: "workspaces/skills",
+          label: "Skills",
+          customProps: {
+            badge: {
+              label: "Experimental",
+              variant: "accent",
+            },
+          },
+        },
+        {
+          type: "doc",
+          id: "workspaces/security",
+          label: "Security",
+          customProps: {
+            badge: {
+              label: "Experimental",
+              variant: "accent",
+            },
+          },
+        },
+      ],
+    },
+    {
+      type: "category",
       label: "Workflows",
       collapsed: true,
       items: [
