@@ -64,13 +64,6 @@ const WorkflowIdParam = t.Object({
 });
 
 /**
- * Execution ID parameter schema
- */
-const ExecutionIdParam = t.Object({
-  executionId: t.String({ description: "Workflow execution ID" }),
-});
-
-/**
  * Workflow and execution ID parameters schema
  */
 const WorkflowExecutionParams = t.Object({
@@ -215,18 +208,25 @@ export function registerWorkflowRoutes(
     },
   );
 
-  // POST /workflows/executions/:executionId/suspend - Suspend workflow execution
+  // POST /workflows/:id/executions/:executionId/suspend - Suspend workflow execution
   app.post(
-    "/workflows/executions/:executionId/suspend",
-    async ({ params, body }) => {
+    "/workflows/:id/executions/:executionId/suspend",
+    async ({ params, body, set }) => {
       const response = await handleSuspendWorkflow(params.executionId, body, deps, logger);
       if (!response.success) {
-        throw new Error("Failed to suspend workflow");
+        const errorMessage = response.error || "";
+        set.status = errorMessage.includes("not found")
+          ? 404
+          : errorMessage.includes("not supported") || errorMessage.includes("suspendable")
+            ? 400
+            : 500;
+        return response;
       }
+      set.status = 200;
       return response;
     },
     {
-      params: ExecutionIdParam,
+      params: WorkflowExecutionParams,
       body: WorkflowSuspendRequestSchema,
       response: {
         200: WorkflowSuspendResponseSchema,
@@ -241,25 +241,25 @@ export function registerWorkflowRoutes(
     },
   );
 
-  // POST /workflows/executions/:executionId/cancel - Cancel workflow execution
+  // POST /workflows/:id/executions/:executionId/cancel - Cancel workflow execution
   app.post(
-    "/workflows/executions/:executionId/cancel",
-    async ({ params, body }) => {
+    "/workflows/:id/executions/:executionId/cancel",
+    async ({ params, body, set }) => {
       const response = await handleCancelWorkflow(params.executionId, body, deps, logger);
       if (!response.success) {
         const errorMessage = response.error || "";
-        if (errorMessage.includes("not found")) {
-          throw new Error("Execution not found");
-        }
-        if (errorMessage.includes("not cancellable")) {
-          throw new Error("Execution is not in a cancellable state");
-        }
-        throw new Error("Failed to cancel workflow");
+        set.status = errorMessage.includes("not found")
+          ? 404
+          : errorMessage.includes("not cancellable")
+            ? 409
+            : 500;
+        return response;
       }
+      set.status = 200;
       return response;
     },
     {
-      params: ExecutionIdParam,
+      params: WorkflowExecutionParams,
       body: WorkflowCancelRequestSchema,
       response: {
         200: WorkflowCancelResponseSchema,
