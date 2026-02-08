@@ -190,7 +190,7 @@
   "1950536117549486550": {
     "__typename": "Tweet",
     "id_str": "1950536117549486550",
-    "text": "@tomsiwik if you're building in typescript, you need to see voltagent.  \n\ntheir state and memory features are solid. \n\njust built a sales pipeline for a client with it, and it runs smoothly.  huge win for complex systems.\n\nhttps://t.co/ZuCR9qgqcj",
+    "text": "@tomhacks if you're building in typescript, you need to see voltagent.  \n\ntheir state and memory features are solid. \n\njust built a sales pipeline for a client with it, and it runs smoothly.  huge win for complex systems.\n\nhttps://t.co/ZuCR9qgqcj",
     "created_at": "2025-07-30T12:37:04.000Z",
     "lang": "en",
     "display_text_range": [
@@ -210,7 +210,17 @@
           "expanded_url": "https://voltagent.dev/docs/agents/memory/overview/"
         }
       ],
-      "user_mentions": [],
+      "user_mentions": [
+        {
+          "indices": [
+            0,
+            9
+          ],
+          "id_str": "19107253",
+          "name": "",
+          "screen_name": "tomhacks"
+        }
+      ],
       "symbols": [],
       "media": []
     },
@@ -624,7 +634,7 @@
       "id_str": "1081110908116631552",
       "name": "Adrian | JavaScript Mastery",
       "screen_name": "jsmasterypro",
-      "profile_image_url_https": "https://pbs.twimg.com/profile_images/1727253129513549824/EYZ8p0PT_normal.jpg",
+      "profile_image_url_https": "https://pbs.twimg.com/profile_images/2020158252076466176/S3nCjv5d_normal.jpg",
       "profile_image_shape": "Circle",
       "verified": false,
       "is_blue_verified": true

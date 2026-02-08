@@ -106,86 +106,44 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
-      label: "Guardrails",
+      label: "Workspaces",
       collapsed: true,
       customProps: {
         badge: {
-          label: "New",
+          label: "Experimental",
           variant: "accent",
         },
       },
-      items: ["guardrails/overview", "guardrails/built-in"],
-    },
-    {
-      type: "category",
-      label: "Workspaces",
-      collapsed: true,
       items: [
         {
           type: "doc",
           id: "workspaces/overview",
           label: "Overview",
-          customProps: {
-            badge: {
-              label: "Experimental",
-              variant: "accent",
-            },
-          },
         },
         {
           type: "doc",
           id: "workspaces/filesystem",
           label: "Filesystem",
-          customProps: {
-            badge: {
-              label: "Experimental",
-              variant: "accent",
-            },
-          },
         },
         {
           type: "doc",
           id: "workspaces/search",
           label: "Search",
-          customProps: {
-            badge: {
-              label: "Experimental",
-              variant: "accent",
-            },
-          },
         },
         {
           type: "doc",
           id: "workspaces/sandbox",
           label: "Sandbox",
-          customProps: {
-            badge: {
-              label: "Experimental",
-              variant: "accent",
-            },
-          },
         },
         {
           type: "doc",
           id: "workspaces/skills",
           label: "Skills",
-          customProps: {
-            badge: {
-              label: "Experimental",
-              variant: "accent",
-            },
-          },
         },
         {
           type: "doc",
           id: "workspaces/security",
           label: "Security",
-          customProps: {
-            badge: {
-              label: "Experimental",
-              variant: "accent",
-            },
-          },
         },
       ],
     },
@@ -217,15 +175,15 @@ const sidebars: SidebarsConfig = {
       ],
     },
     {
+      type: "category",
+      label: "Guardrails",
+      collapsed: true,
+      items: ["guardrails/overview", "guardrails/built-in"],
+    },
+    {
       type: "doc",
       id: "evals",
       label: "Evals",
-      customProps: {
-        badge: {
-          label: "New",
-          variant: "accent",
-        },
-      },
     },
     {
       type: "category",
@@ -262,23 +220,11 @@ const sidebars: SidebarsConfig = {
       type: "doc",
       id: "triggers",
       label: "Triggers",
-      customProps: {
-        badge: {
-          label: "New",
-          variant: "accent",
-        },
-      },
     },
     {
       type: "doc",
       id: "actions",
       label: "Actions",
-      customProps: {
-        badge: {
-          label: "New",
-          variant: "accent",
-        },
-      },
     },
     {
       type: "category",
