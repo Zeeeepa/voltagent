@@ -752,6 +752,7 @@ ${task}\n\nContext: ${safeStringify(contextObj, { indentation: 2 })}`;
     maxSteps?: number;
     conversationId?: string;
     userId?: string;
+    parentToolSpan?: Span;
   }): Tool<any, any> {
     const {
       sourceAgent,
@@ -760,6 +761,7 @@ ${task}\n\nContext: ${safeStringify(contextObj, { indentation: 2 })}`;
       maxSteps,
       conversationId,
       userId,
+      parentToolSpan,
     } = options;
     return createTool({
       id: "delegate_task",
@@ -773,10 +775,10 @@ ${task}\n\nContext: ${safeStringify(contextObj, { indentation: 2 })}`;
           .optional()
           .describe("Additional context for the task"),
       }),
-      execute: async ({ task, targetAgents, context = {} }, options) => {
+      execute: async ({ task, targetAgents, context = {} }, executeOptions) => {
         // Extract OperationContext from options if available
         // Since ToolExecuteOptions extends Partial<OperationContext>, we can cast it
-        const currentOperationContext = options as OperationContext | undefined;
+        const currentOperationContext = executeOptions as OperationContext | undefined;
         // Fall back to the original operation context if not available
         const effectiveOperationContext = currentOperationContext || operationContext;
 
@@ -838,9 +840,10 @@ ${task}\n\nContext: ${safeStringify(contextObj, { indentation: 2 })}`;
             // Pass maxSteps from parent to subagents
             maxSteps,
             // Pass the parentToolSpan from executeOptions for proper span hierarchy
-            parentSpan: effectiveOperationContext?.systemContext?.get("parentToolSpan") as
-              | Span
-              | undefined,
+            parentSpan:
+              (executeOptions?.parentToolSpan as Span | undefined) ||
+              parentToolSpan ||
+              (effectiveOperationContext?.systemContext?.get("parentToolSpan") as Span | undefined),
           });
 
           // Return structured results with agent names and their responses
