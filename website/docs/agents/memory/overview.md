@@ -95,11 +95,11 @@ Agents accept a `memory` option:
 ```ts
 import { Agent, Memory } from "@voltagent/core";
 
-// Default: in-memory storage (no persistence)
+// Default when omitted: built-in in-memory storage
 const agent1 = new Agent({
   name: "Assistant",
   model: "openai/gpt-4o-mini",
-  // memory: undefined // implicit default
+  // memory omitted (or undefined)
 });
 
 // Disable memory entirely
@@ -121,9 +121,19 @@ const agent3 = new Agent({
 });
 ```
 
+**`memory` option behavior**
+
+| Value                 | Behavior                                                                |
+| --------------------- | ----------------------------------------------------------------------- |
+| Omitted / `undefined` | Conversation memory is enabled with a built-in `InMemoryStorageAdapter` |
+| `false`               | Conversation memory is disabled                                         |
+| `new Memory({ ... })` | Conversation memory is enabled with your configured adapter             |
+
+For stateless sub-agents, set `memory: false` on each sub-agent explicitly.
+
 ### Global Defaults (VoltAgent)
 
-Set default memory instances once at the VoltAgent entrypoint. Defaults apply only when an agent or workflow does not specify `memory`. An explicit `memory: false` on an agent disables memory and bypasses defaults.
+Set default memory instances once at the VoltAgent entrypoint. Defaults apply only when an agent or workflow does not specify `memory`. If nothing is configured, VoltAgent still falls back to built-in in-memory storage. An explicit `memory: false` on an agent disables memory and bypasses defaults.
 
 ```ts
 import { Memory, VoltAgent } from "@voltagent/core";

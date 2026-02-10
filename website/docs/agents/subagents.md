@@ -105,7 +105,7 @@ const supervisorAgent = new Agent({
       "Prioritize user experience",
     ],
 
-    // Control whether to include previous agent interactions
+    // Control whether prior sub-agent interactions are injected into supervisor prompt
     includeAgentsMemory: true, // default: true
   },
 });
@@ -416,8 +416,23 @@ supervisorConfig: {
 
 ```ts
 supervisorConfig: {
-  includeAgentsMemory: false; // Fresh context each interaction (default: true)
+  includeAgentsMemory: false; // Exclude prior sub-agent interactions from supervisor prompt (default: true)
 }
+```
+
+:::note `includeAgentsMemory` vs `memory: false`
+`includeAgentsMemory` only controls prompt construction for the supervisor. It does not disable conversation memory inside each sub-agent. If you need a stateless sub-agent, set `memory: false` on that sub-agent.
+:::
+
+**Stateless sub-agent:**
+
+```ts
+const writerAgent = new Agent({
+  name: "Writer",
+  instructions: "Write concise drafts.",
+  model: "openai/gpt-4o-mini",
+  memory: false,
+});
 ```
 
 **Configure event forwarding:**

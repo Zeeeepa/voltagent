@@ -22,6 +22,8 @@ const agent = new Agent({
 });
 ```
 
+Omitting `memory` does **not** disable memory. To make an agent stateless, set `memory: false`.
+
 ## Explicit Configuration
 
 Configure storage limits explicitly:

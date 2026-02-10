@@ -57,7 +57,7 @@ app.registerTriggers(triggers);
 
 ## Memory Defaults
 
-Set default memory once at the VoltAgent entrypoint. Defaults apply only when an agent or workflow does not specify `memory`. An explicit `memory: false` on an agent disables memory entirely.
+Set default memory once at the VoltAgent entrypoint. Defaults apply only when an agent or workflow does not specify `memory`. Omitting `memory` does not disable it; it still resolves to configured defaults (or built-in in-memory). An explicit `memory: false` on an agent disables memory entirely.
 
 ```ts
 import { Memory, VoltAgent } from "@voltagent/core";

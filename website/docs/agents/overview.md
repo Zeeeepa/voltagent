@@ -341,7 +341,7 @@ const agent = new Agent({
   id: "custom-id", // Unique ID (auto-generated if not provided)
   purpose: "Customer support agent", // Agent purpose for supervisor context
   tools: [weatherTool, searchTool], // Available tools
-  memory: memoryStorage, // Memory instance (or false to disable)
+  memory: memoryStorage, // Memory instance (omit -> built-in in-memory, false -> disable)
   context: new Map([
     // Default context for all operations
     ["environment", "production"],
@@ -376,7 +376,7 @@ Agents support additional capabilities through configuration options. Each featu
 
 ### Memory
 
-Memory stores conversation history so agents can reference past messages. By default, agents use in-memory storage (non-persistent). You can configure persistent storage adapters.
+Memory stores conversation history so agents can reference past messages. If `memory` is omitted, agents use built-in in-memory storage. Use `memory: false` for stateless behavior, or configure a persistent adapter for long-term storage.
 
 ```ts
 import { Memory } from "@voltagent/core";
