@@ -3169,9 +3169,16 @@ export class Agent {
     tools: Record<string, any>;
     maxSteps: number;
   }> {
+    const dynamicToolList = (await this.resolveValue(this.dynamicTools, oc)) || [];
+
+    // Merge agent tools with option tools
+    const optionToolsArray = options?.tools || [];
+    const adHocTools = [...dynamicToolList, ...optionToolsArray];
+    const runtimeToolkits = this.extractToolkits(adHocTools);
+
     // Prepare messages (system + memory + input) as UIMessages
     const buffer = this.getConversationBuffer(oc);
-    const uiMessages = await this.prepareMessages(input, oc, options, buffer);
+    const uiMessages = await this.prepareMessages(input, oc, options, buffer, runtimeToolkits);
 
     // Convert UIMessages to ModelMessages for the LLM
     const hooks = this.getMergedHooks(options);
@@ -3195,11 +3202,6 @@ export class Agent {
     const maxSteps = options?.maxSteps ?? this.calculateMaxSteps();
 
     const modelName = this.getModelName();
-    const dynamicToolList = (await this.resolveValue(this.dynamicTools, oc)) || [];
-
-    // Merge agent tools with option tools
-    const optionToolsArray = options?.tools || [];
-    const adHocTools = [...dynamicToolList, ...optionToolsArray];
 
     // Prepare tools with execution context
     const tools = await this.prepareTools(adHocTools, oc, maxSteps, options);
@@ -3929,12 +3931,13 @@ export class Agent {
     oc: OperationContext,
     options: BaseGenerationOptions | undefined,
     buffer: ConversationBuffer,
+    runtimeToolkits: Toolkit[] = [],
   ): Promise<UIMessage[]> {
     const resolvedInput = await this.validateIncomingUIMessages(input, oc);
     const messages: UIMessage[] = [];
 
     // Get system message with retriever context and working memory
-    const systemMessage = await this.getSystemMessage(resolvedInput, oc, options);
+    const systemMessage = await this.getSystemMessage(resolvedInput, oc, options, runtimeToolkits);
     if (systemMessage) {
       const systemMessagesAsUI: UIMessage[] = (() => {
         if (typeof systemMessage === "string") {
@@ -4203,6 +4206,7 @@ export class Agent {
     input: string | UIMessage[] | BaseMessage[],
     oc: OperationContext,
     options?: BaseGenerationOptions,
+    runtimeToolkits: Toolkit[] = [],
   ): Promise<BaseMessage | BaseMessage[]> {
     // Resolve dynamic instructions
     const promptHelper = VoltOpsClientClass.createPromptHelperWithFallback(
@@ -4366,6 +4370,7 @@ export class Agent {
           retrieverContext,
           workingMemoryContext,
           oc,
+          runtimeToolkits,
         );
 
         return {
@@ -4382,6 +4387,7 @@ export class Agent {
       retrieverContext,
       workingMemoryContext,
       oc,
+      runtimeToolkits,
     );
 
     return {
@@ -4393,8 +4399,44 @@ export class Agent {
   /**
    * Add toolkit instructions
    */
-  private addToolkitInstructions(baseInstructions: string): string {
-    const toolkits = this.toolManager.getToolkits();
+  private addToolkitInstructions(
+    baseInstructions: string,
+    runtimeToolkits: Toolkit[] = [],
+  ): string {
+    type ToolkitInstructionSource = {
+      name: string;
+      instructions?: string;
+      addInstructions?: boolean;
+    };
+
+    const toolkits: ToolkitInstructionSource[] = this.toolManager.getToolkits().map((toolkit) => ({
+      name: toolkit.name,
+      instructions: toolkit.instructions,
+      addInstructions: toolkit.addInstructions,
+    }));
+    const toolkitIndexByName = new Map<string, number>();
+
+    for (const [index, toolkit] of toolkits.entries()) {
+      toolkitIndexByName.set(toolkit.name, index);
+    }
+
+    for (const runtimeToolkit of runtimeToolkits) {
+      const runtimeToolkitSource: ToolkitInstructionSource = {
+        name: runtimeToolkit.name,
+        instructions: runtimeToolkit.instructions,
+        addInstructions: runtimeToolkit.addInstructions,
+      };
+      const existingIndex = toolkitIndexByName.get(runtimeToolkit.name);
+      if (existingIndex === undefined) {
+        toolkitIndexByName.set(runtimeToolkit.name, toolkits.length);
+        toolkits.push(runtimeToolkitSource);
+        continue;
+      }
+
+      // Keep static ordering, but prefer runtime toolkit definitions on name collisions.
+      toolkits[existingIndex] = runtimeToolkitSource;
+    }
+
     let toolInstructions = "";
 
     for (const toolkit of toolkits) {
@@ -4414,11 +4456,12 @@ export class Agent {
     retrieverContext: string | null,
     workingMemoryContext: string | null,
     oc: OperationContext,
+    runtimeToolkits: Toolkit[] = [],
   ): Promise<string> {
     let content = baseContent;
 
     // Add toolkit instructions
-    content = this.addToolkitInstructions(content);
+    content = this.addToolkitInstructions(content, runtimeToolkits);
 
     // Add markdown instruction
     if (this.markdown) {
@@ -4446,6 +4489,16 @@ export class Agent {
     }
 
     return content;
+  }
+
+  private extractToolkits(items: (BaseTool | Toolkit)[]): Toolkit[] {
+    return items.filter(
+      (item): item is Toolkit =>
+        typeof item === "object" &&
+        item !== null &&
+        "tools" in item &&
+        Array.isArray((item as Toolkit).tools),
+    );
   }
 
   /**
